@@ -1,7 +1,9 @@
+const { constants } = require('../modules/keyboard');
 const netwareAdmin = require('./netwareAdmin');
 const clientsAdmin = require('./clientsAdmin');
-const { constants } = require('../modules/keyboard');
-const signUp = require('./signUp');
+const supportScene = require('./support');
+const receiptScene = require('./receipt');
+const signUpForm = require('./signUp').signUpForm;
 
 function getCallbackData(text) {
 	for (const constant of Object.values(constants)) {
@@ -18,30 +20,24 @@ function getCallbackData(text) {
 }
 
 
-async function handler(bot, msg) {
+async function handler(bot, msg, webAppUrl) {
 	const data = getCallbackData(msg.text);
 	console.log(data);
 	switch (data) {
 		case '0_1':
-			console.log('0_1');
+			await receiptScene(bot, msg);
 			break;
 		case '0_2':
-			console.log('0_2');
+			await supportScene(bot, msg);
 			break;
 		case '0_3':
-			await signUp(bot, msg);
-			break;
-		case '1_1':
-			console.log('1_1');
-			break;
-		case '1_2':
-			console.log('1_2');
+			await signUpForm(bot, msg, webAppUrl);
 			break;
 		case '2_1':
-			await netwareAdmin(bot);
+			await netwareAdmin(bot, msg);
 			break;
 		case '2_2':
-			await clientsAdmin(bot);
+			await clientsAdmin(bot, msg);
 			break;
 		default:
 			console.log('default');
@@ -49,4 +45,34 @@ async function handler(bot, msg) {
 	}
 }
 
-module.exports = handler;
+async function guestMenu(bot, msg, guestStartButtons) {
+	await bot.sendMessage(msg.chat.id, `Чат-бот <b>ISP SILVER-SERVICE</b> вітає Вас, <b>${msg.chat.first_name} ${msg.chat.last_name}</b>!
+	Вам надано гостьовий доступ`, { parse_mode: "HTML" });
+	await bot.sendMessage(msg.chat.id, guestStartButtons.title, {
+		reply_markup: {
+			keyboard: guestStartButtons.buttons
+		}
+	});
+}
+
+async function userMenu(bot, msg, authStartButtons) {
+	await bot.sendMessage(msg.chat.id, `Чат-бот <b>ISP SILVER-SERVICE</b> вітає Вас, <b>${msg.chat.first_name} ${msg.chat.last_name}</b>!
+	Вам надано авторизований доступ`, { parse_mode: "HTML" });
+	await bot.sendMessage(msg.chat.id, authStartButtons.title, {
+		reply_markup: {
+			keyboard: authStartButtons.buttons
+		}
+	});
+}
+
+async function adminMenu(bot, msg, adminStartButtons) {
+	await bot.sendMessage(msg.chat.id, `Hi, ${msg.chat.first_name} ${msg.chat.last_name}! 
+				You have been granted administrative access`);
+	await bot.sendMessage(msg.chat.id, adminStartButtons.title, {
+		reply_markup: {
+			keyboard: adminStartButtons.buttons
+		}
+	});
+}
+
+module.exports = { handler, guestMenu, userMenu, adminMenu };

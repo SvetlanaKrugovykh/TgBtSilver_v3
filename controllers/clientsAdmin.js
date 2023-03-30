@@ -10,7 +10,7 @@ const { getReceipt } = require('../modules/getReceipt');
 
 
 
-async function clientAdmin(chatId) {
+async function clientAdmin(bot, msg) {
 	let telNumber = '';
 
 	let infoFound = false;

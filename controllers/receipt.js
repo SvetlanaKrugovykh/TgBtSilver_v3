@@ -1,35 +1,31 @@
-const axios = require(`axios`);
-const fs = require('fs');
-const URL = process.env.URL;
-const AUTH_TOKEN = process.env.AUTH_TOKEN;
 const sendReqToDB = require('../modules/tlg_to_DB');
 const { getReceipt } = require('../modules/getReceipt');
 
-const startStep = (ctx) => {
-	ctx.replyWithHTML("Введіть <i>номер телефону </i>, який вказано в договорі на абонентське обслуговування\n");
-	ctx.wizard.next();
-};
+async function receiptScene(bot, msg) {
+	try {
+		const chatId = msg.chat.id;
+		await bot.sendMessage(chatId, "Введіть <i>номер телефону </i>, який вказано в договорі на абонентське обслуговування\n", { parse_mode: "HTML" });
+		const promise = new Promise(resolve => {
+			bot.once('message', (message) => {
+				const phone = message.text;
+				console.log('Received phone number:', phone);
+				resolve(phone);
+			});
+		});
+		const userInput = await promise;
+		const telNumber = userInput.replace(/[^0-9]/g, "");
+		console.log(new Date());
+		console.log('Tel№:', telNumber);
+		sendReqToDB('__SaveTlgMsg__', msg.chat, telNumber);
 
-const conditionStep = (ctx) => {
-	let telNumber = ctx.message.text.replace(/[^0-9]/g, "");
-	console.log(new Date());
-	console.log('Tel№:', telNumber);
-	sendReqToDB('__SaveTlgMsg__', ctx.chat, telNumber);
-	if (telNumber.length < 7 || telNumber.length > 12) {
-		ctx.replyWithHTML("😡Номер телефону введено помилково\nСеанс завершено.");
-		return ctx.scene.leave();
-	} else {
-		getReceipt(telNumber, ctx);
-	};
-	return ctx.scene.leave();
-};
-
-const receiptScene = (ctx) => {
-	const stage = new WizardScene('receiptWizard',
-		(ctx) => startStep(ctx),
-		(ctx) => conditionStep(ctx)
-	);
-	return stage;
+		if (telNumber.length < 7 || telNumber.length > 12) {
+			await bot.sendMessage(chatId, "😡Номер телефону введено помилково\nСеанс завершено.", { parse_mode: "HTML" });
+		} else {
+			getReceipt(telNumber, msg, bot);
+		}
+	} catch (err) {
+		console.log(err);
+	}
 };
 
 module.exports = receiptScene;

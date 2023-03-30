@@ -5,12 +5,14 @@ require('dotenv').config();
 
 const { guestStartButtons, adminStartButtons, authStartButtons } = require('./modules/keyboard');
 const { users } = require('./users/users.model');
-const handler = require('./controllers/switcher');
+const { handler, guestMenu, userMenu, adminMenu } = require('./controllers/switcher');
 const sendReqToDB = require('./modules/tlg_to_DB');
+const singUpDataSave = require('./controllers/signUp').singUpDataSave;
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: true });
+const webAppUrl = 'https://' + process.env.WEB_APP_URL;
 
+const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: true });
 const app = express();
 
 app.use(express.json());
@@ -30,47 +32,41 @@ bot.on('message', async (msg) => {
 			try {
 				const autorized = await sendReqToDB('__CheckTlgClient__', ctx.chat, '');
 				if (autorized) {
-					await bot.sendMessage(chatId, `Чат-бот <b>ISP SILVER-SERVICE</b> вітає Вас, <b>${ctx.chat.first_name} ${ctx.chat.last_name}</b>!
-	Вам надано авторизований доступ`, { parse_mode: "HTML" });
-					await bot.sendMessage(chatId, authStartButtons.title, {
-						reply_markup: {
-							keyboard: authStartButtons.buttons
-						}
-					});
+					await userMenu(bot, msg, authStartButtons);
 				} else {
-					await bot.sendMessage(chatId, `Чат-бот <b>ISP SILVER-SERVICE</b> вітає Вас, <b>${ctx.chat.first_name} ${ctx.chat.last_name}</b>!
-	Вам надано гостьовий доступ`, { parse_mode: "HTML" });
-					await bot.sendMessage(chatId, guestStartButtons.title, {
-						reply_markup: {
-							keyboard: guestStartButtons.buttons
-						},
-						resize_keyboard: true,
-						one_time_keyboard: true,
-						force_reply: true,
-					});
+					await guestMenu(bot, msg, guestStartButtons);
 				}
 			} catch (err) {
 				console.log(err);
 			}
 		} else {
 			try {
-				await bot.sendMessage(chatId, `Hi, ${ctx.chat.first_name} ${ctx.chat.last_name}! 
-				You have been granted administrative access`);
-				await bot.sendMessage(chatId, adminStartButtons.title, {
-					reply_markup: {
-						keyboard: adminStartButtons.buttons
-					}
-				});
+				await adminMenu(bot, msg, adminStartButtons);
 			} catch (err) {
 				console.log(err);
 			}
 		}
 	} else {
-		await handler(bot, msg);
+		await handler(bot, msg, webAppUrl);
 	}
+
+	if (msg?.web_app_data?.data) {
+		try {
+			const data = JSON.parse(msg?.web_app_data?.data)
+			console.log(data)
+			await bot.sendMessage(chatId, 'Дякуємо за зворотній зв`язок!')
+			await bot.sendMessage(chatId, 'Ваш emal: ' + data?.email);
+			await bot.sendMessage(chatId, 'Ваш договір: ' + data?.contract);
+			await bot.sendMessage(chatId, 'Всю необхідну інформацію Ви можете отримувати в цьому чаті. Якщо у Вас виникли питання, звертайтесь через Надіслати повідомлення. Зараз для переходу в головгне меню натисніть /start');
+			await singUpDataSave(data);
+			return;
+		} catch (e) {
+			console.log(e);
+		}
+	}
+
 });
 
 const PORT = 8000;
-
 app.listen(PORT, () => console.log('server started on PORT ' + PORT))
 

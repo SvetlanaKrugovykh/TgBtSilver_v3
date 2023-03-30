@@ -1,5 +1,6 @@
 const guestStartButtons = {
 	title: 'Оберіть, будь ласка, дію',
+	options: [{ resize_keyboard: true }],
 	buttons: [
 		[{ text: 'Отримати рахунок.', callback_data: '0_1' }],
 		[{ text: 'Надіслати повідомлення.', callback_data: '0_2' }],
@@ -9,6 +10,7 @@ const guestStartButtons = {
 
 const authStartButtons = {
 	title: 'Оберіть, будь ласка, дію',
+	options: [{ resize_keyboard: true }],
 	buttons: [
 		[{ text: 'Отримати рахунок.', callback_data: '0_1' }],
 		[{ text: 'Надіслати повідомлення.', callback_data: '0_2' }]
@@ -18,6 +20,7 @@ const authStartButtons = {
 
 const adminStartButtons = {
 	title: 'Choose an action',
+	options: [{ resize_keyboard: true }],
 	buttons: [
 		[{ text: 'Netware support.', callback_data: '2_1' }],
 		[{ text: 'Clients support.', callback_data: '2_2' }]

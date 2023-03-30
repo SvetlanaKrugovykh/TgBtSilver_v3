@@ -6,7 +6,7 @@ const { cli, devices } = require('../data/cli.model');
 const telnetCall = require('../modules/telnet');
 
 
-async function netwareAdmin(chatId) {
+async function netwareAdmin(bot, msg) {
 
 	bot.on('message', async (msg) => {
 		try {
