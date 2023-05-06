@@ -25,13 +25,19 @@ async function handler(bot, msg, webAppUrl) {
 	console.log(data);
 	switch (data) {
 		case '0_1':
-			await receiptScene(bot, msg);
+			await receiptScene(bot, msg, false);
 			break;
 		case '0_2':
-			await supportScene(bot, msg);
+			await supportScene(bot, msg, false);
 			break;
 		case '0_3':
 			await signUpForm(bot, msg, webAppUrl);
+			break;
+		case '1_1':
+			await receiptScene(bot, msg, true);
+			break;
+		case '1_2':
+			await supportScene(bot, msg, true);
 			break;
 		case '2_1':
 			await netwareAdmin(bot, msg);
@@ -50,7 +56,8 @@ async function guestMenu(bot, msg, guestStartButtons) {
 	Вам надано гостьовий доступ`, { parse_mode: "HTML" });
 	await bot.sendMessage(msg.chat.id, guestStartButtons.title, {
 		reply_markup: {
-			keyboard: guestStartButtons.buttons
+			keyboard: guestStartButtons.buttons,
+			resize_keyboard: true
 		}
 	});
 }
@@ -60,7 +67,8 @@ async function userMenu(bot, msg, authStartButtons) {
 	Вам надано авторизований доступ`, { parse_mode: "HTML" });
 	await bot.sendMessage(msg.chat.id, authStartButtons.title, {
 		reply_markup: {
-			keyboard: authStartButtons.buttons
+			keyboard: authStartButtons.buttons,
+			resize_keyboard: true
 		}
 	});
 }
@@ -70,9 +78,11 @@ async function adminMenu(bot, msg, adminStartButtons) {
 				You have been granted administrative access`);
 	await bot.sendMessage(msg.chat.id, adminStartButtons.title, {
 		reply_markup: {
-			keyboard: adminStartButtons.buttons
+			keyboard: adminStartButtons.buttons,
+			resize_keyboard: true
 		}
 	});
 }
 
 module.exports = { handler, guestMenu, userMenu, adminMenu };
+

@@ -1,7 +1,7 @@
 const sendReqToDB = require('../modules/tlg_to_DB');
 
 
-async function supportScene(bot, msg) {
+async function supportScene(bot, msg, isAuthorized) {
 	try {
 		await bot.sendMessage(
 			msg.chat.id,
@@ -25,6 +25,7 @@ async function supportScene(bot, msg) {
 				`Дякую! Ваше повідомлення надіслано.\n Чекайте на відповідь протягом 30 хвилин`,
 				{ parse_mode: "HTML" }
 			);
+			///////////////bot.chatAction(msg.chat.id, "quit");
 		});
 	} catch (err) {
 		console.log(err);

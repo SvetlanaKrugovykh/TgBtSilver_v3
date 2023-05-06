@@ -1,3 +1,5 @@
+const sendReqToDB = require("../modules/tlg_to_DB");
+
 async function signUpForm(bot, msg, webAppUrl) {
 	const chatId = msg.chat.id;
 	await bot.sendMessage(chatId, 'Нижче з`явиться кнопка, заповніть форму', {
@@ -10,7 +12,9 @@ async function signUpForm(bot, msg, webAppUrl) {
 	})
 }
 
-async function singUpDataSave(data) {
-	console.log(data)
+async function singUpDataSave(chatId, data) {
+	console.log(chatId, data);
+	const signUpRezult = await sendReqToDB('___UserRegistration__', data, chatId);
+	console.log(signUpRezult);
 }
 module.exports = { signUpForm, singUpDataSave };

@@ -1,7 +1,7 @@
 const sendReqToDB = require('../modules/tlg_to_DB');
 const { getReceipt } = require('../modules/getReceipt');
 
-async function receiptScene(bot, msg) {
+async function receiptScene(bot, msg, isAuthorized) {
 	try {
 		const chatId = msg.chat.id;
 		await bot.sendMessage(chatId, "Введіть <i>номер телефону </i>, який вказано в договорі на абонентське обслуговування\n", { parse_mode: "HTML" });

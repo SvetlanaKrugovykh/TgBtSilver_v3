@@ -30,8 +30,8 @@ bot.on('message', async (msg) => {
 		const adminUser = users.find(user => user.id === ctx.chat.id);
 		if (!adminUser) {
 			try {
-				const autorized = await sendReqToDB('__CheckTlgClient__', ctx.chat, '');
-				if (autorized) {
+				const response = await sendReqToDB('__CheckTlgClient__', ctx.chat, '');
+				if (response.includes("authorized")) {
 					await userMenu(bot, msg, authStartButtons);
 				} else {
 					await guestMenu(bot, msg, guestStartButtons);
@@ -57,8 +57,8 @@ bot.on('message', async (msg) => {
 			await bot.sendMessage(chatId, 'Дякуємо за зворотній зв`язок!')
 			await bot.sendMessage(chatId, 'Ваш emal: ' + data?.email);
 			await bot.sendMessage(chatId, 'Ваш договір: ' + data?.contract);
-			await bot.sendMessage(chatId, 'Всю необхідну інформацію Ви можете отримувати в цьому чаті. Якщо у Вас виникли питання, звертайтесь через Надіслати повідомлення. Зараз для переходу в головгне меню натисніть /start');
-			await singUpDataSave(data);
+			await bot.sendMessage(chatId, 'Всю необхідну інформацію Ви можете отримувати в цьому чаті. Якщо у Вас виникли питання, звертайтесь через меню /"Надіслати повідомлення/". Зараз для переходу в головне меню натисніть /start');
+			await singUpDataSave(chatId, data);
 			return;
 		} catch (e) {
 			console.log(e);
