@@ -12,8 +12,8 @@ const authStartButtons = {
 	title: 'Оберіть, будь ласка, дію',
 	options: [{ resize_keyboard: true }],
 	buttons: [
-		[{ text: 'Отримати рахунок.', callback_data: '1_1' }],
-		[{ text: 'Надіслати повідомлення.', callback_data: '1_2' }]
+		[{ text: 'Oтримати рахунок.', callback_data: '1_1' }],
+		[{ text: 'Hадіслати повідомлення.', callback_data: '1_2' }]
 	]
 };
 

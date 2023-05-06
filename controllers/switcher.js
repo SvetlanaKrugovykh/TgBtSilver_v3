@@ -22,7 +22,7 @@ function getCallbackData(text) {
 
 async function handler(bot, msg, webAppUrl) {
 	const data = getCallbackData(msg.text);
-	console.log(data);
+	console.log('The choise is:', data);
 	switch (data) {
 		case '0_1':
 			await receiptScene(bot, msg, false);

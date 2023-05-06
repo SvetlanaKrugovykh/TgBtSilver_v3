@@ -19,13 +19,12 @@ async function supportScene(bot, msg, isAuthorized) {
 				`\n` +
 				userInput
 			);
-			sendReqToDB("__SaveTlgMsg__", msg.chat, userInput);
+			await sendReqToDB("__SaveTlgMsg__", msg.chat, userInput);
 			await bot.sendMessage(
 				msg.chat.id,
 				`Дякую! Ваше повідомлення надіслано.\n Чекайте на відповідь протягом 30 хвилин`,
 				{ parse_mode: "HTML" }
 			);
-			///////////////bot.chatAction(msg.chat.id, "quit");
 		});
 	} catch (err) {
 		console.log(err);
