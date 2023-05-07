@@ -34,7 +34,7 @@ async function actionsOnId(bot, msg, inputLine) {
 		let id = inputLine.split("id#")[1];
 		let msgtext = inputLine.split("id#")[2];
 		try {
-			await bot.sendMessage(msg.chat.id, `Дякуємо за звернення, відповідь: \n ${msgtext}`, { parse_mode: 'HTML' });
+			await bot.sendMessage(id, `Дякуємо за звернення, відповідь: \n ${msgtext}`, { parse_mode: 'HTML' });
 			await bot.sendMessage(msg.chat.id, `🥎🥎 id# request sent\n`, { parse_mode: 'HTML' });
 		} catch (err) {
 			console.log(err);
@@ -52,7 +52,8 @@ async function invoice(bot, msg, telNumber) {
 	await getReceipt(telNumber, msg, bot);
 }
 
-async function goToHardware(bot, msg, responseData, store) {
+async function goToHardware(bot, msg, responseData) {
+	const Params = new TelnetParams();
 	if (responseData.ResponseArray[0].HOST) {
 		const HOST = responseData.ResponseArray[0].HOST.toString();
 		console.log(HOST);
@@ -74,50 +75,37 @@ async function goToHardware(bot, msg, responseData, store) {
 				}
 			} catch (err) { console.log('HOST is not define'); }
 		}
-		if (response.data.split(',').length > 1) {
-			infoFound = true;
-		} else {
-			return null;
-		}
 	}
 }
 
 async function clientAdmin(bot, msg) {
 
-	let telNumber = '';
-	const Params = new TelnetParams();
 	const htmlText = "Введіть <i>номер телефону </i> або <i>адресу через # </i>, що є в договорі на абонентське обслуговування.\nТакож формат для відправки відповіді по id клієнта id#...id...id#...відповідь...\n";
-	let infoFound = false;
 	await bot.sendMessage(msg.chat.id, htmlText, { parse_mode: 'HTML' });
 	console.log(((new Date()).toLocaleTimeString()));
 	let inputLine = await inputLineScene(bot, msg);
-	responseData = await getInfo(bot, msg, inputLine);
+	const responseData = await getInfo(bot, msg, inputLine);
 	if (responseData === null) {
 		await bot.sendMessage(msg.chat.id, `⛔️Жодної інформації за запитом не знайдено`, { parse_mode: 'HTML' });
 		return null;
-	} else {
-		await bot.sendMessage(msg.chat.id, `🥎\n ${responseData.ResponseArray[0].Comment}.\n`, { parse_mode: 'HTML' });
 	}
-	// await actionsOnId(bot, msg, inputLine);
+	await goToHardware(bot, msg, responseData);
 
-	// let txtCommand = inputLine;
-	// if (txtCommand.includes('switchon#')) {
-	// 	await switchOn(bot, msg, txtCommand);
-	// 	infoFound = false;
-	// } else {
-	// 	if (txtCommand.includes('invoice#') && !(telNumber == '')) {
-	// 		await invoice(bot, msg, telNumber);
-	// 	}
-	// }
-
-	// telNumber = responseData.ResponseArray[0].telNumber;
-	// console.log(`Admin request for the receipt ${telNumber}`);
-
-	// await goToHardware(bot, msg, responseData, store);
+	let telNumber = responseData.ResponseArray[0].telNumber;
+	await bot.sendMessage(msg.chat.id, `🥎\n ${responseData.ResponseArray[0].Comment}.\n`, { parse_mode: 'HTML' });
+	let commandHtmlText = "Введіть <i>комаду для виконання </i>\n";
+	await bot.sendMessage(msg.chat.id, commandHtmlText, { parse_mode: 'HTML' });
+	let txtCommand = await inputLineScene(bot, msg);
+	await actionsOnId(bot, msg, txtCommand);
+	if (txtCommand.includes('switchon#')) await switchOn(bot, msg, txtCommand);
+	if (txtCommand.includes('id#')) await actionsOnId(bot, msg, txtCommand);
+	if (txtCommand.includes('invoice#') && (telNumber.length > 6)) {
+		console.log(`Admin request for the receipt ${telNumber}`);
+		await invoice(bot, msg, telNumber);
+	}
 
 
-	// await bot.sendMessage(msg.chat.id, "👋💙💛 Have a nice day!\n", { parse_mode: 'HTML' });
-
+	await bot.sendMessage(msg.chat.id, "👋💙💛 Have a nice day!\n", { parse_mode: 'HTML' });
 }
 
 

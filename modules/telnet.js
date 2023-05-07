@@ -3,7 +3,7 @@ const PORT = 23; // Telnet port
 const { TelnetParams } = require('../data/telnet.model');
 
 
-function telnetCall(HOST, replaceStr) {
+async function telnetCall(HOST, replaceStr) {
 	return new Promise((resolve, reject) => {
 		let store = [];
 		let authorized = false;
