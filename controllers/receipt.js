@@ -18,8 +18,13 @@ async function receiptScene(bot, msg, isAuthorized) {
 			const userInput = await promise;
 			telNumber = userInput.replace(/[^0-9]/g, "");
 		} else {
-			telNumber = await sendReqToDB('__ReadTelNum__', chatId, '');
-			console.log('!!!!!Tel№:', telNumber);
+			try {
+				const data = await sendReqToDB('__ReadTelNum__', msg.chat, '');
+				let parsedData = JSON.parse(data);
+				telNumber = parsedData.ResponseArray.toString();
+			} catch (err) {
+				await bot.sendMessage(chatId, "😡Номер телефону введено помилково\nСеанс буде завершено.", { parse_mode: "HTML" });
+			}
 		}
 		console.log(new Date());
 		console.log('Tel№:', telNumber);
