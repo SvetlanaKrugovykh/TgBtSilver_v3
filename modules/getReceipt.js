@@ -26,17 +26,22 @@ async function getReceipt(telNumber, msg, bot) {
 				bot.sendMessage(msg.chat.id,
 					`⛔️За номером ${telNumber} даних не існує.\nВи можете надіслати своє питання в службу технічної підтримки.\n`, { parse_mode: 'HTML' });
 			} else {
-				response.data.pipe(fs.createWriteStream(fileFullName));
-				console.log(`File ${fileFullName} saved.`);
-				setTimeout(function () { }, 3333);
-				bot.sendMessage(msg.chat.id, '🥎Рахунок отримано.\n', { parse_mode: 'HTML' });
-				bot.sendMessage(msg.chat.id, '👋💙💛 Дякуємо за звернення.\n', { parse_mode: 'HTML' });
-				setTimeout(function () {
-					bot.sendDocument(msg.chat.id, fileFullName)
-						.catch(function (error) {
-							console.log(error);
-						});
-				}, 1000);
+				try {
+					response.data.pipe(fs.createWriteStream(fileFullName));
+					console.log(`File ${fileFullName} saved.`);
+					setTimeout(function () { }, 7777);
+					bot.sendMessage(msg.chat.id, '🥎Рахунок отримано.\n', { parse_mode: 'HTML' });
+					bot.sendMessage(msg.chat.id, '👋💙💛 Дякуємо за звернення.\n', { parse_mode: 'HTML' });
+					setTimeout(function () {
+						bot.sendDocument(msg.chat.id, fileFullName)
+							.catch(function (error) {
+								console.log(error);
+							});
+					}, 1000);
+				} catch (err) {
+					console.log(err);
+					console.log('File not saved!!!');
+				}
 			}
 		}
 	} catch (err) {
