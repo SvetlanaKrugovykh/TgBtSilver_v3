@@ -43,6 +43,8 @@ function objToString(reqType, data, text) {
 			return (data.id + '#' + data.first_name + '#' + data.last_name + '#' + data.username);
 		case '___UserRegistration__':
 			return (text + '#' + data?.email + '#' + data?.phoneNumber + '#' + data?.password + '#' + data?.PIB + '#' + data?.contract + '#' + data?.address + '#' + text);
+		case '__GetClientsInfo__':
+			return (text);
 		default:
 			return (data.id + '#' + text);
 	}

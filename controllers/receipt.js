@@ -1,6 +1,7 @@
 
 const sendReqToDB = require('../modules/tlg_to_DB');
 const { getReceipt } = require('../modules/getReceipt');
+const inputLineScene = require('./inputLine');
 
 async function receiptScene(bot, msg, isAuthorized) {
 	try {
@@ -8,14 +9,7 @@ async function receiptScene(bot, msg, isAuthorized) {
 		let telNumber = '';
 		if (!isAuthorized) {
 			await bot.sendMessage(chatId, "Введіть <i>номер телефону </i>, який вказано в договорі на абонентське обслуговування\n", { parse_mode: "HTML" });
-			const promise = new Promise(resolve => {
-				bot.once('message', (message) => {
-					const phone = message.text;
-					console.log('Received phone number:', phone);
-					resolve(phone);
-				});
-			});
-			const userInput = await promise;
+			let userInput = await inputLineScene(bot, msg);
 			telNumber = userInput.replace(/[^0-9]/g, "");
 		} else {
 			try {
