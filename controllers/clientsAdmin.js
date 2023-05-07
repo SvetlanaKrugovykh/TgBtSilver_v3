@@ -54,28 +54,30 @@ async function invoice(bot, msg, telNumber) {
 
 async function goToHardware(bot, msg, responseData) {
 	const Params = new TelnetParams();
-	if (responseData.ResponseArray[0].HOST) {
-		const HOST = responseData.ResponseArray[0].HOST.toString();
-		console.log(HOST);
-		if (HOST.length > 12 && !Params.excludeHOSTS.includes(HOST)) {
-			try {
-				let match = responseData.ResponseArray[0].Comment.match(/^\w+\/\d+:\d+/);
-				console.log(HOST + ' match= ' + match);
-				if (match) {
-					const comment = match[0];
-					console.log(comment);
-					await telnetCall(HOST, comment)
-						.then(store => {
-							console.dir(store);
-							bot.sendMessage(msg.chat.id, `🥎\n ${store.toString()}.\n`, { parse_mode: 'HTML' });
-						})
-						.catch(err => {
-							console.log(err);
-						});
-				}
-			} catch (err) { console.log('HOST is not define'); }
+	try {
+		if (responseData.ResponseArray[0].HOST) {
+			const HOST = responseData.ResponseArray[0].HOST.toString();
+			console.log(HOST);
+			if (HOST.length > 12 && !Params.excludeHOSTS.includes(HOST)) {
+				try {
+					let match = responseData.ResponseArray[0].Comment.match(/^\w+\/\d+:\d+/);
+					console.log(HOST + ' match= ' + match);
+					if (match) {
+						const comment = match[0];
+						console.log(comment);
+						await telnetCall(HOST, comment)
+							.then(store => {
+								console.dir(store);
+								bot.sendMessage(msg.chat.id, `🥎\n ${store.toString()}.\n`, { parse_mode: 'HTML' });
+							})
+							.catch(err => {
+								console.log(err);
+							});
+					}
+				} catch (err) { console.log('HOST is not define'); }
+			}
 		}
-	}
+	} catch (err) { console.log(err); }
 }
 
 async function clientAdmin(bot, msg) {
