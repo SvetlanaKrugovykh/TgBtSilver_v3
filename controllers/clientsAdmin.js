@@ -87,11 +87,12 @@ async function clientAdmin(bot, msg) {
 	console.log(((new Date()).toLocaleTimeString()));
 	let inputLine = await inputLineScene(bot, msg);
 	const responseData = await getInfo(bot, msg, inputLine);
-	if (responseData === null) {
+	if (responseData.ResponseArray === null) {
 		await bot.sendMessage(msg.chat.id, `⛔️Жодної інформації за запитом не знайдено`, { parse_mode: 'HTML' });
 		return null;
+	} else {
+		await goToHardware(bot, msg, responseData);
 	}
-	await goToHardware(bot, msg, responseData);
 
 	let telNumber = responseData.ResponseArray[0].telNumber;
 	await bot.sendMessage(msg.chat.id, `🥎\n ${responseData.ResponseArray[0].Comment}.\n`, { parse_mode: 'HTML' });
