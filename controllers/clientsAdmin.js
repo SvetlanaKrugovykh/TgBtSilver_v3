@@ -7,11 +7,12 @@ const telnetCall = require('../modules/telnet');
 const { TelnetParams } = require('../data/telnet.model');
 const { getReceipt } = require('../modules/getReceipt');
 const inputLineScene = require('./inputLine');
+const checkValue = require('../modules/common');
 
 async function getInfo(bot, msg, inputLine) {
 	const data = await sendReqToDB('__GetClientsInfo__', msg.chat, inputLine);
 	if (data === null) {
-		bot.sendMessage(msg.chat.id, `⛔️Ніякої інформації за запитом не знайдено`);
+		await bot.sendMessage(msg.chat.id, `⛔️Жодної інформації за запитом не знайдено`, { parse_mode: 'HTML' });
 		return null;
 	}
 	try {
@@ -87,11 +88,12 @@ async function clientAdmin(bot, msg) {
 	console.log(((new Date()).toLocaleTimeString()));
 	let inputLine = await inputLineScene(bot, msg);
 	const responseData = await getInfo(bot, msg, inputLine);
-	if (responseData.ResponseArray === null) {
-		await bot.sendMessage(msg.chat.id, `⛔️Жодної інформації за запитом не знайдено`, { parse_mode: 'HTML' });
-		return null;
+	if (responseData?.ResponseArray && Array.isArray(responseData?.ResponseArray)) {
+		if (responseData?.ResponseArray[0]?.HOST) {
+			await goToHardware(bot, msg, responseData);
+		}
 	} else {
-		await goToHardware(bot, msg, responseData);
+		return null;
 	}
 
 	let telNumber = responseData.ResponseArray[0].telNumber;
