@@ -7,12 +7,12 @@ const telnetCall = require('../modules/telnet');
 
 async function netwareAdmin(bot, msg) {
 
-	try {
-		// console.log(msg);	
-	}
-	catch (err) {
-		console.log(err);
-	}
+  try {
+    console.log('netwareAdmin');
+  }
+  catch (err) {
+    console.log(err);
+  }
 }
 
 module.exports = netwareAdmin;
