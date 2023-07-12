@@ -13,7 +13,8 @@ const authStartButtons = {
   options: [{ resize_keyboard: true }],
   buttons: [
     [{ text: 'Oтримати рахунок.', callback_data: '1_1' }],
-    [{ text: 'Hадіслати повідомлення.', callback_data: '1_2' }]
+    [{ text: 'Hадіслати повідомлення.', callback_data: '1_2' }],
+    [{ text: 'Здійснити оплату послуг.', callback_data: '1_3' }]
   ]
 };
 

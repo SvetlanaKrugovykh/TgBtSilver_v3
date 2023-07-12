@@ -4,6 +4,7 @@ const { clientsAdmin, clientsAdminGetInfo, clientsAdminResponseToRequest,
   clientsAdminSwitchOnClient, clientsAdminGetInvoice } = require('./clientsAdmin');
 const supportScene = require('./support');
 const receiptScene = require('./receipt');
+const paymentScene = require('./payments');
 const signUpForm = require('./signUp').signUpForm;
 
 function getCallbackData(text) {
@@ -39,6 +40,9 @@ async function handler(bot, msg, webAppUrl) {
       break;
     case '1_2':
       await supportScene(bot, msg, true);
+      break;
+    case '1_3':
+      await paymentScene(bot, msg);
       break;
     case '2_1':
       await netwareAdmin(bot, msg);

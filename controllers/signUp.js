@@ -1,6 +1,7 @@
 const sendReqToDB = require("../modules/tlg_to_DB");
 const sendMail = require("../modules/mailer");
 const SENDER = process.env.SENDER;
+const GROUP_ID = Number(process.env.GROUP_ID)
 
 async function signUpForm(bot, msg, webAppUrl) {
   const chatId = msg.chat.id;
@@ -15,7 +16,7 @@ async function signUpForm(bot, msg, webAppUrl) {
   })
 }
 
-async function singUpDataSave(chatId, data) {
+async function singUpDataSave(bot, chatId, data) {
   console.log(chatId, data);
   const signUpRezult = await sendReqToDB('___UserRegistration__', data, chatId);
   console.log(signUpRezult);
@@ -27,8 +28,9 @@ async function singUpDataSave(chatId, data) {
     html: 'data:' + JSON.stringify(data),
   };
   try {
-    await sendMail.sendmail(message);
-    console.log('mail sent');
+    await bot.sendMessage(GROUP_ID, `Заповнена нова реєстраційна форма. Контент: ${JSON.stringify(data)},chatId=${chatId}  \n`, { parse_mode: "HTML" })
+    //await sendMail.sendmail(message);
+    console.log('Registration message sent', message);
   }
   catch (err) {
     console.log(err);

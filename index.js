@@ -58,7 +58,7 @@ bot.on('message', async (msg) => {
       await bot.sendMessage(chatId, 'Ваш emal: ' + data?.email);
       await bot.sendMessage(chatId, 'Ваш договір: ' + data?.contract);
       await bot.sendMessage(chatId, 'Всю необхідну інформацію Ви можете отримувати в цьому чаті. Якщо у Вас виникли питання, звертайтесь через меню /"Надіслати повідомлення/". Зараз для переходу в головне меню натисніть /start');
-      await singUpDataSave(chatId, data);
+      await singUpDataSave(bot, chatId, data);
       return;
     } catch (e) {
       console.log(e);
