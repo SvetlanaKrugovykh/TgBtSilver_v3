@@ -132,7 +132,7 @@ async function clientsAdminGetInfo(bot, msg) {
 
   if (responseData?.ResponseArray && Array.isArray(responseData?.ResponseArray)) {
     if (responseData?.ResponseArray[0]?.HOST) {
-      // await goToHardware(bot, msg, responseData);
+      await goToHardware(bot, msg, responseData);
     }
   } else {
     return null;
