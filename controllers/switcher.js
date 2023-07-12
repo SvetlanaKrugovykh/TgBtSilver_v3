@@ -1,6 +1,7 @@
 const { constants } = require('../modules/keyboard');
 const netwareAdmin = require('./netwareAdmin');
-const clientsAdmin = require('./clientsAdmin');
+const { clientsAdmin, clientsAdminGetInfo, clientsAdminResponseToRequest,
+  clientsAdminSwitchOnClient, clientsAdminGetInvoice } = require('./clientsAdmin');
 const supportScene = require('./support');
 const receiptScene = require('./receipt');
 const signUpForm = require('./signUp').signUpForm;
@@ -45,6 +46,21 @@ async function handler(bot, msg, webAppUrl) {
     case '2_2':
       await clientsAdmin(bot, msg);
       break;
+    case '3_1':
+      await clientsAdminGetInfo(bot, msg);
+      break;
+    case '3_2':
+      await clientsAdminResponseToRequest(bot, msg);
+      break;
+    case '3_11':
+      await clientsAdminSwitchOnClient(bot, msg);
+      break;
+    case '3_12':
+      await clientsAdminGetInvoice(bot, msg);
+      break;
+    case '3_13':
+      await clientsAdmin(bot, msg);
+      break;
     default:
       console.log('default');
       break;
@@ -84,5 +100,4 @@ async function adminMenu(bot, msg, adminStartButtons) {
   });
 }
 
-module.exports = { handler, guestMenu, userMenu, adminMenu };
-
+module.exports = { handler, guestMenu, userMenu, adminMenu }

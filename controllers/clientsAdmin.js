@@ -8,6 +8,10 @@ const { TelnetParams } = require('../data/telnet.model');
 const { getReceipt } = require('../modules/getReceipt');
 const inputLineScene = require('./inputLine');
 const checkValue = require('../modules/common');
+const { clientAdminStarterButtons, clientAdminStep2Buttons } = require('../modules/keyboard');
+let telNumber = '';
+let codeRule = '';
+let comment
 
 async function getInfo(bot, msg, inputLine) {
   const data = await sendReqToDB('__GetClientsInfo__', msg.chat, inputLine);
@@ -49,7 +53,7 @@ async function actionsOnId(bot, msg, inputLine) {
 
 async function switchOn(bot, msg, txtCommand) {
   await sendReqToDB('___SwitchOn__', '', txtCommand);
-  await bot.sendMessage(msg.chat.id, `🥎🥎 switchon# request sent\n`, { parse_mode: 'HTML' });
+  await bot.sendMessage(msg.chat.id, `🥎🥎 ${txtCommand} request sent\n`, { parse_mode: 'HTML' });
 }
 
 async function invoice(bot, msg, telNumber) {
@@ -85,38 +89,100 @@ async function goToHardware(bot, msg, responseData) {
   } catch (err) { console.log(err); }
 }
 
-async function clientAdmin(bot, msg) {
+async function clientsAdmin(bot, msg) {
 
-  const htmlText = "Введіть <i>номер телефону </i> або <i>адресу через # </i>, що є в договорі на абонентське обслуговування.\nТакож формат для відправки відповіді по id клієнта id#...id...id#...відповідь...\n";
-  await bot.sendMessage(msg.chat.id, htmlText, { parse_mode: 'HTML' });
+  await clientAdminMenuStarter(bot, msg, clientAdminStarterButtons);
+
+}
+
+
+//#region clientAdminMenus
+async function clientAdminMenuStarter(bot, msg, clientAdminStarterButtons) {
+  await bot.sendMessage(msg.chat.id, clientAdminStarterButtons.title, {
+    reply_markup: {
+      keyboard: clientAdminStarterButtons.buttons,
+      resize_keyboard: true
+    }
+  });
+
   console.log(((new Date()).toLocaleTimeString()));
-  let inputLine = await inputLineScene(bot, msg);
+}
+
+async function clientAdminStep2Menu(bot, msg, clientAdminStep2Buttons) {
+  await bot.sendMessage(msg.chat.id, clientAdminStep2Buttons.title, {
+    reply_markup: {
+      keyboard: clientAdminStep2Buttons.buttons,
+      resize_keyboard: true
+    }
+  })
+}
+//#endregion
+
+//#region clientAdminSubMenus
+async function clientsAdminGetInfo(bot, msg) {
+  await bot.sendMessage(msg.chat.id,
+    "Введіть <i>строку для пошуку інформаціі </i>\nПошукові параметри розділяйте через #, \nпошук ведеться через \nПІБ#город#вул#телефон0981234567#буд#кв\nПриклади: М_дв_д_в або Таран_нко\n(*якщо не впевнені яку буква, то використовуйте _)\n ?2#234\n(*використовуйте ? спочатку запиту, якщо немає прізвища)",
+    { parse_mode: 'HTML' });
+  const inputLine = await inputLineScene(bot, msg);
   const responseData = await getInfo(bot, msg, inputLine);
+
+  telNumber = responseData.ResponseArray[0].telNumber;
+  codeRule = responseData.ResponseArray[0].КодПравил;
+  comment = responseData.ResponseArray[0].Comment;
+
   if (responseData?.ResponseArray && Array.isArray(responseData?.ResponseArray)) {
     if (responseData?.ResponseArray[0]?.HOST) {
-      await goToHardware(bot, msg, responseData);
+      // await goToHardware(bot, msg, responseData);
     }
   } else {
     return null;
   }
 
-  let telNumber = responseData.ResponseArray[0].telNumber;
-  await bot.sendMessage(msg.chat.id, `🥎\n ${responseData.ResponseArray[0].Comment}.\n`, { parse_mode: 'HTML' });
-  let commandHtmlText = "Введіть <i>комаду для виконання </i>\n";
-  await bot.sendMessage(msg.chat.id, commandHtmlText, { parse_mode: 'HTML' });
-  let txtCommand = await inputLineScene(bot, msg);
-  await actionsOnId(bot, msg, txtCommand);
-  if (txtCommand.includes('switchon#')) await switchOn(bot, msg, txtCommand);
-  if (txtCommand.includes('id#')) await actionsOnId(bot, msg, txtCommand);
-  if (txtCommand.includes('invoice#') && (telNumber.length > 6)) {
-    console.log(`Admin request for the receipt ${telNumber}`);
-    await invoice(bot, msg, telNumber);
+  await clientAdminStep2Menu(bot, msg, clientAdminStep2Buttons)
+
+}
+
+async function clientsAdminResponseToRequest(bot, msg) {
+  await bot.sendMessage(msg.chat.id, "Введіть <i>id чата для відправки відповіді клієнту </i>\n", { parse_mode: 'HTML' });
+  const codeChat = await inputLineScene(bot, msg);
+  if (codeChat.length < 7) {
+    await bot.sendMessage(msg.chat.id, "Wrong id. Операцію скасовано\n", { parse_mode: 'HTML' });
+    return null;
   }
+  const commandHtmlText = "Введіть <i>text відповіді клієнту </i>\n";
+  await bot.sendMessage(msg.chat.id, commandHtmlText, { parse_mode: 'HTML' });
+  const txtCommand = await inputLineScene(bot, msg);
+  if (txtCommand.length < 7) {
+    await bot.sendMessage(msg.chat.id, "Незрозуміла відповідь. Операцію скасовано\n", { parse_mode: 'HTML' });
+    return null;
+  }
+  const txtCommandForSend = 'id#' + codeChat + 'id#' + txtCommand;
+  await actionsOnId(bot, msg, txtCommandForSend);
+}
 
-
+async function clientsAdminSwitchOnClient(bot, msg) {
+  if (codeRule.length < 3) {
+    await bot.sendMessage(msg.chat.id, "Wrong codeRule. Операцію скасовано. Треба повторити пошук\n", { parse_mode: 'HTML' });
+    return null;
+  }
+  const txtCommand = 'switchon#' + codeRule;
+  console.log(`Admin request for the switch on ${codeRule}`);
+  await switchOn(bot, msg, txtCommand);
   await bot.sendMessage(msg.chat.id, "👋💙💛 Have a nice day!\n", { parse_mode: 'HTML' });
 }
 
+async function clientsAdminGetInvoice(bot, msg) {
+  if (telNumber.length < 8) {
+    await bot.sendMessage(msg.chat.id, "Wrong telNumber. Операцію скасовано. Треба повторити пошук\n", { parse_mode: 'HTML' });
+    return null;
+  }
+  console.log(`Admin request for the receipt ${telNumber}`);
+  await invoice(bot, msg, telNumber);
+  await bot.sendMessage(msg.chat.id, "👋💙💛 Have a nice day!\n", { parse_mode: 'HTML' });
+}
+//#endregion
 
-
-module.exports = clientAdmin;
+module.exports = {
+  clientsAdmin, clientsAdminGetInfo, clientsAdminResponseToRequest,
+  clientsAdminSwitchOnClient, clientsAdminGetInvoice
+};

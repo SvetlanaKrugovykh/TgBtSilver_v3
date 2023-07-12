@@ -1,7 +1,4 @@
 {
-  // Use IntelliSense to learn about possible attributes.
-  // Hover to view descriptions of existing attributes.
-  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
     {
@@ -11,8 +8,13 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      //"runtimeExecutable": "nodemon",
-      "program": "${workspaceFolder}\\index.js"
+      "runtimeExecutable": "nodemon", // Uncomment this line for Nodemon
+      "runtimeArgs": [
+        "--inspect"
+      ], // Add this line for Node.js or Nodemon
+      "program": "${workspaceFolder}/index.js",
+      "restart": true, // Add this line for Nodemon
+      "console": "integratedTerminal" // Add this line for Nodemon
     }
   ]
 }
