@@ -1,7 +1,7 @@
 const { constants } = require('../modules/keyboard');
 const netwareAdmin = require('./netwareAdmin');
 const { clientsAdmin, clientsAdminGetInfo, clientsAdminResponseToRequest,
-  clientsAdminSwitchOnClient, clientsAdminGetInvoice } = require('./clientsAdmin');
+  clientsAdminSwitchOnClient, clientsAdminGetInvoice, clientsAdminStopClientService } = require('./clientsAdmin');
 const supportScene = require('./support');
 const receiptScene = require('./receipt');
 const paymentScene = require('./payments');
@@ -63,6 +63,9 @@ async function handler(bot, msg, webAppUrl) {
       await clientsAdminGetInvoice(bot, msg);
       break;
     case '3_13':
+      await clientsAdminStopClientService(bot, msg);
+      break;
+    case '3_14':
       await clientsAdmin(bot, msg);
       break;
     default:

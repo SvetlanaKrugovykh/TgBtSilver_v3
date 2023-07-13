@@ -11,7 +11,7 @@ const checkValue = require('../modules/common');
 const { clientAdminStarterButtons, clientAdminStep2Buttons } = require('../modules/keyboard');
 let telNumber = '';
 let codeRule = '';
-let comment
+let comment = '';
 
 async function getInfo(bot, msg, inputLine) {
   const data = await sendReqToDB('__GetClientsInfo__', msg.chat, inputLine);
@@ -56,12 +56,20 @@ async function switchOn(bot, msg, txtCommand) {
   await bot.sendMessage(msg.chat.id, `🥎🥎 ${txtCommand} request sent\n`, { parse_mode: 'HTML' });
 }
 
+async function stopService(bot, msg, txtCommand) {
+  await sendReqToDB('___StopService__', '', txtCommand);
+  await bot.sendMessage(msg.chat.id, `🥎🥎 ${txtCommand} request sent\n`, { parse_mode: 'HTML' });
+}
+
 async function invoice(bot, msg, telNumber) {
   console.log('Reguest for receipt for', telNumber);
   await getReceipt(telNumber, msg, bot);
 }
 
 async function goToHardware(bot, msg, responseData) {
+  if (process.env.HARDWARE_CHECKING === 'false') {
+    return null
+  }
   const Params = new TelnetParams();
   try {
     if (responseData.ResponseArray[0].HOST) {
@@ -72,9 +80,12 @@ async function goToHardware(bot, msg, responseData) {
           let match = responseData.ResponseArray[0].Comment.match(/^\w+\/\d+:\d+/);
           console.log(HOST + ' match= ' + match);
           if (match) {
-            const comment = match[0];
-            console.log(comment);
-            await telnetCall(HOST, comment)
+            const partComment = match[0];
+            if (!partComment.startsWith('EPON')) {
+              return null
+            }
+            console.log(partComment);
+            await telnetCall(HOST, partComment)
               .then(store => {
                 console.dir(store);
                 bot.sendMessage(msg.chat.id, `🥎\n ${store.toString()}.\n`, { parse_mode: 'HTML' });
@@ -180,9 +191,20 @@ async function clientsAdminGetInvoice(bot, msg) {
   await invoice(bot, msg, telNumber);
   await bot.sendMessage(msg.chat.id, "👋💙💛 Have a nice day!\n", { parse_mode: 'HTML' });
 }
+
+async function clientsAdminStopClientService(bot, msg) {
+  if (codeRule.length < 3) {
+    await bot.sendMessage(msg.chat.id, "Wrong codeRule. Операцію скасовано. Треба повторити пошук\n", { parse_mode: 'HTML' });
+    return null;
+  }
+  const txtCommand = 'stopService#' + codeRule;
+  console.log(`Admin request for the stop service on ${codeRule}`);
+  await stopService(bot, msg, txtCommand);
+  await bot.sendMessage(msg.chat.id, "👋💙💛 Have a nice day!\n", { parse_mode: 'HTML' });
+}
 //#endregion
 
 module.exports = {
   clientsAdmin, clientsAdminGetInfo, clientsAdminResponseToRequest,
-  clientsAdminSwitchOnClient, clientsAdminGetInvoice
+  clientsAdminSwitchOnClient, clientsAdminGetInvoice, clientsAdminStopClientService
 };
