@@ -48,8 +48,18 @@ async function paymentScene(bot, msg) {
       }
     })
 
+    const options = {
+      reply_markup: {
+        inline_keyboard: [[{
+          text: 'Перейти по ссылке',
+          url: 'http://silver-service.com.ua/payments/5887602942.html'
+        }]]
+      }
+    }
+    bot.sendMessage(chatId, '⚠️Натисність кнопку, щоб перейти за посиланням', options)
+
     sendReqToDB('__SaveTlgMsg__', msg.chat, `payment_${chatId}`)
-    await bot.sendMessage(chatId, 'Наразі опція оплати послуг знаходиться в стані розробки. Дякуємо за те, що користуєтесь нашими послугами!')
+    await bot.sendMessage(chatId, '⚠️Наразі опція оплати послуг знаходиться в стані розробки. Дякуємо за те, що користуєтесь нашими послугами!')
 
     // await bot.sendMessage(GROUP_ID, `Проведено оплату від клієнта. ${JSON.stringify(data)},chatId=${chatId}  \n`, { parse_mode: "HTML" })
   } catch (err) {
