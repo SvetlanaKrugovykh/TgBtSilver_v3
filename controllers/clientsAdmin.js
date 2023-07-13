@@ -137,19 +137,23 @@ async function clientsAdminGetInfo(bot, msg) {
   const inputLine = await inputLineScene(bot, msg);
   const responseData = await getInfo(bot, msg, inputLine);
 
-  telNumber = responseData.ResponseArray[0].telNumber;
-  codeRule = responseData.ResponseArray[0].КодПравил;
-  comment = responseData.ResponseArray[0].Comment;
+  try {
+    telNumber = responseData.ResponseArray[0].telNumber;
+    codeRule = responseData.ResponseArray[0].КодПравил;
+    comment = responseData.ResponseArray[0].Comment;
 
-  if (responseData?.ResponseArray && Array.isArray(responseData?.ResponseArray)) {
-    if (responseData?.ResponseArray[0]?.HOST) {
-      await goToHardware(bot, msg, responseData);
+    if (responseData?.ResponseArray && Array.isArray(responseData?.ResponseArray)) {
+      if (responseData?.ResponseArray[0]?.HOST) {
+        await goToHardware(bot, msg, responseData);
+      }
+    } else {
+      return null;
     }
-  } else {
-    return null;
-  }
 
-  await clientAdminStep2Menu(bot, msg, clientAdminStep2Buttons)
+    await clientAdminStep2Menu(bot, msg, clientAdminStep2Buttons)
+  } catch (err) {
+    console.log(err);
+  }
 
 }
 
