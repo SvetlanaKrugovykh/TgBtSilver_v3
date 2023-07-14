@@ -23,8 +23,8 @@ const adminStartButtons = {
   title: 'Choose an action',
   options: [{ resize_keyboard: true }],
   buttons: [
-    //    [{ text: 'Netware support.', callback_data: '2_1' }],
-    [{ text: 'Clients support.', callback_data: '2_2' }]
+    [{ text: 'Clients support.', callback_data: '2_1' }],
+    [{ text: 'Netware support.', callback_data: '2_2' }]
   ]
 };
 
@@ -33,7 +33,8 @@ const clientAdminStarterButtons = {
   options: [{ resize_keyboard: true }],
   buttons: [
     [{ text: 'Отримати інформацію про клієнта.', callback_data: '3_1' }],
-    [{ text: 'Надіслати відповідь на звернення.', callback_data: '3_2' }]
+    [{ text: 'Надіслати відповідь на звернення.', callback_data: '3_2' }],
+    [{ text: 'Return.', callback_data: '3_3' }]
   ]
 };
 
@@ -48,8 +49,17 @@ const clientAdminStep2Buttons = {
   ]
 };
 
-const constants = [guestStartButtons, authStartButtons, adminStartButtons, clientAdminStarterButtons, clientAdminStep2Buttons];
+const netwareAdminButtons = {
+  title: 'Choose netware admin action',
+  options: [{ resize_keyboard: true }],
+  buttons: [
+    [{ text: 'Ping the device.', callback_data: '5_11' }],
+    [{ text: 'Try service.', callback_data: '5_12' }],
+    [{ text: 'Return.', callback_data: '5_13' }]
+  ]
+}
+const constants = [guestStartButtons, authStartButtons, adminStartButtons, clientAdminStarterButtons, clientAdminStep2Buttons, netwareAdminButtons];
 
-module.exports = { guestStartButtons, adminStartButtons, authStartButtons, clientAdminStarterButtons, clientAdminStep2Buttons, constants };
+module.exports = { guestStartButtons, adminStartButtons, authStartButtons, clientAdminStarterButtons, clientAdminStep2Buttons, netwareAdminButtons, constants };
 
 
