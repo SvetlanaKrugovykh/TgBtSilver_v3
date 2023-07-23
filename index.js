@@ -1,13 +1,15 @@
 const TelegramBot = require('node-telegram-bot-api');
 const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
+const bodyParser = require('body-parser')
+const cors = require('cors')
+require('dotenv').config()
 
 const { guestStartButtons, adminStartButtons, authStartButtons } = require('./modules/keyboard');
 const { users } = require('./users/users.model');
 const { handler, guestMenu, userMenu, adminMenu } = require('./controllers/switcher');
 const sendReqToDB = require('./modules/tlg_to_DB');
 const singUpDataSave = require('./controllers/signUp').singUpDataSave;
+const formController = require('./controllers/formController')
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const webAppUrl = 'https://' + process.env.WEB_APP_URL;
@@ -66,6 +68,8 @@ bot.on('message', async (msg) => {
   }
 
 });
+
+app.post('/submit-form', formController.handleFormSubmit)
 
 const PORT = 8000;
 app.listen(PORT, () => console.log('server started on PORT ' + PORT))
