@@ -11,6 +11,7 @@ const checkValue = require('../modules/common')
 const { clientAdminStarterButtons, clientAdminStep2Buttons } = require('../modules/keyboard')
 let telNumber = ''
 let codeRule = ''
+let _HOST = ''
 let EPON = ''
 
 async function getInfo(bot, msg, inputLine) {
@@ -74,6 +75,7 @@ async function goToHardware(bot, msg, responseData) {
   try {
     if (responseData.ResponseArray[0].HOST) {
       const HOST = responseData.ResponseArray[0].HOST.toString()
+      _HOST = HOST
       console.log(HOST)
       if (HOST.length > 12 && !Params.excludeHOSTS.includes(HOST)) {
         try {
@@ -214,7 +216,7 @@ async function clientsAdminCheckAttenuationService(bot, msg) {
     return null
   }
   if (EPON.length > 5) {
-    await telnetCall(HOST, EPON, 'attenuation')
+    await telnetCall(_HOST, EPON, 'attenuation')
   }
   await bot.sendMessage(msg.chat.id, "👋💙💛 Have a nice day!\n", { parse_mode: 'HTML' })
 }
