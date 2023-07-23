@@ -11,7 +11,7 @@ const checkValue = require('../modules/common')
 const { clientAdminStarterButtons, clientAdminStep2Buttons } = require('../modules/keyboard')
 let telNumber = ''
 let codeRule = ''
-let comment = ''
+let EPON = ''
 
 async function getInfo(bot, msg, inputLine) {
   const data = await sendReqToDB('__GetClientsInfo__', msg.chat, inputLine)
@@ -85,6 +85,7 @@ async function goToHardware(bot, msg, responseData) {
               return null
             }
             console.log(partComment)
+            EPON = partComment
             await telnetCall(HOST, partComment)
               .then(store => {
                 console.dir(store)
@@ -206,9 +207,23 @@ async function clientsAdminStopClientService(bot, msg) {
   await stopService(bot, msg, txtCommand)
   await bot.sendMessage(msg.chat.id, "👋💙💛 Have a nice day!\n", { parse_mode: 'HTML' })
 }
+
+async function clientsAdminCheckAttenuationService(bot, msg) {
+  if (codeRule.length < 3) {
+    await bot.sendMessage(msg.chat.id, "Wrong codeRule. Операцію скасовано. Треба повторити пошук\n", { parse_mode: 'HTML' })
+    return null
+  }
+  if (EPON.length > 5) {
+    await telnetCall(HOST, EPON, 'attenuation')
+  }
+  await bot.sendMessage(msg.chat.id, "👋💙💛 Have a nice day!\n", { parse_mode: 'HTML' })
+}
+
+
 //#endregion
 
 module.exports = {
   clientsAdmin, clientsAdminGetInfo, clientsAdminResponseToRequest,
-  clientsAdminSwitchOnClient, clientsAdminGetInvoice, clientsAdminStopClientService
+  clientsAdminSwitchOnClient, clientsAdminGetInvoice,
+  clientsAdminStopClientService, clientsAdminCheckAttenuationService
 }

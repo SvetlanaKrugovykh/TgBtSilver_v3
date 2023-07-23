@@ -3,14 +3,27 @@ const PORT = 23 // Telnet port
 const { TelnetParams } = require('../data/telnet.model')
 
 
-async function telnetCall(HOST, replaceStr) {
+async function telnetCall(HOST, replaceStr, _conditional = undefined) {
   return new Promise((resolve, reject) => {
     let store = []
     let authorized = false
     let i = 0
+    let ArrayOfCommands = []
 
     const Params = new TelnetParams()
-    Params.cliArray = Params.cliArray.map(element => {
+
+    switch (_conditional) {
+      case 'attenuation':
+        ArrayOfCommands = Params.attenuationArray
+        break
+      case 'chrckBandWidth':
+        ArrayOfCommands = Params.cliArray
+        break
+      default:
+        ArrayOfCommands = Params.cliArray
+        break
+    }
+    ArrayOfCommands = ArrayOfCommands.map(element => {
       if (Params.searchStr && element.includes(Params.searchStr)) {
         return element.replace(new RegExp(Params.searchStr, 'g'), replaceStr)
       }
@@ -34,7 +47,7 @@ async function telnetCall(HOST, replaceStr) {
         authorized = true
       } else {
         if (authorized && (buffer.length > 1)) {
-          if (i === Params.cliArray.length) {
+          if (i === ArrayOfCommands.length) {
             if (buffer.includes(replaceStr)) store.push(buffer)
             client.on('close', () => {
               console.log('Connection closed')
@@ -42,7 +55,7 @@ async function telnetCall(HOST, replaceStr) {
             })
           }
           if (buffer.includes(replaceStr)) store.push(buffer)
-          client.write(Params.cliArray[i] + '\n')
+          client.write(ArrayOfCommands[i] + '\n')
           i++
         }
       }
