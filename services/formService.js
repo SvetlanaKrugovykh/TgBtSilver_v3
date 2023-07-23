@@ -1,12 +1,12 @@
 const axios = require('axios')
 
-const processFormData = (phoneNumber, name) => {
+const processFormData = async function (phoneNumber, name) {
   const message = `New form submission from website = call request:\nName: ${name}\nPhone: ${phoneNumber}`
   const chatId = process.env.GROUP_ID
   const apiKey = process.env.TELEGRAM_BOT_TOKEN
 
   try {
-    const response = axios.post(`https://api.telegram.org/bot${apiKey}/sendMessage`, {
+    const response = await axios.post(`https://api.telegram.org/bot${apiKey}/sendMessage`, {
       chat_id: chatId,
       text: message,
     })
