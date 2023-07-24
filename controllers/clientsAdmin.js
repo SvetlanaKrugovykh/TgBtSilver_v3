@@ -216,9 +216,15 @@ async function clientsAdminCheckAttenuationService(bot, msg) {
     return null
   }
   if (EPON.length > 5) {
+    console.log(`Admin request for the check attenuation on ${_HOST} for ${EPON}`)
     await telnetCall(_HOST, EPON, 'attenuation')
+      .then(store => {
+        console.dir(store)
+        bot.sendMessage(msg.chat.id, `🥎\n ${store.toString()}.\n`, { parse_mode: 'HTML' })
+      })
+  } else {
+    await bot.sendMessage(msg.chat.id, "👋💙💛 No data, but have a nice day!\n", { parse_mode: 'HTML' })
   }
-  await bot.sendMessage(msg.chat.id, "👋💙💛 Have a nice day!\n", { parse_mode: 'HTML' })
 }
 
 
