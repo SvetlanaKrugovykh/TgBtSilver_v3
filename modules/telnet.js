@@ -9,14 +9,12 @@ async function telnetCall(HOST, replaceStr, _conditional = undefined) {
     let authorized = false
     let i = 0
     let ArrayOfCommands = []
-    let dlt = 0
 
     const Params = new TelnetParams()
 
     switch (_conditional) {
       case 'attenuation':
         ArrayOfCommands = Params.attenuationArray
-        dlt = -1
         break
       case 'chrckBandWidth':
         ArrayOfCommands = Params.cliArray
@@ -49,7 +47,7 @@ async function telnetCall(HOST, replaceStr, _conditional = undefined) {
         authorized = true
       } else {
         if (authorized && (buffer.length > 1)) {
-          if (i === (ArrayOfCommands.length + dlt)) {
+          if (i === ArrayOfCommands.length) {
             if (buffer.includes(replaceStr)) store.push(buffer)
             client.on('close', () => {
               console.log('Connection closed')
