@@ -9,13 +9,14 @@ async function telnetCall(HOST, replaceStr, _conditional = undefined) {
     let authorized = false
     let i = 0
     let ArrayOfCommands = []
+    let _replaceStr = replaceStr
 
     const Params = new TelnetParams()
 
     switch (_conditional) {
       case 'attenuation':
         ArrayOfCommands = Params.attenuationArray
-        replaceStr = replaceStr.toLowerCase()
+        _replaceStr = replaceStr.toLowerCase()
         break
       case 'chrckBandWidth':
         ArrayOfCommands = Params.cliArray
