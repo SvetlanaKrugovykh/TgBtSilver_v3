@@ -15,6 +15,7 @@ async function telnetCall(HOST, replaceStr, _conditional = undefined) {
     switch (_conditional) {
       case 'attenuation':
         ArrayOfCommands = Params.attenuationArray
+        replaceStr = replaceStr.toLowerCase()
         break
       case 'chrckBandWidth':
         ArrayOfCommands = Params.cliArray
@@ -48,13 +49,13 @@ async function telnetCall(HOST, replaceStr, _conditional = undefined) {
       } else {
         if (authorized && (buffer.length > 1)) {
           if (i === ArrayOfCommands.length) {
-            if (buffer.toLowerCase().includes(replaceStr.toLowerCase())) store.push(buffer)
+            if (buffer.includes(replaceStr)) store.push(buffer)
             client.on('close', () => {
               console.log('Connection closed')
               resolve(store)
             })
           }
-          if (buffer.toLowerCase().includes(replaceStr.toLowerCase())) store.push(buffer)
+          if (buffer.includes(replaceStr)) store.push(buffer)
           client.write(ArrayOfCommands[i] + '\n')
           i++
         }
