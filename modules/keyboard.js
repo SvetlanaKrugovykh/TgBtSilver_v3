@@ -50,7 +50,10 @@ const clientAdminStep2Buttons = {
       { text: 'STOP services for this client.', callback_data: '3_13' },
       { text: 'Check attenuation.', callback_data: '3_14' },
     ],
-    [{ text: 'Return.', callback_data: '3_15' }]
+    [
+      { text: 'Check bandwidth.', callback_data: '3_15' },
+      { text: 'Return.', callback_data: '3_16' }
+    ]
   ]
 };
 
