@@ -48,13 +48,13 @@ async function telnetCall(HOST, replaceStr, _conditional = undefined) {
       } else {
         if (authorized && (buffer.length > 1)) {
           if (i === ArrayOfCommands.length) {
-            if (buffer.includes(replaceStr)) store.push(buffer)
+            if (buffer.toLowerCase().includes(replaceStr.toLowerCase())) store.push(buffer)
             client.on('close', () => {
               console.log('Connection closed')
               resolve(store)
             })
           }
-          if (buffer.includes(replaceStr)) store.push(buffer)
+          if (buffer.toLowerCase().includes(replaceStr.toLowerCase())) store.push(buffer)
           client.write(ArrayOfCommands[i] + '\n')
           i++
         }
