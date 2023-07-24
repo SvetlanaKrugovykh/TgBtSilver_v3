@@ -8,6 +8,10 @@ const EPON = 'EPON0/4:4'
 
 
 async function testTelnetCall(HOST, replaceStr, _conditional = undefined) {
+  await telnetCall(_HOST, EPON)
+    .then(store => {
+      console.dir(store)
+    })
   await telnetCall(_HOST, EPON, 'attenuation')
     .then(store => {
       console.dir(store)
