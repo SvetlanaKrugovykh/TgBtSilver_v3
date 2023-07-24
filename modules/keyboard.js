@@ -40,15 +40,20 @@ const clientAdminStarterButtons = {
 
 const clientAdminStep2Buttons = {
   title: 'Choose step2 admin action',
-  options: [{ resize_keyboard: true }],
+  options: { resize_keyboard: true },
   buttons: [
-    [{ text: 'Switch ON this client.', callback_data: '3_11' }],
-    [{ text: 'Get invoice for this client.', callback_data: '3_12' }],
-    [{ text: 'Stop services for this client.', callback_data: '3_13' }],
-    [{ text: 'Return.', callback_data: '3_15' }],
-    [{ text: 'Check attenuation.', callback_data: '3_14' }]
+    [
+      { text: 'Switch ON this client.', callback_data: '3_11' },
+      { text: 'Get INVOICE for this client.', callback_data: '3_12' },
+    ],
+    [
+      { text: 'STOP services for this client.', callback_data: '3_13' },
+      { text: 'Check attenuation.', callback_data: '3_14' },
+    ],
+    [{ text: 'Return.', callback_data: '3_15' }]
   ]
 };
+
 
 const netwareAdminButtons = {
   title: 'Choose netware admin action',
