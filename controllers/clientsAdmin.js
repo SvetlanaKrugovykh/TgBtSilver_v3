@@ -22,7 +22,40 @@ async function getInfo(bot, msg, inputLine) {
   }
   try {
     if (data.length > 3900) {
-      bot.sendMessage(msg.chat.id, `\n The Answer is too long. Write another request..\n`, { parse_mode: 'HTML' })
+      const parsedData = JSON.parse(data)
+      if (parsedData.ResponseArray.length > 2) {
+        await bot.sendMessage(msg.chat.id, `⛔️За запитом знайдено ${parsedData.ResponseArray.length} записів. Введіть більш точний запит`, { parse_mode: 'HTML' })
+        const ClientsValues = parsedData.ResponseArray.map((item, index) => ({
+          id: index,
+          value: item['Контрагент']
+        }))
+
+        const buttonsPerRow = 2;
+        const keyboard = {
+          keyboard: [],
+          resize_keyboard: true,
+          one_time_keyboard: true,
+        };
+
+        let currentRow = [];
+        ClientsValues.forEach((item) => {
+          currentRow.push(item.value);
+
+          if (currentRow.length === buttonsPerRow) {
+            keyboard.keyboard.push(currentRow);
+            currentRow = [];
+          }
+        });
+
+        if (currentRow.length > 0) {
+          keyboard.keyboard.push(currentRow);
+        }
+
+        bot.sendMessage(msg.chat.id, 'Choose a контрагент:', {
+          reply_markup: keyboard,
+        })
+        return null
+      }
       return null
     }
     console.log(data.toString())
