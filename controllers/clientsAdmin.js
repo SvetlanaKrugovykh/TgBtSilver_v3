@@ -30,31 +30,34 @@ async function getInfo(bot, msg, inputLine) {
           value: item['Контрагент']
         }))
 
-        const buttonsPerRow = 2;
+        const buttonsPerRow = 2
         const keyboard = {
           keyboard: [],
           resize_keyboard: true,
           one_time_keyboard: true,
-        };
+        }
 
-        let currentRow = [];
+        let currentRow = []
         ClientsValues.forEach((item) => {
-          currentRow.push(item.value);
+          const callbackData = `11_${item.id + 1}`
+          const button = { text: item.value, callback_data: callbackData }
+          currentRow.push(button)
 
           if (currentRow.length === buttonsPerRow) {
-            keyboard.keyboard.push(currentRow);
-            currentRow = [];
+            keyboard.keyboard.push(currentRow)
+            currentRow = []
           }
-        });
+        })
 
         if (currentRow.length > 0) {
-          keyboard.keyboard.push(currentRow);
+          keyboard.keyboard.push(currentRow)
         }
+        const returnButton = { text: 'Return', callback_data: '11_99' };
+        keyboard.keyboard.push([returnButton])
 
         bot.sendMessage(msg.chat.id, 'Choose a контрагент:', {
           reply_markup: keyboard,
         })
-        return null
       }
       return null
     }
