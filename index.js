@@ -71,6 +71,6 @@ bot.on('message', async (msg) => {
 
 app.post('/submit-form', formController.handleFormSubmit)
 
-const PORT = 8000
+const PORT = Number(process.env.PORT) || 7999
 app.listen(PORT, () => console.log('server started on PORT ' + PORT))
 
