@@ -107,13 +107,16 @@ function clientAdminChoiceClientFromList(bot, msg, parsedData) {
     }
 
     const returnButton = { text: 'Rеturn', callback_data: '11_99' }
+    const homeButton = { text: 'Home', callback_data: '11_98' }
 
     if (
       clientChoiceButtons.buttons.length > 0 &&
       clientChoiceButtons.buttons[clientChoiceButtons.buttons.length - 1].length < buttonsPerRow
     ) {
+      clientChoiceButtons.buttons[clientChoiceButtons.buttons.length - 1].push(homeButton)
       clientChoiceButtons.buttons[clientChoiceButtons.buttons.length - 1].push(returnButton)
     } else {
+      clientChoiceButtons.buttons.push([homeButton])
       clientChoiceButtons.buttons.push([returnButton])
     }
 
@@ -128,6 +131,7 @@ const retunAdminButtons = {
   options: [{ resize_keyboard: true }],
   buttons: [
     [{ text: 'Rеturn', callback_data: '11_99' }],
+    [{ text: 'Home', callback_data: '11_98' }]
   ]
 }
 

@@ -88,9 +88,11 @@ async function handler(bot, msg, webAppUrl) {
     case '5_13':
       await netwareAdmin(bot, msg)
       break
-    case '11_99':
-      console.log('11_99')
+    case '11_98':
       await clientsAdmin(bot, msg)
+      break
+    case '11_99':
+      await clientsAdminGetInfo(bot, msg, 'return')
       break
     default:
       console.log(`default: ${msg.text}`)

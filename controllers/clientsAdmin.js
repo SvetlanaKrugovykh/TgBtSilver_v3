@@ -22,6 +22,10 @@ async function getInfo(bot, msg, inputLine) {
   }
   try {
     const parsedData = JSON.parse(data)
+    if (parsedData.ResponseArray === null) {
+      await bot.sendMessage(msg.chat.id, `⛔️Жодної інформації за запитом не знайдено`, { parse_mode: 'HTML' })
+      return null
+    }
     if (parsedData.ResponseArray.length > 1 && !inputLine.includes('#')) {
       await bot.sendMessage(msg.chat.id, `⛔️За запитом знайдено ${parsedData.ResponseArray.length} записів. Введіть більш точний запит`, { parse_mode: 'HTML' })
       const clientChoiceButtons = clientAdminChoiceClientFromList(bot, msg, parsedData)
@@ -141,9 +145,9 @@ async function clientAdminStep2Menu(bot, msg, clientAdminStep2Buttons) {
 //#endregion
 
 //#region clientAdminSubMenus
-async function clientsAdminGetInfo(bot, msg) {
+async function clientsAdminGetInfo(bot, msg, condition = undefined) {
   let inputLine = ''
-  if (msg.text === 'Отримати інформацію про клієнта.') {
+  if (msg.text === 'Отримати інформацію про клієнта.' || condition === 'return') {
     await bot.sendMessage(msg.chat.id,
       "Введіть <i>строку для пошуку інформаціі </i>\nПошукові параметри розділяйте через #, \nпошук ведеться через \nПІБ#город#вул#телефон0981234567#буд#кв\nПриклади: М_дв_д_в або Таран_нко\n(*якщо не впевнені яку буква, то використовуйте _)\n ?2#234\n(*використовуйте ? спочатку запиту, якщо немає прізвища)",
       { parse_mode: 'HTML' })
