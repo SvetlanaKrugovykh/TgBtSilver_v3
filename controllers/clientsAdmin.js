@@ -142,10 +142,15 @@ async function clientAdminStep2Menu(bot, msg, clientAdminStep2Buttons) {
 
 //#region clientAdminSubMenus
 async function clientsAdminGetInfo(bot, msg) {
-  await bot.sendMessage(msg.chat.id,
-    "Введіть <i>строку для пошуку інформаціі </i>\nПошукові параметри розділяйте через #, \nпошук ведеться через \nПІБ#город#вул#телефон0981234567#буд#кв\nПриклади: М_дв_д_в або Таран_нко\n(*якщо не впевнені яку буква, то використовуйте _)\n ?2#234\n(*використовуйте ? спочатку запиту, якщо немає прізвища)",
-    { parse_mode: 'HTML' })
-  const inputLine = await inputLineScene(bot, msg)
+  let inputLine = ''
+  if (msg.text === 'Отримати інформацію про клієнта.') {
+    await bot.sendMessage(msg.chat.id,
+      "Введіть <i>строку для пошуку інформаціі </i>\nПошукові параметри розділяйте через #, \nпошук ведеться через \nПІБ#город#вул#телефон0981234567#буд#кв\nПриклади: М_дв_д_в або Таран_нко\n(*якщо не впевнені яку буква, то використовуйте _)\n ?2#234\n(*використовуйте ? спочатку запиту, якщо немає прізвища)",
+      { parse_mode: 'HTML' })
+    inputLine = await inputLineScene(bot, msg)
+  } else {
+    inputLine = msg.text
+  }
   const responseData = await getInfo(bot, msg, inputLine)
   if (responseData === null) {
     return null
