@@ -69,10 +69,19 @@ const netwareAdminButtons = {
 
 function clientAdminChoiceClientFromList(bot, msg, parsedData) {
   try {
-    const ClientsValues = parsedData.ResponseArray.map((item, index) => ({
-      id: index,
-      value: item['Контрагент']
-    }))
+    const ClientsValues = parsedData.ResponseArray.map((item, index) => {
+      let value = item['Контрагент']
+      if (item['АдресДом']) {
+        value += '#H' + item['АдресДом']
+        if (item['АдресКвартира']) {
+          value += '#A' + item['АдресКвартира']
+        }
+      }
+      return {
+        id: index,
+        value: value,
+      }
+    })
 
     const buttonsPerRow = 2
     const clientChoiceButtons = {

@@ -22,7 +22,7 @@ async function getInfo(bot, msg, inputLine) {
   }
   try {
     const parsedData = JSON.parse(data)
-    if (parsedData.ResponseArray.length > 1) {
+    if (parsedData.ResponseArray.length > 1 && !inputLine.includes('#')) {
       await bot.sendMessage(msg.chat.id, `⛔️За запитом знайдено ${parsedData.ResponseArray.length} записів. Введіть більш точний запит`, { parse_mode: 'HTML' })
       const clientChoiceButtons = clientAdminChoiceClientFromList(bot, msg, parsedData)
       await bot.sendMessage(msg.chat.id, clientChoiceButtons.title, {
