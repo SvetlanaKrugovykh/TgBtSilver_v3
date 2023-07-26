@@ -8,7 +8,7 @@ const { TelnetParams } = require('../data/telnet.model')
 const { getReceipt } = require('../modules/getReceipt')
 const inputLineScene = require('./inputLine')
 const checkValue = require('../modules/common')
-const { clientAdminStarterButtons, clientAdminStep2Buttons } = require('../modules/keyboard')
+const { clientAdminStarterButtons, clientAdminStep2Buttons, clientAdminChoiceClientFromList } = require('../modules/keyboard')
 let telNumber = ''
 let codeRule = ''
 let _HOST = ''
@@ -21,44 +21,16 @@ async function getInfo(bot, msg, inputLine) {
     return null
   }
   try {
-    if (data.length > 3900) {
-      const parsedData = JSON.parse(data)
-      if (parsedData.ResponseArray.length > 2) {
-        await bot.sendMessage(msg.chat.id, `⛔️За запитом знайдено ${parsedData.ResponseArray.length} записів. Введіть більш точний запит`, { parse_mode: 'HTML' })
-        const ClientsValues = parsedData.ResponseArray.map((item, index) => ({
-          id: index,
-          value: item['Контрагент']
-        }))
-
-        const buttonsPerRow = 2
-        const keyboard = {
-          keyboard: [],
-          resize_keyboard: true,
-          one_time_keyboard: true,
+    const parsedData = JSON.parse(data)
+    if (parsedData.ResponseArray.length > 1) {
+      await bot.sendMessage(msg.chat.id, `⛔️За запитом знайдено ${parsedData.ResponseArray.length} записів. Введіть більш точний запит`, { parse_mode: 'HTML' })
+      const clientChoiceButtons = clientAdminChoiceClientFromList(bot, msg, parsedData)
+      await bot.sendMessage(msg.chat.id, clientChoiceButtons.title, {
+        reply_markup: {
+          keyboard: clientChoiceButtons.buttons,
+          resize_keyboard: true
         }
-
-        let currentRow = []
-        ClientsValues.forEach((item) => {
-          const callbackData = `11_${item.id + 1}`
-          const button = { text: item.value, callback_data: callbackData }
-          currentRow.push(button)
-
-          if (currentRow.length === buttonsPerRow) {
-            keyboard.keyboard.push(currentRow)
-            currentRow = []
-          }
-        })
-
-        if (currentRow.length > 0) {
-          keyboard.keyboard.push(currentRow)
-        }
-        const returnButton = { text: 'Return', callback_data: '11_99' };
-        keyboard.keyboard.push([returnButton])
-
-        bot.sendMessage(msg.chat.id, 'Choose a контрагент:', {
-          reply_markup: keyboard,
-        })
-      }
+      })
       return null
     }
     console.log(data.toString())
@@ -175,7 +147,9 @@ async function clientsAdminGetInfo(bot, msg) {
     { parse_mode: 'HTML' })
   const inputLine = await inputLineScene(bot, msg)
   const responseData = await getInfo(bot, msg, inputLine)
-
+  if (responseData === null) {
+    return null
+  }
   try {
     telNumber = responseData.ResponseArray[0].telNumber
     codeRule = responseData.ResponseArray[0].КодПравил

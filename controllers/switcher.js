@@ -88,8 +88,15 @@ async function handler(bot, msg, webAppUrl) {
     case '5_13':
       await netwareAdmin(bot, msg)
       break
+    case '11_99':
+      console.log('11_99')
+      await clientsAdmin(bot, msg)
+      break
     default:
-      console.log('default')
+      console.log(`default: ${msg.text}`)
+      if (msg.text.length > 3 && msg.text.includes('.')) {
+        clientsAdminGetInfo(bot, msg, msg.text)
+      }
       break
   }
 }

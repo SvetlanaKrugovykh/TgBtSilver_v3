@@ -6,7 +6,7 @@ const guestStartButtons = {
     [{ text: 'Надіслати повідомлення.', callback_data: '0_2' }],
     [{ text: 'Зареєструватися.', callback_data: '0_3' }]
   ]
-};
+}
 
 const authStartButtons = {
   title: 'Оберіть, будь ласка, дію',
@@ -16,7 +16,7 @@ const authStartButtons = {
     [{ text: 'Hадіслати повідомлення.', callback_data: '1_2' }],
     [{ text: 'Здійснити оплату послуг.', callback_data: '1_3' }]
   ]
-};
+}
 
 
 const adminStartButtons = {
@@ -26,7 +26,7 @@ const adminStartButtons = {
     [{ text: 'Clients support.', callback_data: '2_1' }],
     [{ text: 'Netware support.', callback_data: '2_2' }]
   ]
-};
+}
 
 const clientAdminStarterButtons = {
   title: 'Choose a starter admin action',
@@ -36,7 +36,7 @@ const clientAdminStarterButtons = {
     [{ text: 'Надіслати відповідь на звернення.', callback_data: '3_2' }],
     [{ text: 'Return.', callback_data: '3_3' }]
   ]
-};
+}
 
 const clientAdminStep2Buttons = {
   title: 'Choose step2 admin action',
@@ -55,8 +55,7 @@ const clientAdminStep2Buttons = {
       { text: 'Return.', callback_data: '3_16' }
     ]
   ]
-};
-
+}
 
 const netwareAdminButtons = {
   title: 'Choose netware admin action',
@@ -67,8 +66,64 @@ const netwareAdminButtons = {
     [{ text: 'Return.', callback_data: '5_13' }]
   ]
 }
-const constants = [guestStartButtons, authStartButtons, adminStartButtons, clientAdminStarterButtons, clientAdminStep2Buttons, netwareAdminButtons];
 
-module.exports = { guestStartButtons, adminStartButtons, authStartButtons, clientAdminStarterButtons, clientAdminStep2Buttons, netwareAdminButtons, constants };
+function clientAdminChoiceClientFromList(bot, msg, parsedData) {
+  try {
+    const ClientsValues = parsedData.ResponseArray.map((item, index) => ({
+      id: index,
+      value: item['Контрагент']
+    }))
+
+    const buttonsPerRow = 2
+    const clientChoiceButtons = {
+      title: 'Choose an client from list:',
+      options: [{ resize_keyboard: true }],
+      buttons: []
+    }
+
+    let currentRow = []
+    ClientsValues.forEach((item) => {
+      const callbackData = `11_${item.id + 1}`
+      const button = { text: item.value, callback_data: callbackData }
+      currentRow.push(button)
+
+      if (currentRow.length === buttonsPerRow) {
+        clientChoiceButtons.buttons.push(currentRow)
+        currentRow = []
+      }
+    })
+
+    if (currentRow.length > 0) {
+      clientChoiceButtons.buttons.push(currentRow)
+    }
+
+    const returnButton = { text: 'Rеturn', callback_data: '11_99' }
+
+    if (
+      clientChoiceButtons.buttons.length > 0 &&
+      clientChoiceButtons.buttons[clientChoiceButtons.buttons.length - 1].length < buttonsPerRow
+    ) {
+      clientChoiceButtons.buttons[clientChoiceButtons.buttons.length - 1].push(returnButton)
+    } else {
+      clientChoiceButtons.buttons.push([returnButton])
+    }
+
+    return clientChoiceButtons
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+const retunAdminButtons = {
+  title: 'Choose a starter admin action',
+  options: [{ resize_keyboard: true }],
+  buttons: [
+    [{ text: 'Rеturn', callback_data: '11_99' }],
+  ]
+}
+
+const constants = [guestStartButtons, authStartButtons, adminStartButtons, clientAdminStarterButtons, clientAdminStep2Buttons, netwareAdminButtons, retunAdminButtons]
+
+module.exports = { guestStartButtons, adminStartButtons, authStartButtons, clientAdminStarterButtons, clientAdminStep2Buttons, netwareAdminButtons, constants, clientAdminChoiceClientFromList }
 
 
