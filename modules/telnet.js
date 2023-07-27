@@ -35,38 +35,41 @@ async function telnetCall(HOST, replaceStr, _conditional = undefined) {
 
     const client = new net.Socket()
 
-    client.connect(PORT, HOST, () => {
-      console.log('Connected to network device')
-    })
+    try {
+      client.connect(PORT, HOST, () => {
+        console.log('Connected to network device')
+      })
 
-    let buffer = ''
+      let buffer = ''
 
-    client.on('data', (data) => {
-      buffer += data.toString().trim()
-      if (buffer.includes('Username:')) {
-        client.write(Params.username)
-      } else if (buffer.startsWith('Password:')) {
-        client.write(Params.password)
-        authorized = true
-      } else {
-        if (authorized && (buffer.length > 1)) {
-          if (i === ArrayOfCommands.length) {
+      client.on('data', (data) => {
+        buffer += data.toString().trim()
+        if (buffer.includes('Username:')) {
+          client.write(Params.username)
+        } else if (buffer.startsWith('Password:')) {
+          client.write(Params.password)
+          authorized = true
+        } else {
+          if (authorized && (buffer.length > 1)) {
+            if (i === ArrayOfCommands.length) {
+              if (buffer.includes(_replaceStr)) store.push(buffer)
+              client.on('close', () => {
+                console.log('Connection closed')
+                resolve(store)
+              })
+            }
             if (buffer.includes(_replaceStr)) store.push(buffer)
-            client.on('close', () => {
-              console.log('Connection closed')
-              resolve(store)
-            })
+            client.write(ArrayOfCommands[i] + '\n')
+            i++
           }
-          if (buffer.includes(_replaceStr)) store.push(buffer)
-          client.write(ArrayOfCommands[i] + '\n')
-          i++
         }
-      }
 
-      buffer = ''
-    })
+        buffer = ''
+      })
 
-
+    } catch (error) {
+      console.log(error)
+    }
   })
 }
 
