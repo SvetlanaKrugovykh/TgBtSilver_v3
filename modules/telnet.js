@@ -22,6 +22,10 @@ async function telnetCall(HOST, replaceStr, _conditional = undefined) {
         ArrayOfCommands = Params.bandwidthArray
         _replaceStr = 'downstream'
         break
+      case 'macs':
+        ArrayOfCommands = Params.macsArray
+        _replaceStr = replaceStr.toLowerCase()
+        break
       default:
         ArrayOfCommands = Params.cliArray
         break

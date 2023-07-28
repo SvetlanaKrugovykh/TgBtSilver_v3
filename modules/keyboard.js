@@ -52,7 +52,8 @@ const clientAdminStep2Buttons = {
     ],
     [
       { text: 'Check bandwidth.', callback_data: '3_15' },
-      { text: 'Return.', callback_data: '3_16' }
+      { text: 'Check macs.', callback_data: '3_16' },
+      { text: 'Return.', callback_data: '3_17' }
     ]
   ]
 }

@@ -3,7 +3,7 @@ const { netwareAdmin, netwareAdminPing, netwareAdminServiceCheck } = require('./
 const { clientsAdmin, clientsAdminGetInfo, clientsAdminResponseToRequest,
   clientsAdminSwitchOnClient, clientsAdminGetInvoice,
   clientsAdminStopClientService, clientsAdminCheckAttenuationService,
-  clientsAdminCheckBandWidthService } = require('./clientsAdmin')
+  clientsAdminCheckBandWidthService, clientsAdminCheckMacsService } = require('./clientsAdmin')
 const supportScene = require('./support')
 const receiptScene = require('./receipt')
 const paymentScene = require('./payments')
@@ -77,6 +77,9 @@ async function handler(bot, msg, webAppUrl) {
       await clientsAdminCheckBandWidthService(bot, msg)
       break
     case '3_16':
+      await clientsAdminCheckMacsService(bot, msg)
+      break
+    case '3_17':
       await clientsAdmin(bot, msg)
       break
     case '5_11':
