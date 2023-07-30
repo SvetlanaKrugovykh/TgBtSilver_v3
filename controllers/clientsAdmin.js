@@ -230,7 +230,7 @@ async function clientsAdminStopClientService(bot, msg) {
 }
 
 async function clientsAdminCheckAttenuationService(bot, msg) {
-  if (codeRule.length < 3) {
+  if (_HOST.length < 12 || Params.excludeHOSTS.includes(_HOST)) {
     await bot.sendMessage(msg.chat.id, "Wrong codeRule. Операцію скасовано. Треба повторити пошук\n", { parse_mode: 'HTML' })
     return null
   }
@@ -247,7 +247,7 @@ async function clientsAdminCheckAttenuationService(bot, msg) {
 }
 
 async function clientsAdminCheckBandWidthService(bot, msg) {
-  if (codeRule.length < 3) {
+  if (_HOST.length < 12 || Params.excludeHOSTS.includes(_HOST)) {
     await bot.sendMessage(msg.chat.id, "Wrong codeRule. Операцію скасовано. Треба повторити пошук\n", { parse_mode: 'HTML' })
     return null
   }
@@ -264,7 +264,7 @@ async function clientsAdminCheckBandWidthService(bot, msg) {
 }
 
 async function clientsAdminCheckMacsService(bot, msg) {
-  if (codeRule.length < 3) {
+  if (_HOST.length < 12 || Params.excludeHOSTS.includes(_HOST)) {
     await bot.sendMessage(msg.chat.id, "Wrong codeRule. Операцію скасовано. Треба повторити пошук\n", { parse_mode: 'HTML' })
     return null
   }
