@@ -49,9 +49,9 @@ async function getInfo(bot, msg, inputLine) {
 
 async function actionsOnId(bot, msg, inputLine) {
   if (inputLine !== undefined) {
-    if (inputLine.includes("id#")) {
-      let id = inputLine.split("id#")[1]
-      let msgtext = inputLine.split("id#")[2]
+    if (inputLine.includes('id#')) {
+      let id = inputLine.split('id#')[1]
+      let msgtext = inputLine.split('id#')[2]
       console.log('id', id)
       console.log('msgtext', msgtext)
       try {
@@ -88,28 +88,26 @@ async function goToHardware(bot, msg, responseData) {
     if (responseData.ResponseArray[0].HOST) {
       const HOST = responseData.ResponseArray[0].HOST.toString()
       _HOST = HOST
-      console.log(HOST)
+      console.log(_HOST)
       if (HOST.length > 12 && !Params.excludeHOSTS.includes(HOST)) {
-        try {
-          let match = responseData.ResponseArray[0].Comment.match(/^\w+\/\d+:\d+/)
-          console.log(HOST + ' match= ' + match)
-          if (match) {
-            const partComment = match[0]
-            if (!partComment.startsWith('EPON')) {
-              return null
-            }
-            console.log(partComment)
-            EPON = partComment
-            await telnetCall(HOST, partComment)
-              .then(store => {
-                console.dir(store)
-                bot.sendMessage(msg.chat.id, `🥎\n ${store.toString()}.\n`, { parse_mode: 'HTML' })
-              })
-              .catch(err => {
-                console.log(err)
-              })
+        let match = responseData.ResponseArray[0].Comment.match(/^\w+\/\d+:\d+/)
+        console.log(HOST + ' match= ' + match)
+        if (match) {
+          const partComment = match[0]
+          if (!partComment.startsWith('EPON')) {
+            return null
           }
-        } catch (err) { console.log('HOST is not define') }
+          console.log(partComment)
+          EPON = partComment
+          await telnetCall(HOST, partComment)
+            .then(store => {
+              console.dir(store)
+              bot.sendMessage(msg.chat.id, `🥎\n ${store.toString()}.\n`, { parse_mode: 'HTML' })
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        }
       }
     }
   } catch (err) { console.log(err) }
@@ -120,7 +118,6 @@ async function clientsAdmin(bot, msg) {
   await clientAdminMenuStarter(bot, msg, clientAdminStarterButtons)
 
 }
-
 
 //#region clientAdminMenus
 async function clientAdminMenuStarter(bot, msg, clientAdminStarterButtons) {
@@ -149,7 +146,7 @@ async function clientsAdminGetInfo(bot, msg, condition = undefined) {
   let inputLine = ''
   if (msg.text === 'Отримати інформацію про клієнта.' || condition === 'return') {
     await bot.sendMessage(msg.chat.id,
-      "Введіть <i>строку для пошуку інформаціі </i>\nПошукові параметри розділяйте через #, \nпошук ведеться через \nПІБ#город#вул#телефон0981234567#буд#кв\nПриклади: М_дв_д_в або Таран_нко\n(*якщо не впевнені яку буква, то використовуйте _)\n ?2#234\n(*використовуйте ? спочатку запиту, якщо немає прізвища)",
+      'Введіть <i>строку для пошуку інформаціі </i>\nПошукові параметри розділяйте через #, \nпошук ведеться через \nПІБ#город#вул#телефон0981234567#буд#кв\nПриклади: М_дв_д_в або Таран_нко\n(*якщо не впевнені яку буква, то використовуйте _)\n ?2#234\n(*використовуйте ? спочатку запиту, якщо немає прізвища)',
       { parse_mode: 'HTML' })
     inputLine = await inputLineScene(bot, msg)
   } else {
@@ -180,17 +177,17 @@ async function clientsAdminGetInfo(bot, msg, condition = undefined) {
 }
 
 async function clientsAdminResponseToRequest(bot, msg) {
-  await bot.sendMessage(msg.chat.id, "Введіть <i>id чата для відправки відповіді клієнту </i>\n", { parse_mode: 'HTML' })
+  await bot.sendMessage(msg.chat.id, 'Введіть <i>id чата для відправки відповіді клієнту </i>\n', { parse_mode: 'HTML' })
   const codeChat = await inputLineScene(bot, msg)
   if (codeChat.length < 7) {
-    await bot.sendMessage(msg.chat.id, "Wrong id. Операцію скасовано\n", { parse_mode: 'HTML' })
+    await bot.sendMessage(msg.chat.id, 'Wrong id. Операцію скасовано\n', { parse_mode: 'HTML' })
     return null
   }
-  const commandHtmlText = "Введіть <i>text відповіді клієнту </i>\n"
+  const commandHtmlText = 'Введіть <i>text відповіді клієнту </i>\n'
   await bot.sendMessage(msg.chat.id, commandHtmlText, { parse_mode: 'HTML' })
   const txtCommand = await inputLineScene(bot, msg)
   if (txtCommand.length < 7) {
-    await bot.sendMessage(msg.chat.id, "Незрозуміла відповідь. Операцію скасовано\n", { parse_mode: 'HTML' })
+    await bot.sendMessage(msg.chat.id, 'Незрозуміла відповідь. Операцію скасовано\n', { parse_mode: 'HTML' })
     return null
   }
   const txtCommandForSend = 'id#' + codeChat + 'id#' + txtCommand
@@ -199,87 +196,51 @@ async function clientsAdminResponseToRequest(bot, msg) {
 
 async function clientsAdminSwitchOnClient(bot, msg) {
   if (codeRule.length < 3) {
-    await bot.sendMessage(msg.chat.id, "Wrong codeRule. Операцію скасовано. Треба повторити пошук\n", { parse_mode: 'HTML' })
+    await bot.sendMessage(msg.chat.id, 'Wrong codeRule. Операцію скасовано. Треба повторити пошук\n', { parse_mode: 'HTML' })
     return null
   }
   const txtCommand = 'switchon#' + codeRule
   console.log(`Admin request for the switch on ${codeRule}`)
   await switchOn(bot, msg, txtCommand)
-  await bot.sendMessage(msg.chat.id, "👋💙💛 Have a nice day!\n", { parse_mode: 'HTML' })
+  await bot.sendMessage(msg.chat.id, '👋💙💛 Have a nice day!\n', { parse_mode: 'HTML' })
 }
 
 async function clientsAdminGetInvoice(bot, msg) {
   if (telNumber.length < 8) {
-    await bot.sendMessage(msg.chat.id, "Wrong telNumber. Операцію скасовано. Треба повторити пошук\n", { parse_mode: 'HTML' })
+    await bot.sendMessage(msg.chat.id, 'Wrong telNumber. Операцію скасовано. Треба повторити пошук\n', { parse_mode: 'HTML' })
     return null
   }
   console.log(`Admin request for the receipt ${telNumber}`)
   await invoice(bot, msg, telNumber)
-  await bot.sendMessage(msg.chat.id, "👋💙💛 Have a nice day!\n", { parse_mode: 'HTML' })
+  await bot.sendMessage(msg.chat.id, '👋💙💛 Have a nice day!\n', { parse_mode: 'HTML' })
 }
 
 async function clientsAdminStopClientService(bot, msg) {
   if (codeRule.length < 3) {
-    await bot.sendMessage(msg.chat.id, "Wrong codeRule. Операцію скасовано. Треба повторити пошук\n", { parse_mode: 'HTML' })
+    await bot.sendMessage(msg.chat.id, 'Wrong codeRule. Операцію скасовано. Треба повторити пошук\n', { parse_mode: 'HTML' })
     return null
   }
   const txtCommand = 'stopService#' + codeRule
   console.log(`Admin request for the stop service on ${codeRule}`)
   await stopService(bot, msg, txtCommand)
-  await bot.sendMessage(msg.chat.id, "👋💙💛 Have a nice day!\n", { parse_mode: 'HTML' })
+  await bot.sendMessage(msg.chat.id, '👋💙💛 Have a nice day!\n', { parse_mode: 'HTML' })
 }
 
-async function clientsAdminCheckAttenuationService(bot, msg) {
+async function clientsAdminCheckHWService(bot, msg, request) {
   const Params = new TelnetParams()
   if (_HOST.length < 12 || Params.excludeHOSTS.includes(_HOST)) {
-    await bot.sendMessage(msg.chat.id, "Wrong codeRule. Операцію скасовано. Треба повторити пошук\n", { parse_mode: 'HTML' })
+    await bot.sendMessage(msg.chat.id, `Wrong codeRule. Операцію  ${request} скасовано. Треба повторити пошук\n`, { parse_mode: 'HTML' })
     return null
   }
   if (EPON.length > 5) {
-    console.log(`Admin request for the check attenuation on ${_HOST} for ${EPON}`)
-    await telnetCall(_HOST, EPON, 'attenuation')
+    console.log(`Admin request for the check ${request} on ${_HOST} for ${EPON}`)
+    await telnetCall(_HOST, EPON, request)
       .then(store => {
         console.dir(store)
         bot.sendMessage(msg.chat.id, `🥎\n ${store.toString()}.\n`, { parse_mode: 'HTML' })
       })
   } else {
-    await bot.sendMessage(msg.chat.id, "👋💙💛 No data, but have a nice day!\n", { parse_mode: 'HTML' })
-  }
-}
-
-async function clientsAdminCheckBandWidthService(bot, msg) {
-  const Params = new TelnetParams()
-  if (_HOST.length < 12 || Params.excludeHOSTS.includes(_HOST)) {
-    await bot.sendMessage(msg.chat.id, "Wrong codeRule. Операцію скасовано. Треба повторити пошук\n", { parse_mode: 'HTML' })
-    return null
-  }
-  if (EPON.length > 5) {
-    console.log(`Admin request for the check attenuation on ${_HOST} for ${EPON}`)
-    await telnetCall(_HOST, EPON, 'bandwidth')
-      .then(store => {
-        console.dir(store)
-        bot.sendMessage(msg.chat.id, `🥎\n ${store.toString()}.\n`, { parse_mode: 'HTML' })
-      })
-  } else {
-    await bot.sendMessage(msg.chat.id, "👋💙💛 No data, but have a nice day!\n", { parse_mode: 'HTML' })
-  }
-}
-
-async function clientsAdminCheckMacsService(bot, msg) {
-  const Params = new TelnetParams()
-  if (_HOST.length < 12 || Params.excludeHOSTS.includes(_HOST)) {
-    await bot.sendMessage(msg.chat.id, "Wrong codeRule. Операцію скасовано. Треба повторити пошук\n", { parse_mode: 'HTML' })
-    return null
-  }
-  if (EPON.length > 5) {
-    console.log(`Admin request for the check macs on ${_HOST} for ${EPON}`)
-    await telnetCall(_HOST, EPON, 'macs')
-      .then(store => {
-        console.dir(store)
-        bot.sendMessage(msg.chat.id, `🥎\n ${store.toString()}.\n`, { parse_mode: 'HTML' })
-      })
-  } else {
-    await bot.sendMessage(msg.chat.id, "👋💙💛 No data, but have a nice day!\n", { parse_mode: 'HTML' })
+    await bot.sendMessage(msg.chat.id, '👋💙💛 No data, but have a nice day!\n', { parse_mode: 'HTML' })
   }
 }
 //#endregion
@@ -287,6 +248,5 @@ async function clientsAdminCheckMacsService(bot, msg) {
 module.exports = {
   clientsAdmin, clientsAdminGetInfo, clientsAdminResponseToRequest,
   clientsAdminSwitchOnClient, clientsAdminGetInvoice,
-  clientsAdminStopClientService, clientsAdminCheckAttenuationService,
-  clientsAdminCheckBandWidthService, clientsAdminCheckMacsService
+  clientsAdminStopClientService, clientsAdminCheckHWService,
 }
