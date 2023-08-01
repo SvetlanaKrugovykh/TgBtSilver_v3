@@ -232,7 +232,7 @@ async function clientsAdminStopClientService(bot, msg) {
 
 async function clientsAdminCheckHWService(bot, msg, request) {
   const Params = new TelnetParams()
-  if (_HOST[msg.chat.id] === undefined) return null
+  if (_HOST[msg.chat.id] === undefined || EPON[msg.chat.id] === undefined) return null
   if (_HOST[msg.chat.id].length < 12 || Params.excludeHOSTS.includes(_HOST[msg.chat.id])) {
     await bot.sendMessage(msg.chat.id, `Wrong codeRule. Операцію  ${request} скасовано. Треба повторити пошук\n`, { parse_mode: 'HTML' })
     return null
