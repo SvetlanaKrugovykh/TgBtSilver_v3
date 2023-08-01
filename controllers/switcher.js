@@ -98,9 +98,11 @@ async function handler(bot, msg, webAppUrl) {
       break
     default:
       console.log(`default: ${msg.text}`)
-      if (msg.text.length > 3 && msg.text.includes('.')) {
-        clientsAdminGetInfo(bot, msg, msg.text)
-      }
+      try {
+        if (msg.text.length > 3 && msg.text.includes('.')) {
+          clientsAdminGetInfo(bot, msg, msg.text)
+        }
+      } catch (error) { console.log(error) }
       break
   }
 }
