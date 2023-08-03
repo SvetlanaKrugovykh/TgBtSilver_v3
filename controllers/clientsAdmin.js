@@ -67,13 +67,21 @@ async function actionsOnId(bot, msg, inputLine) {
 }
 
 async function switchOn(bot, msg, txtCommand) {
-  await sendReqToDB('___SwitchOn__', '', txtCommand)
-  await bot.sendMessage(msg.chat.id, `🥎🥎 ${txtCommand} request sent\n`, { parse_mode: 'HTML' })
+  const response = await sendReqToDB('___SwitchOn__', '', txtCommand)
+  if (response === null) {
+    await bot.sendMessage(msg.chat.id, `⛔️ ERROR Client is not switch On`, { parse_mode: 'HTML' })
+  } else {
+    await bot.sendMessage(msg.chat.id, `🥎🥎 ${txtCommand} request sent\n`, { parse_mode: 'HTML' })
+  }
 }
 
 async function stopService(bot, msg, txtCommand) {
-  await sendReqToDB('___StopService__', '', txtCommand)
-  await bot.sendMessage(msg.chat.id, `🥎🥎 ${txtCommand} request sent\n`, { parse_mode: 'HTML' })
+  const response = await sendReqToDB('___StopService__', '', txtCommand)
+  if (response === null) {
+    await bot.sendMessage(msg.chat.id, `⛔️ ERROR of stop clients service`, { parse_mode: 'HTML' })
+  } else {
+    await bot.sendMessage(msg.chat.id, `🥎🥎 ${txtCommand} request sent\n`, { parse_mode: 'HTML' })
+  }
 }
 
 async function invoice(bot, msg, telNumber) {
