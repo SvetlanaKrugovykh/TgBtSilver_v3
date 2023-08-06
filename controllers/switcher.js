@@ -100,7 +100,7 @@ async function handler(bot, msg, webAppUrl) {
     default:
       console.log(`default: ${msg.text}`)
       try {
-        if (msg.text.length > 3 && msg.text.includes('.') && !regexIP.test(msg.text)) {
+        if (msg.text.length > 3 && msg.text.includes('#H') && !regexIP.test(msg.text)) {
           clientsAdminGetInfo(bot, msg, msg.text)
         }
       } catch (error) { console.log(error) }
