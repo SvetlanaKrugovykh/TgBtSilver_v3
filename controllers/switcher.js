@@ -7,6 +7,7 @@ const supportScene = require('./support')
 const receiptScene = require('./receipt')
 const paymentScene = require('./payments')
 const signUpForm = require('./signUp').signUpForm
+const regexIP = /^(\?|)\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(#|)$/
 
 function getCallbackData(text) {
   for (const constant of Object.values(constants)) {
@@ -99,7 +100,7 @@ async function handler(bot, msg, webAppUrl) {
     default:
       console.log(`default: ${msg.text}`)
       try {
-        if (msg.text.length > 3 && msg.text.includes('.')) {
+        if (msg.text.length > 3 && msg.text.includes('.') && !regexIP.test(msg.text)) {
           clientsAdminGetInfo(bot, msg, msg.text)
         }
       } catch (error) { console.log(error) }
