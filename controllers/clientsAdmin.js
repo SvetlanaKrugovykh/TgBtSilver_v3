@@ -221,7 +221,7 @@ async function clientsAdminGetInvoice(bot, msg) {
     return null
   }
   console.log(`Admin request for the receipt ${telNumber[msg.chat.id]}`)
-  await invoice(bot, msg, telNumber)
+  await invoice(bot, msg, telNumber[msg.chat.id])
   await bot.sendMessage(msg.chat.id, '👋💙💛 Have a nice day!\n', { parse_mode: 'HTML' })
 }
 
