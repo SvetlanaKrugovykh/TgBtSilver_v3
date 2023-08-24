@@ -1,6 +1,7 @@
 const { netwareAdminButtons } = require('../modules/keyboard')
 const inputLineScene = require('./inputLine')
 const ping = require('ping')
+const sendReqToDB = require('../modules/tlg_to_DB')
 
 
 async function netwareAdmin(bot, msg) {
@@ -31,6 +32,18 @@ async function netwareAdminPing(bot, msg) {
   }
 }
 
+async function netwareAdminDeadIPCheck(bot, msg) {
+  try {
+    const chatId = msg.chat.id
+    const data = await sendReqToDB('__GetDeadIP__', chatId)
+    await bot.sendMessage(msg.chat.id, `🥎\n ${data.toString()}.\n`, { parse_mode: 'HTML' })
+  }
+  catch (err) {
+    console.log(err)
+  }
+}
+
+
 async function netwareAdminServiceCheck(bot, msg) {
   try {
     console.log('netwareAdminServiceCheck')
@@ -40,4 +53,4 @@ async function netwareAdminServiceCheck(bot, msg) {
   }
 }
 
-module.exports = { netwareAdmin, netwareAdminPing, netwareAdminServiceCheck }
+module.exports = { netwareAdmin, netwareAdminPing, netwareAdminServiceCheck, netwareAdminDeadIPCheck }
