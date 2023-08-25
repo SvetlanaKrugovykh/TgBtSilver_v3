@@ -153,7 +153,7 @@ async function clientAdminStep2Menu(bot, msg, clientAdminStep2Buttons) {
 //#region clientAdminSubMenus
 async function clientsAdminGetInfo(bot, msg, condition = undefined) {
   let inputLine = ''
-  if (msg.text === 'Отримати інформацію про клієнта.' || condition === 'return') {
+  if (msg.text === 'Отримати інформацію про клієнта' || condition === 'return') {
     await bot.sendMessage(msg.chat.id,
       'Введіть <i>строку для пошуку інформаціі </i>\nПошукові параметри розділяйте через #, \nпошук ведеться через \nПІБ#город#вул#телефон0981234567#буд#кв\nПриклади: М_дв_д_в або Таран_нко\n(*якщо не впевнені яку буква, то використовуйте _)\n ?2#234\n(*використовуйте ? спочатку запиту, якщо немає прізвища)\n(*якщо ?192.168.1.1# буде пошук за IP адресою)',
       { parse_mode: 'HTML' })

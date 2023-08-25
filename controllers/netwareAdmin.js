@@ -36,6 +36,10 @@ async function netwareAdminDeadIPCheck(bot, msg) {
   try {
     const chatId = msg.chat.id
     const data = await sendReqToDB('__GetDeadIP__', chatId)
+    const text = data.toString()
+    if (text.length < 28) {
+      await bot.sendMessage(msg.chat.id, `🌟🌟🌟🌟🌟 Everything's good ✅ 👍 Absolutely 🆗.\n`, { parse_mode: 'HTML' })
+    }
     await bot.sendMessage(msg.chat.id, `🥎\n ${data.toString()}.\n`, { parse_mode: 'HTML' })
   }
   catch (err) {
