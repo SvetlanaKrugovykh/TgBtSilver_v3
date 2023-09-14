@@ -44,14 +44,17 @@ const clientAdminStep2Buttons = {
   buttons: [
     [
       { text: 'Switch ON this client', callback_data: '3_11' },
+      { text: 'STOP services for this client', callback_data: '3_13' }
+    ],
+    [
       { text: 'Get INVOICE for this client', callback_data: '3_12' },
+      { text: 'Send INVOICE by email', callback_data: '3_18' }
     ],
     [
-      { text: 'STOP services for this client', callback_data: '3_13' },
       { text: 'Check attenuation', callback_data: '3_14' },
+      { text: 'Check bandwidth', callback_data: '3_15' }
     ],
     [
-      { text: 'Check bandwidth', callback_data: '3_15' },
       { text: 'Check macs', callback_data: '3_16' },
       { text: 'Return', callback_data: '3_17' }
     ]

@@ -2,7 +2,7 @@ const axios = require('axios')
 const fs = require('fs')
 const { AUTH_TOKEN, URL } = process.env
 
-async function getReceipt(telNumber, msg, bot) {
+async function getReceipt(telNumber, msg, bot, fileName) {
   try {
     const response = await axios({
       method: 'post',
@@ -30,15 +30,16 @@ async function getReceipt(telNumber, msg, bot) {
         try {
           response.data.pipe(fs.createWriteStream(fileFullName))
           console.log(`File ${fileFullName} saved.`)
-          setTimeout(function () { }, 7777)
+          fileName[msg.chat.id] = fileFullName
+
           bot.sendMessage(msg.chat.id, '🥎Рахунок отримано.\n', { parse_mode: 'HTML' })
           bot.sendMessage(msg.chat.id, '👋💙💛 Дякуємо за звернення.\n', { parse_mode: 'HTML' })
           setTimeout(function () {
             bot.sendDocument(msg.chat.id, fileFullName)
               .catch(function (error) {
-                console.log(error)
+                console.log(error);
               })
-          }, 1000)
+          }, 1111)
         } catch (err) {
           console.log(err)
           console.log('File not saved!!!')

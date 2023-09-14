@@ -8,6 +8,7 @@ const { TelnetParams } = require('../data/telnet.model')
 const { getReceipt } = require('../modules/getReceipt')
 const inputLineScene = require('./inputLine')
 const checkValue = require('../modules/common')
+const { sendMail } = require("../modules/mailer")
 const { clientAdminStarterButtons, clientAdminStep2Buttons, clientAdminChoiceClientFromList } = require('../modules/keyboard')
 
 let telNumber = {}
@@ -15,6 +16,9 @@ let codeRule = {}
 let _HOST = {}
 let EPON = {}
 let comment = {}
+let email = {}
+let fileName = {}
+
 
 async function getInfo(bot, msg, inputLine) {
   const data = await sendReqToDB('__GetClientsInfo__', msg.chat, inputLine)
@@ -83,9 +87,9 @@ async function stopService(bot, msg, txtCommand) {
   }
 }
 
-async function invoice(bot, msg, telNumber) {
+async function invoice(bot, msg, telNumber, fileName) {
   console.log('Reguest for receipt for', telNumber)
-  await getReceipt(telNumber, msg, bot)
+  await getReceipt(telNumber, msg, bot, fileName)
 }
 
 async function goToHardware(bot, msg, responseData) {
@@ -169,6 +173,7 @@ async function clientsAdminGetInfo(bot, msg, condition = undefined) {
     telNumber[msg.chat.id] = responseData.ResponseArray[0].telNumber
     codeRule[msg.chat.id] = responseData.ResponseArray[0].КодПравил
     comment[msg.chat.id] = responseData.ResponseArray[0].Comment
+    email[msg.chat.id] = responseData.ResponseArray[0].email
 
     if (responseData?.ResponseArray && Array.isArray(responseData?.ResponseArray)) {
       if (responseData?.ResponseArray[0]?.HOST) {
@@ -221,7 +226,7 @@ async function clientsAdminGetInvoice(bot, msg) {
     return null
   }
   console.log(`Admin request for the receipt ${telNumber[msg.chat.id]}`)
-  await invoice(bot, msg, telNumber[msg.chat.id])
+  invoice(bot, msg, telNumber[msg.chat.id], fileName)
   await bot.sendMessage(msg.chat.id, '👋💙💛 Have a nice day!\n', { parse_mode: 'HTML' })
 }
 
@@ -258,10 +263,38 @@ async function clientsAdminCheckHWService(bot, msg, request) {
     await bot.sendMessage(msg.chat.id, '👋💙💛 No data, but have a nice day!\n', { parse_mode: 'HTML' })
   }
 }
+
+
+async function sendInvoice(_bot, msg) {
+
+  try {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email[msg.chat.id])) {
+      console.log("Invalid email address:", email)
+      return
+    }
+    if (fileName[msg.chat.id].length === 0) {
+      console.log("Invalid fileName:", fileName)
+      return
+    }
+
+    const message = {
+      from: 'AbonOtdel@silver-service.com.ua',
+      to: email[msg.chat.id],
+      subject: 'Рахунок до сплати за послуги Internet',
+      text: 'Доброго дня! У вкладенні рахунок щодо сплати за послуги Інтернет',
+      html: '<p>Очікуємо на своєчасну сплату рахунку</p>'
+    }
+
+    sendMail(message, fileName[msg.chat.id])
+  } catch (err) {
+    console.log(err)
+  }
+}
 //#endregion
 
 module.exports = {
   clientsAdmin, clientsAdminGetInfo, clientsAdminResponseToRequest,
   clientsAdminSwitchOnClient, clientsAdminGetInvoice,
-  clientsAdminStopClientService, clientsAdminCheckHWService,
+  clientsAdminStopClientService, clientsAdminCheckHWService, sendInvoice
 }
