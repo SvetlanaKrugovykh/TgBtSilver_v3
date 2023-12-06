@@ -50,6 +50,8 @@ function objToString(reqType, data, text) {
       return (text);
     case '__GetDeadIP__  ':
       return (text)
+    case '___SwitchRedirectedClientOn__':
+      return (text)
     default:
       return (data.id + '#' + text)
   }
