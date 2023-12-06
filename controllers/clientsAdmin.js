@@ -18,6 +18,7 @@ let EPON = {}
 let comment = {}
 let email = {}
 let fileName = {}
+let IP_address = {}
 
 
 async function getInfo(bot, msg, inputLine) {
@@ -75,6 +76,15 @@ async function switchOn(bot, msg, txtCommand) {
     await bot.sendMessage(msg.chat.id, `⛔️ ERROR Client is not switch On`, { parse_mode: 'HTML' })
   } else {
     await bot.sendMessage(msg.chat.id, `🥎🥎 ${txtCommand} request sent\n`, { parse_mode: 'HTML' })
+  }
+}
+
+async function switchRedirectedClientOn(bot, msg, ip) {
+  const response = await sendReqToDB('___SwitchRedirectedClientOn__', '', ip)
+  if (response === null) {
+    await bot.sendMessage(msg.chat.id, `⛔️ ERROR Redirected Client is not switch On`, { parse_mode: 'HTML' })
+  } else {
+    await bot.sendMessage(msg.chat.id, `🥎🥎 ${ip} request sent\n`, { parse_mode: 'HTML' })
   }
 }
 
@@ -174,6 +184,7 @@ async function clientsAdminGetInfo(bot, msg, condition = undefined) {
     codeRule[msg.chat.id] = responseData.ResponseArray[0].КодПравил
     comment[msg.chat.id] = responseData.ResponseArray[0].Comment
     email[msg.chat.id] = responseData.ResponseArray[0].email
+    IP_address[msg.chat.id] = responseData.ResponseArray[0].IP_address
 
     if (responseData?.ResponseArray && Array.isArray(responseData?.ResponseArray)) {
       if (responseData?.ResponseArray[0]?.HOST) {
@@ -217,6 +228,20 @@ async function clientsAdminSwitchOnClient(bot, msg) {
   console.log(`Admin request for the switch on ${codeRule[msg.chat.id]}`)
   await switchOn(bot, msg, txtCommand)
   await bot.sendMessage(msg.chat.id, '👋💙💛 Have a nice day!\n', { parse_mode: 'HTML' })
+}
+
+async function clientsAdminRedirectedClientSwitchOn(bot, msg) {
+  try {
+    const ip = IP_address[msg.chat.id].replace(/\s+/g, '')
+    if (!ip || ip.length < 7) {
+      console.log(`ERROR in request for the Redirected Client switch on ${ip}`)
+      return null
+    }
+    console.log(`Admin request for the Redirected Client switch on ${codeRule[msg.chat.id]}`)
+    await switchRedirectedClientOn(bot, msg, ip)
+  } catch (err) {
+    console.log(err)
+  }
 }
 
 async function clientsAdminGetInvoice(bot, msg) {
@@ -296,5 +321,6 @@ async function sendInvoice(_bot, msg) {
 module.exports = {
   clientsAdmin, clientsAdminGetInfo, clientsAdminResponseToRequest,
   clientsAdminSwitchOnClient, clientsAdminGetInvoice,
-  clientsAdminStopClientService, clientsAdminCheckHWService, sendInvoice
+  clientsAdminStopClientService, clientsAdminCheckHWService, sendInvoice,
+  clientsAdminRedirectedClientSwitchOn
 }

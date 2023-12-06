@@ -51,6 +51,10 @@ const clientAdminStep2Buttons = {
       { text: 'Send INVOICE by email', callback_data: '3_18' }
     ],
     [
+      { text: 'Redirect Client Switch ON', callback_data: '3_19' },
+      { text: 'Return', callback_data: '3_17' }
+    ],
+    [
       { text: 'Check attenuation', callback_data: '3_14' },
       { text: 'Check bandwidth', callback_data: '3_15' }
     ],
