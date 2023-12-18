@@ -24,18 +24,18 @@ async function sendReqToDB(reqType, data, text) {
       console.log(response.status)
       return null
     } else {
-      if (reqType === '__GetClientPersData__' || reqType === '__GetDeadIP__') {
+      if (reqType === '__GetClientPersData__' || reqType === '__GetDeadIP__' || reqType === '___GetArpMac___') {
         return response.data
       } else {
-        let answer = response.data.toString();
-        console.log(answer.slice(0, 125) + '...');
+        let answer = response.data.toString()
+        console.log(answer.slice(0, 125) + '...')
         return answer;
       }
     }
 
   } catch (err) {
-    console.log(err);
-    return null;
+    console.log(err)
+    return null
   }
 }
 
@@ -49,6 +49,8 @@ function objToString(reqType, data, text) {
     case '__GetClientsInfo__':
       return (text);
     case '__GetDeadIP__  ':
+      return (text)
+    case '___GetArpMac___':
       return (text)
     case '___SwitchRedirectedClientOn__':
       return (text)

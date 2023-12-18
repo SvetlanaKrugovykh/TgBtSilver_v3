@@ -88,6 +88,15 @@ async function switchRedirectedClientOn(bot, msg, ip) {
   }
 }
 
+async function GetArpMac(bot, msg, ip) {
+  const response = await sendReqToDB('___GetArpMac__', '', ip)
+  if (response === null) {
+    await bot.sendMessage(msg.chat.id, `⛔️ ERROR GetArpMac`, { parse_mode: 'HTML' })
+  } else {
+    await bot.sendMessage(msg.chat.id, `🥎🥎 ${response}\n`, { parse_mode: 'HTML' })
+  }
+}
+
 async function stopService(bot, msg, txtCommand) {
   const response = await sendReqToDB('___StopService__', '', txtCommand)
   if (response === null) {
@@ -243,6 +252,19 @@ async function clientsAdminRedirectedClientSwitchOn(bot, msg) {
     console.log(err)
   }
 }
+async function clientsAdminGetArpMac(bot, msg) {
+  try {
+    const ip = IP_address[msg.chat.id].replace(/\s+/g, '')
+    if (!ip || ip.length < 7) {
+      console.log(`ERROR in request for the Redirected Client switch on ${ip}`)
+      return null
+    }
+    console.log(`Admin request for the Redirected Client switch on ${codeRule[msg.chat.id]}`)
+    await GetArpMac(bot, msg, ip)
+  } catch (err) {
+    console.log(err)
+  }
+}
 
 async function clientsAdminGetInvoice(bot, msg) {
   if (telNumber[msg.chat.id] === undefined) return null
@@ -322,5 +344,5 @@ module.exports = {
   clientsAdmin, clientsAdminGetInfo, clientsAdminResponseToRequest,
   clientsAdminSwitchOnClient, clientsAdminGetInvoice,
   clientsAdminStopClientService, clientsAdminCheckHWService, sendInvoice,
-  clientsAdminRedirectedClientSwitchOn
+  clientsAdminRedirectedClientSwitchOn, clientsAdminGetArpMac
 }

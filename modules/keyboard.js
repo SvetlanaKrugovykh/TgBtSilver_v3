@@ -52,7 +52,7 @@ const clientAdminStep2Buttons = {
     ],
     [
       { text: 'Redirect Client Switch ON', callback_data: '3_19' },
-      { text: 'Return', callback_data: '3_17' }
+      { text: 'Get arp mac', callback_data: '3_20' }
     ],
     [
       { text: 'Check attenuation', callback_data: '3_14' },
