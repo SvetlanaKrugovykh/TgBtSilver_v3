@@ -256,10 +256,10 @@ async function clientsAdminGetArpMac(bot, msg) {
   try {
     const ip = IP_address[msg.chat.id].replace(/\s+/g, '')
     if (!ip || ip.length < 7) {
-      console.log(`ERROR in request for the Redirected Client switch on ${ip}`)
+      console.log(`ERROR in request for the get mac for ip ${ip}`)
       return null
     }
-    console.log(`Admin request for the Redirected Client switch on ${codeRule[msg.chat.id]}`)
+    console.log(`Admin request for get mac for ip ${ip} sent`)
     await GetArpMac(bot, msg, ip)
   } catch (err) {
     console.log(err)
