@@ -22,6 +22,7 @@ async function getReceipt(telNumber, msg, bot, fileName) {
     } else {
       console.log('response.status', response.status)
       const TEMP_CATALOG = process.env.TEMP_CATALOG
+      if (!fs.existsSync(TEMP_CATALOG)) fs.mkdirSync(TEMP_CATALOG, { recursive: true })
       let fileFullName = `${TEMP_CATALOG}__${msg.chat.id}__.pdf`
       if (!response.status == 200) {
         bot.sendMessage(msg.chat.id,
