@@ -1,7 +1,7 @@
 
-const { ChartJSNodeCanvas } = require('chartjs-node-canvas')
 const axios = require('axios')
 require('dotenv').config()
+const fs = require('fs').promises
 
 const plot = async (bot, msg, period, deviceName) => {
   const URL_LOG = process.env.URL_LOG
@@ -35,31 +35,31 @@ const plot = async (bot, msg, period, deviceName) => {
 }
 
 
+// Функция для выбора каждой n-ой точки из массива данных
+function selectEveryNthPoint(data, n) {
+  return data.filter((item, index) => index % n === 0)
+}
+
 async function drawChart(bot, msg, data) {
-  const filteredDataIn = data.filter(item => item.deviceName === '192.168.65.239_UP_in')
-  const filteredDataOut = data.filter(item => item.deviceName === '192.168.65.239_UP_out')
+  const quickChartAPI = 'https://quickchart.io/chart'
 
-  const chartDataIn = filteredDataIn.map(item => item.Mbps)
-  const chartDataOut = filteredDataOut.map(item => item.Mbps)
-  const chartLabels = filteredDataIn.map(item => item.Period)
+  // Фильтрация данных
+  const filteredData = selectEveryNthPoint(data, 10);
 
-  const chartTitleIn = '192.168.65.239_UP_in'
-  const chartTitleOut = '192.168.65.239_UP_out'
-
-  const chartConfig = {
+  const chartData = {
     type: 'line',
     data: {
-      labels: chartLabels,
+      labels: filteredData.map(item => item.Period),
       datasets: [
         {
-          label: chartTitleIn,
-          data: chartDataIn,
+          label: '192.168.65.239_UP_in',
+          data: filteredData.map(item => item.Mbps),
           borderColor: '#ADD8E6',
           fill: false
         },
         {
-          label: chartTitleOut,
-          data: chartDataOut,
+          label: '192.168.65.239_UP_out',
+          data: filteredData.map(item => item.Mbps),
           borderColor: '#90EE90',
           fill: false
         }
@@ -86,13 +86,31 @@ async function drawChart(bot, msg, data) {
     }
   }
 
-  const width = 800 //px
-  const height = 600 //px
-  const chartJSNodeCanvas = new ChartJSNodeCanvas({ width, height })
-  const chartImageBuffer = await chartJSNodeCanvas.renderToBuffer(chartConfig)
+  try {
+    const response = await axios.post(quickChartAPI, {
+      chart: chartData,
+      width: 800,
+      height: 600
+    }, {
+      responseType: 'arraybuffer' // Указываем axios, что мы хотим получить массив байтов в ответе
+    })
 
-  await bot.sendPhoto(msg.chat.id, chartImageBuffer)
+    if (response.status === 200) {
+      // Сохраняем изображение во временный файл
+      const tempFilePath = 'chart.png'
+      await fs.writeFile(tempFilePath, response.data)
+
+      // Отправляем изображение через Telegram Bot API
+      await bot.sendPhoto(msg.chat.id, tempFilePath)
+
+      // Удаляем временный файл после отправки
+      await fs.unlink(tempFilePath)
+    } else {
+      console.error('Ошибка при получении изображения графика: Неправильный статус ответа', response.status)
+    }
+  } catch (error) {
+    console.error('Ошибка при получении изображения графика:', error.message)
+  }
 }
 
 module.exports = { plot }
-
