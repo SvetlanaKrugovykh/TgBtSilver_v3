@@ -1,7 +1,6 @@
 
 const axios = require('axios')
 require('dotenv').config()
-const fs = require('fs').promises
 
 const plot = async (bot, msg, period, deviceName) => {
   const URL_LOG = process.env.URL_LOG
@@ -20,11 +19,10 @@ const plot = async (bot, msg, period, deviceName) => {
     },
   })
 
+  console.log('post data get for graph responese', response.status)
   if (!response.status == 200) {
-    console.log(response.status)
     return null
   } else {
-    console.log('response.status', response.status)
     try {
       const data = response.data.ResponseArray
       await drawChart(bot, msg, data)
@@ -35,17 +33,13 @@ const plot = async (bot, msg, period, deviceName) => {
 }
 
 
-// Функция для выбора каждой n-ой точки из массива данных
 function selectEveryNthPoint(data, n) {
   return data.filter((item, index) => index % n === 0)
 }
 
 async function drawChart(bot, msg, data) {
   const quickChartAPI = 'https://quickchart.io/chart'
-
-  // Фильтрация данных
-  const filteredData = selectEveryNthPoint(data, 10);
-
+  const filteredData = selectEveryNthPoint(data, 10)
   const chartData = {
     type: 'line',
     data: {
@@ -92,24 +86,16 @@ async function drawChart(bot, msg, data) {
       width: 800,
       height: 600
     }, {
-      responseType: 'arraybuffer' // Указываем axios, что мы хотим получить массив байтов в ответе
+      responseType: 'arraybuffer'
     })
 
     if (response.status === 200) {
-      // Сохраняем изображение во временный файл
-      const tempFilePath = 'chart.png'
-      await fs.writeFile(tempFilePath, response.data)
-
-      // Отправляем изображение через Telegram Bot API
-      await bot.sendPhoto(msg.chat.id, tempFilePath)
-
-      // Удаляем временный файл после отправки
-      await fs.unlink(tempFilePath)
+      await bot.sendPhoto(msg.chat.id, response.data)
     } else {
-      console.error('Ошибка при получении изображения графика: Неправильный статус ответа', response.status)
+      console.error('Error fetching image: Incorrect response status', response.status)
     }
   } catch (error) {
-    console.error('Ошибка при получении изображения графика:', error.message)
+    console.error('Error fetching image', error.message)
   }
 }
 
