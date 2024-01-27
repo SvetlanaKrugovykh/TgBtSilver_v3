@@ -19,7 +19,7 @@ const plot = async (bot, msg, period, deviceName) => {
     },
   })
 
-  console.log('post data get for graph responese', response.status)
+  console.log('URL_LOG post data get for graph responese', response.status)
   if (!response.status == 200) {
     return null
   } else {
@@ -39,7 +39,7 @@ function selectEveryNthPoint(data, n) {
 
 async function drawChart(bot, msg, data) {
   const quickChartAPI = 'https://quickchart.io/chart'
-  const filteredData = selectEveryNthPoint(data, 10)
+  const filteredData = selectEveryNthPoint(data, 20)
   const chartData = {
     type: 'line',
     data: {
