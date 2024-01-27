@@ -2,6 +2,7 @@ const { netwareAdminButtons } = require('../modules/keyboard')
 const inputLineScene = require('./inputLine')
 const ping = require('ping')
 const sendReqToDB = require('../modules/tlg_to_DB')
+const { plot } = require('../services/plots')
 
 
 async function netwareAdmin(bot, msg) {
@@ -52,6 +53,13 @@ async function netwareAdminDeadIPCheck(bot, msg) {
 async function netwareAdminServiceCheck(bot, msg) {
   try {
     console.log('netwareAdminServiceCheck')
+    const now = new Date()
+    const period = {
+      day: now.getDate().toString(),
+      month: (now.getMonth() + 1).toString(),
+      year: now.getFullYear().toString()
+    }
+    plot(bot, msg, period, '192.168.65.239_UP%')
   }
   catch (err) {
     console.log(err)
