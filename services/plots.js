@@ -36,40 +36,50 @@ const plot = async (bot, msg, period, deviceName) => {
 
 
 async function drawChart(bot, msg, data) {
-  const chartData = data.map(item => item.Mbps)
-  const chartLabels = [...new Set(data.map(item => item.deviceName))]
-  const chartColors = data.map(item => {
-    switch (item.deviceName) {
-      case '192.168.65.239_UP_in':
-        return '#ADD8E6'
-      case '192.168.65.239_UP_out':
-        return '#90EE90'
-      default:
-        return '#000000'
-    }
-  })
-  const chartTitle = '192.168.65.239_UP'
+  const filteredDataIn = data.filter(item => item.deviceName === '192.168.65.239_UP_in')
+  const filteredDataOut = data.filter(item => item.deviceName === '192.168.65.239_UP_out')
+
+  const chartDataIn = filteredDataIn.map(item => item.Mbps)
+  const chartDataOut = filteredDataOut.map(item => item.Mbps)
+  const chartLabels = filteredDataIn.map(item => item.Period)
+
+  const chartTitleIn = '192.168.65.239_UP_in'
+  const chartTitleOut = '192.168.65.239_UP_out'
 
   const chartConfig = {
-    type: 'bar',
+    type: 'line',
     data: {
       labels: chartLabels,
-      datasets: [{
-        label: chartTitle,
-        data: chartData,
-        backgroundColor: chartColors,
-        borderColor: chartColors,
-        borderWidth: 1
-      }]
+      datasets: [
+        {
+          label: chartTitleIn,
+          data: chartDataIn,
+          borderColor: '#ADD8E6',
+          fill: false
+        },
+        {
+          label: chartTitleOut,
+          data: chartDataOut,
+          borderColor: '#90EE90',
+          fill: false
+        }
+      ]
     },
     options: {
       scales: {
+        xAxes: [{
+          type: 'time',
+          time: {
+            unit: 'minute'
+          }
+        }],
         yAxes: [{
           ticks: {
             beginAtZero: true,
-            min: 0,
-            max: 100,
-            stepSize: 20
+            stepSize: 500000000,
+            callback: function (value) {
+              return value / 1000000 + ' Mbps'
+            }
           }
         }]
       }
