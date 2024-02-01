@@ -1,5 +1,5 @@
 const { constants, adminStartButtons } = require('../modules/keyboard')
-const { netwareAdmin, netwareAdminPing, netwareAdminServiceCheck, netwareAdminDeadIPCheck } = require('./netwareAdmin')
+const { netwareAdmin, netwareAdminPing, netwareAdminServiceCheck, netwareAdminDeadIPCheck, nagios } = require('./netwareAdmin')
 const { clientsAdmin, sendInvoice, clientsAdminGetInfo, clientsAdminResponseToRequest,
   clientsAdminSwitchOnClient, clientsAdminGetInvoice,
   clientsAdminStopClientService, clientsAdminCheckHWService, clientsAdminRedirectedClientSwitchOn, clientsAdminGetArpMac } = require('./clientsAdmin')
@@ -99,6 +99,9 @@ async function handler(bot, msg, webAppUrl) {
       break
     case '5_15':
       await netwareAdminDeadIPCheck(bot, msg)
+      break
+    case '5_17':
+      await nagios(bot, msg)
       break
     case '5_13':
       await netwareAdmin(bot, msg)

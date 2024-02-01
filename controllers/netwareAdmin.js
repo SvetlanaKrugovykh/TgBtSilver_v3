@@ -3,7 +3,8 @@ const inputLineScene = require('./inputLine')
 const ping = require('ping')
 const sendReqToDB = require('../modules/tlg_to_DB')
 const { plot } = require('../services/plots')
-
+const axios = require('axios')
+require('dotenv').config()
 
 async function netwareAdmin(bot, msg) {
   await netwareAdminMenuStarter(bot, msg, netwareAdminButtons)
@@ -66,4 +67,25 @@ async function netwareAdminServiceCheck(bot, msg) {
   }
 }
 
-module.exports = { netwareAdmin, netwareAdminPing, netwareAdminServiceCheck, netwareAdminDeadIPCheck }
+async function nagios(bot, msg) {
+  try {
+    const chatId = msg.chat.id
+    const username = process.env.NAGIOS_USERNAME
+    const password = process.env.NAGIOS_PASSWORD
+    const NAGIOS_URL = process.env.NAGIOS_URL
+    const BUFFER_URL = process.env.BUFFER_URL
+    const res = await axios.post(BUFFER_URL, {
+      url: NAGIOS_URL,
+      login: username,
+      password: password
+    })
+    const imageBase64 = res.data.image
+    const imageBuffer = Buffer.from(imageBase64, 'base64')
+    await bot.sendPhoto(chatId, imageBuffer, { caption: 'ScreenShot' })
+
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+module.exports = { netwareAdmin, netwareAdminPing, netwareAdminServiceCheck, netwareAdminDeadIPCheck, nagios }
