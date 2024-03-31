@@ -47,6 +47,9 @@ const clientAdminStep2Buttons = {
       { text: 'STOP services for this client', callback_data: '3_13' }
     ],
     [
+      { text: 'Switch ON this client AFTER STOPPING', callback_data: '3_31' }
+    ],
+    [
       { text: 'Get INVOICE for this client', callback_data: '3_12' },
       { text: 'Send INVOICE by email', callback_data: '3_18' }
     ],

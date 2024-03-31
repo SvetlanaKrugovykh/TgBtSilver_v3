@@ -79,6 +79,15 @@ async function switchOn(bot, msg, txtCommand) {
   }
 }
 
+async function switchOnAfterStop(bot, msg, txtCommand) {
+  const response = await sendReqToDB('___SwitchOnAfterStop__', '', txtCommand)
+  if (response === null) {
+    await bot.sendMessage(msg.chat.id, `⛔️ ERROR Client is not switch On After Stopping`, { parse_mode: 'HTML' })
+  } else {
+    await bot.sendMessage(msg.chat.id, `🥎🥎 ${txtCommand} request sent\n`, { parse_mode: 'HTML' })
+  }
+}
+
 async function switchRedirectedClientOn(bot, msg, ip) {
   const response = await sendReqToDB('___SwitchRedirectedClientOn__', '', ip)
   if (response === null) {
@@ -239,6 +248,18 @@ async function clientsAdminSwitchOnClient(bot, msg) {
   await bot.sendMessage(msg.chat.id, '👋💙💛 Have a nice day!\n', { parse_mode: 'HTML' })
 }
 
+async function clientsAdminSwitchOnClientAfterStopping(bot, msg) {
+  if (codeRule.length < 3) {
+    await bot.sendMessage(msg.chat.id, 'Wrong codeRule. Операцію скасовано. Треба повторити пошук\n', { parse_mode: 'HTML' })
+    return null
+  }
+  const txtCommand = 'switchon#' + codeRule[msg.chat.id]
+  console.log(`Admin request for the switch on ${codeRule[msg.chat.id]}`)
+  await switchOnAfterStop(bot, msg, txtCommand)
+  await bot.sendMessage(msg.chat.id, '👋💙💛 Have a nice day!\n', { parse_mode: 'HTML' })
+}
+
+
 async function clientsAdminRedirectedClientSwitchOn(bot, msg) {
   try {
     const ip = IP_address[msg.chat.id].replace(/\s+/g, '')
@@ -342,7 +363,7 @@ async function sendInvoice(_bot, msg) {
 
 module.exports = {
   clientsAdmin, clientsAdminGetInfo, clientsAdminResponseToRequest,
-  clientsAdminSwitchOnClient, clientsAdminGetInvoice,
+  clientsAdminSwitchOnClient, clientsAdminSwitchOnClientAfterStopping, clientsAdminGetInvoice,
   clientsAdminStopClientService, clientsAdminCheckHWService, sendInvoice,
   clientsAdminRedirectedClientSwitchOn, clientsAdminGetArpMac
 }
