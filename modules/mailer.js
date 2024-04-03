@@ -1,4 +1,9 @@
 const nodemailer = require('nodemailer')
+const axios = require('axios')
+const FormData = require('form-data')
+const fs = require('fs')
+require('dotenv').config()
+
 const { MAILHOST, MAILPORT } = process.env
 
 async function sendMail(message, filename) {
@@ -33,4 +38,24 @@ async function sendMail(message, filename) {
 
 }
 
-module.exports = { sendMail }
+async function sendTelegram(tg_id, fileName) {
+  try {
+    const url = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendDocument`
+    const formData = new FormData()
+    formData.append('chat_id', tg_id)
+    formData.append('document', fs.createReadStream(fileName), {
+      filename: 'receipt.pdf',
+      contentType: 'application/pdf'
+    })
+
+    const response = await axios.post(url, formData, {
+      headers: formData.getHeaders()
+    })
+
+    console.log(response.data)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+module.exports = { sendMail, sendTelegram }

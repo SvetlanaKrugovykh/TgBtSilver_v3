@@ -8,7 +8,7 @@ const { TelnetParams } = require('../data/telnet.model')
 const { getReceipt } = require('../modules/getReceipt')
 const inputLineScene = require('./inputLine')
 const checkValue = require('../modules/common')
-const { sendMail } = require("../modules/mailer")
+const { sendMail, sendTelegram } = require("../modules/mailer")
 const { clientAdminStarterButtons, clientAdminStep2Buttons, clientAdminChoiceClientFromList } = require('../modules/keyboard')
 
 let telNumber = {}
@@ -333,19 +333,27 @@ async function clientsAdminCheckHWService(bot, msg, request) {
 }
 
 
-async function sendInvoice(_bot, msg) {
+async function sendInvoice(_bot, msg, recID = false) {
 
   try {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email[msg.chat.id])) {
-      console.log("Invalid email address:", email)
-      return
-    }
+    if (!fileName[msg.chat.id]) return
     if (fileName[msg.chat.id].length === 0) {
       console.log("Invalid fileName:", fileName)
       return
     }
 
+    if (recID) {
+      await _bot.sendMessage(msg.chat.id, 'Введіть ID клієнта\n', { parse_mode: 'HTML' })
+      const tg_id = await inputLineScene(_bot, msg)
+      sendTelegram(tg_id, fileName[msg.chat.id])
+      return
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email[msg.chat.id])) {
+      console.log("Invalid email address:", email)
+      return
+    }
     const message = {
       from: 'AbonOtdel@silver-service.com.ua',
       to: email[msg.chat.id],
