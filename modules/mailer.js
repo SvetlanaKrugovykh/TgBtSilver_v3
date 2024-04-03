@@ -53,6 +53,7 @@ async function sendTelegram(tg_id, fileName) {
     })
 
     console.log(response.data)
+    return true
   } catch (error) {
     console.error(error)
   }
