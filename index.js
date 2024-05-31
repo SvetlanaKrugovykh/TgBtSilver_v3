@@ -1,5 +1,10 @@
+//index.js
+const fs = require('fs')
+const path = require('path')
 const TelegramBot = require('node-telegram-bot-api')
-const express = require('express')
+const Fastify = require('fastify')
+const https = require('https')
+const authPlugin = require('./plagins/app.auth.plugin')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 require('dotenv').config()
@@ -15,10 +20,22 @@ const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN
 const webAppUrl = 'https://' + process.env.WEB_APP_URL
 
 const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: true })
-const app = express()
+const credentials = {
+  key: fs.readFileSync(path.resolve(__dirname, 'path/to/localhost.key')),
+  cert: fs.readFileSync(path.resolve(__dirname, 'path/to/localhost.pem'))
+}
 
-app.use(express.json())
-app.use(cors())
+const app_api = Fastify({
+  trustProxy: true,
+  https: credentials,
+  logger: {
+    level: 'debug',
+  },
+});
+
+const app = Fastify({
+  trustProxy: true
+})
 
 bot.on('message', async (msg) => {
 
@@ -71,6 +88,11 @@ bot.on('message', async (msg) => {
 
 app.post('/submit-form', formController.handleFormSubmit)
 
-const PORT = Number(process.env.PORT) || 7999
-app.listen(PORT, () => console.log('server started on PORT ' + PORT))
+app_api.register(authPlugin)
+app_api.register(require('./routes/auth.route'), { prefix: '/api' })
+app_api.register(require('./routes/dataExchange.route'), { prefix: '/api/v1' })
+
+
+module.exports = { app, app_api }
+
 

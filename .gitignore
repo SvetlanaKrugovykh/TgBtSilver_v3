@@ -1,6 +1,7 @@
 #Data security
 users/
 data/
+path
 
 # Logs
 logs

@@ -8,13 +8,12 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "runtimeExecutable": "nodemon", // Uncomment this line for Nodemon
+      "runtimeExecutable": "nodemon",
       "runtimeArgs": [
         "--inspect"
-      ], // Add this line for Node.js or Nodemon
-      "program": "${workspaceFolder}/index.js",
-      "restart": true, // Add this line for Nodemon
-      "console": "integratedTerminal" // Add this line for Nodemon
+      ],
+      "program": "${workspaceFolder}/server.js",
+      "restart": true
     }
   ]
 }
