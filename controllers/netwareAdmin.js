@@ -42,7 +42,8 @@ async function netwareAdminDeadIPCheck(bot, msg) {
     if (text.length < 28) {
       await bot.sendMessage(msg.chat.id, `🌟🌟🌟🌟🌟 Everything's good ✅ 👍 Absolutely 🆗.\n`, { parse_mode: 'HTML' })
     } else {
-      await bot.sendMessage(msg.chat.id, `🥎\n ${data.toString()}.\n`, { parse_mode: 'HTML' })
+      await bot.sendMessage(msg.chat.id, `🥎\n The problems are}.\n`, { parse_mode: 'HTML' })
+      await reportOfNEtProblems(bot, msg, data)
     }
   }
   catch (err) {
@@ -50,6 +51,29 @@ async function netwareAdminDeadIPCheck(bot, msg) {
   }
 }
 
+async function reportOfNEtProblems(bot, msg, data) {
+  const dataObj = JSON.parse(data)
+  const batches = Math.ceil(dataObj.ResponseArray.length / 10)
+
+  for (let i = 0; i < batches; i++) {
+    let message = ''
+    const start = i * 10
+    const end = start + 10
+    const batch = dataObj.ResponseArray.slice(start, end)
+
+    for (const item of batch) {
+      message += `IP Address: ${item.ip_address}\n`
+      message += `IP Description: ${item.ip_description}\n`
+      message += `Started At: ${item.StartedAt}\n`
+      message += `Duration Minutes: ${item.durationMinutes}\n`
+      message += `Value: ${item.value}\n`
+      message += `Response: ${item.response}\n`
+      message += '\n'
+    }
+
+    await bot.sendMessage(msg.chat.id, message, { parse_mode: 'HTML' })
+  }
+}
 
 async function netwareAdminServiceCheck(bot, msg) {
   try {
