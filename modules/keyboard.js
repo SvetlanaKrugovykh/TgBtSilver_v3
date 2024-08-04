@@ -34,6 +34,7 @@ const clientAdminStarterButtons = {
   buttons: [
     [{ text: 'Отримати інформацію про клієнта', callback_data: '3_1' }],
     [{ text: 'Надіслати відповідь на звернення', callback_data: '3_2' }],
+    [{ text: 'Віконати відключення (щомісячне 10-го числа)', callback_data: '3_4' }],
     [{ text: 'Return', callback_data: '3_3' }]
   ]
 }
