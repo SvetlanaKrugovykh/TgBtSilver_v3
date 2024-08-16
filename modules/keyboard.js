@@ -24,7 +24,8 @@ const adminStartButtons = {
   options: [{ resize_keyboard: true }],
   buttons: [
     [{ text: 'Clients support', callback_data: '2_1' }],
-    [{ text: 'Netware support', callback_data: '2_2' }]
+    [{ text: 'Netware support', callback_data: '2_2' }],
+    [{ text: 'Speech support', callback_data: '2_3' }]
   ]
 }
 

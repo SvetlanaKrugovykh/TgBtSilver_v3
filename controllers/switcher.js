@@ -4,9 +4,11 @@ const { clientsAdmin, sendInvoice, clientsAdminGetInfo, clientsAdminResponseToRe
   clientsAdminSwitchOnClient, clientsAdminSwitchOnClientAfterStopping, clientsAdminGetInvoice,
   clientsAdminStopClientService, clientsAdminCheckHWService, clientsAdminRedirectedClientSwitchOn, clientsAdminGetArpMac } = require('./clientsAdmin')
 const supportScene = require('./support')
+const speechScene = require('./speech')
 const receiptScene = require('./receipt')
 const paymentScene = require('./payments')
 const signUpForm = require('./signUp').signUpForm
+const handleVoiceMessage = require('./handleVoiceMessage')
 const regexIP = /^(\?|)\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(#|)$/
 
 function getCallbackData(text) {
@@ -23,10 +25,17 @@ function getCallbackData(text) {
   return null
 }
 
-
 async function handler(bot, msg, webAppUrl) {
+
+  if (msg.voice) {
+    console.log('The voice message is:', msg.voice)
+    await handleVoiceMessage(bot, msg?.chat?.id, msg)
+    return
+  }
+
   const data = getCallbackData(msg.text)
   console.log('The choise is:', data)
+
   switch (data) {
     case '0_1':
       await receiptScene(bot, msg, false)
@@ -51,6 +60,9 @@ async function handler(bot, msg, webAppUrl) {
       break
     case '2_2':
       await netwareAdmin(bot, msg)
+      break
+    case '2_3':
+      await speechScene(bot, msg)
       break
     case '3_1':
       await clientsAdminGetInfo(bot, msg)
