@@ -1,4 +1,5 @@
 const { constants, adminStartButtons } = require('../modules/keyboard')
+const { users } = require('../users/users.model')
 const { netwareAdmin, netwareAdminPing, netwareAdminServiceCheck, netwareAdminDeadIPCheck, nagios } = require('./netwareAdmin')
 const { clientsAdmin, sendInvoice, clientsAdminGetInfo, clientsAdminResponseToRequest, clientsAdminMonthlyOFF,
   clientsAdminSwitchOnClient, clientsAdminSwitchOnClientAfterStopping, clientsAdminGetInvoice,
@@ -28,8 +29,11 @@ function getCallbackData(text) {
 async function handler(bot, msg, webAppUrl) {
 
   if (msg.voice) {
-    console.log('The voice message is:', msg.voice)
-    await handleVoiceMessage(bot, msg?.chat?.id, msg)
+    const adminUser = users.find(user => user.id === msg.chat.id)
+    if (adminUser) {
+      console.log('The voice message is:', msg.voice)
+      await handleVoiceMessage(bot, msg?.chat?.id, msg)
+    }
     return
   }
 
