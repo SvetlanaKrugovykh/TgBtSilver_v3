@@ -19,7 +19,9 @@ async function detectLanguage(transcription) {
 
   if (langCode) {
     if (langCode === 'pol') {
-      direction = 'pl_en';
+      direction = 'pl_en'
+    } else if (langCode === 'eng') {
+      direction = 'en_uk'
     } else {
       direction = langCode.substring(0, 2) + '_en';
     }
