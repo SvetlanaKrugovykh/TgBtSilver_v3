@@ -20,6 +20,7 @@
 		"fastify": "^4.27.0",
 		"fastify-plugin": "^4.5.1",
 		"form-data": "^4.0.0",
+		"franc": "^6.2.0",
 		"ip-range-check": "^0.2.0",
 		"jsonwebtoken": "^9.0.2",
 		"node-telegram-bot-api": "^0.61.0",

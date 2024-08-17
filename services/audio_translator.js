@@ -1,10 +1,9 @@
 // src/services/audio_translator.js
-
 const axios = require('axios')
 const fs = require('fs')
 require('dotenv').config()
 
-module.exports.translateText = async function (transcription) {
+module.exports.translateText = async function (transcription, direction = 'en-ru') {
   try {
     const startTime = Date.now()
     const translatorUrl = process.env.TRANSLATOR_URL
@@ -12,7 +11,6 @@ module.exports.translateText = async function (transcription) {
     const clientId = process.env.CLIENT_ID
     const email = process.env.EMAIL
     const authorization = process.env.AUTHORIZATION_TRANSLATE
-    const direction = process.env.DIRECTION
 
     const data = {
       serviceId,

@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const axios = require('axios')
+const { detectLanguage } = require('../services/languageDetector.cjs')
 const { sendAudio } = require('../services/audio_sender')
 const { translateText } = require('../services/audio_translator')
 require('dotenv').config()
@@ -31,12 +32,12 @@ async function handleVoiceMessage(bot, chatId, voiceMsg) {
       fs.writeFileSync(tempFilePath, response.data)
       console.log(`Voice message saved to ${tempFilePath}`)
       await bot.sendMessage(chatId, 'Ваше голосове повідомлення збережено.', { parse_mode: 'HTML' })
-
       const segmentNumber = Math.floor(Math.random() * 99) + 1
       const transcription = await sendAudio(tempFilePath, segmentNumber)
       await bot.sendMessage(chatId, `Ваш текст: ${transcription}.`, { parse_mode: 'HTML' })
       console.log(`Transcription: ${transcription}`)
-      const LangBridgeTxt = await translateText(transcription)
+      const direction = await detectLanguage(transcription)
+      const LangBridgeTxt = await translateText(transcription, direction)
       await bot.sendMessage(chatId, `Ваш Переклад: ${LangBridgeTxt}.`, { parse_mode: 'HTML' })
       console.log(`Translated Text: ${LangBridgeTxt}`)
 
