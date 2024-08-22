@@ -5,7 +5,7 @@ const { clientsAdmin, sendInvoice, clientsAdminGetInfo, clientsAdminResponseToRe
   clientsAdminSwitchOnClient, clientsAdminSwitchOnClientAfterStopping, clientsAdminGetInvoice,
   clientsAdminStopClientService, clientsAdminCheckHWService, clientsAdminRedirectedClientSwitchOn, clientsAdminGetArpMac } = require('./clientsAdmin')
 const supportScene = require('./support')
-const speechScene = require('./speech')
+const contactScene = require('./contacts')
 const receiptScene = require('./receipt')
 const paymentScene = require('./payments')
 const signUpForm = require('./signUp').signUpForm
@@ -66,7 +66,7 @@ async function handler(bot, msg, webAppUrl) {
       await netwareAdmin(bot, msg)
       break
     case '2_3':
-      await speechScene(bot, msg)
+      await contactScene(bot, msg)
       break
     case '3_1':
       await clientsAdminGetInfo(bot, msg)

@@ -25,7 +25,7 @@ const adminStartButtons = {
   buttons: [
     [{ text: 'Clients support', callback_data: '2_1' }],
     [{ text: 'Netware support', callback_data: '2_2' }],
-    [{ text: 'Speech support', callback_data: '2_3' }]
+    [{ text: 'Contacts support', callback_data: '2_3' }]
   ]
 }
 
