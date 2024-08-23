@@ -1,8 +1,9 @@
 const { TelegramClient } = require('telegram')
 const { StringSession } = require('telegram/sessions')
+const { Api } = require('telegram/tl')
 require('dotenv').config()
-const inputLineScene = require('./inputLine')
 const sendReqToDB = require('../modules/tlg_to_DB')
+const inputLineScene = require('./inputLine')
 
 async function getArrayForSearchTelegramAccounts(bot, msg, txtCommand = '') {
   const response = await sendReqToDB('___SearchTelegramAccounts__', '', txtCommand)
@@ -14,31 +15,11 @@ async function getArrayForSearchTelegramAccounts(bot, msg, txtCommand = '') {
   }
 }
 
-async function getCodeFromUser(bot, msg) {
-  await bot.sendMessage(msg.chat.id, 'Введіть отриманий код підтвердження', { parse_mode: 'HTML' })
-  const inputLine = await inputLineScene(bot, msg)
-  console.log('Input code:', inputLine)
-
-  if (!inputLine || isNaN(Number(inputLine))) {
-    throw new Error('Received code is empty or not a valid number')
-  }
-
-  console.log('Parsed code:', inputLine)
+async function getCodeManually(bot, msg) {
+  await bot.sendMessage(msg.chat.id, `☂︎ Enter the code`, { parse_mode: 'HTML' })
+  let inputLine = await inputLineScene(bot, msg)
+  console.log('Received input line:', inputLine)
   return inputLine
-}
-
-async function handleAuthError(err, bot, msg, client) {
-  if (err.code === 420) {
-    console.error(`FloodWaitError: Please wait ${err.seconds} seconds before retrying.`)
-    await bot.sendMessage(msg.chat.id, `Too many attempts. Please wait ${err.seconds} seconds before trying again.`)
-  } else if (err.message.includes('PHONE_CODE_EXPIRED')) {
-    console.error('Phone code expired, requesting a new code.')
-    await bot.sendMessage(msg.chat.id, 'The phone code has expired. Requesting a new code...')
-    await client.sendCode(process.env.TG_NUMBER)
-  } else {
-    console.error('Error during authentication:', err.message)
-    await bot.sendMessage(msg.chat.id, `Error during authentication: ${err.message}`)
-  }
 }
 
 async function startTgClient(bot, msg) {
@@ -46,6 +27,7 @@ async function startTgClient(bot, msg) {
     const apiId = Number(process.env.TG_API_ID)
     const apiHash = process.env.TG_API_HASH
     const phoneNumber = process.env.TG_NUMBER
+    const tg_passwd = process.env.TG_PASSWD
 
     if (!phoneNumber) {
       throw new Error('TG_NUMBER is not defined in environment variables')
@@ -55,31 +37,26 @@ async function startTgClient(bot, msg) {
 
     try {
       await client.start({
-        phoneNumber: phoneNumber,
+        phoneNumber: async () => phoneNumber,
         phoneCode: async () => {
-          const code = await getCodeFromUser(bot, msg)
-          console.log('Received and entered code:', code)
+          let code
+          console.log("Automatic code retrieval failed. Please enter the code manually:")
+          code = await getCodeManually(bot, msg)
           return code
         },
-        onError: (err) => {
-          handleAuthError(err, bot, msg, client).catch(console.error)
-        },
+        password: async () => tg_passwd,
+        onError: (err) => console.log('Error:', err.message),
       })
-      console.log('Session string:', client.session.save())
+
+      console.log('You are now connected.')
+      console.log('Your session string:', client.session.save())
+      await client.sendMessage('me', { message: 'It works!' })
+      await bot.sendMessage(msg.chat.id, 'Successfully authenticated!')
+      return client
 
     } catch (err) {
       console.error('Error in startTgClient:', err.message)
-      if (attempts < maxAttempts) {
-        await bot.sendMessage(msg.chat.id, `Authentication failed. Please try again. Attempt ${attempts} of ${maxAttempts}`)
-      } else {
-        await bot.sendMessage(msg.chat.id, `Authentication failed after ${maxAttempts} attempts. Please try again later.`)
-      }
-    }
-
-    if (loginSuccess) {
-      return client
-    } else {
-      throw new Error('Failed to authenticate after several attempts')
+      await bot.sendMessage(msg.chat.id, `Authentication failed: ${err.message}`)
     }
 
   } catch (err) {
@@ -166,7 +143,6 @@ async function contactScene(bot, msg) {
 
   } catch (err) {
     console.error('Error in contactScene:', err)
-    // await bot.sendMessage(chatId, 'Сталася помилка при записі вашого голосового повідомлення. Спробуйте ще раз.')
   }
 }
 
