@@ -31,7 +31,8 @@ async function handleVoiceMessage(bot, chatId, voiceMsg) {
 
       fs.writeFileSync(tempFilePath, response.data)
       console.log(`Voice message saved to ${tempFilePath}`)
-      await bot.sendMessage(chatId, 'Ваше голосове повідомлення збережено.', { parse_mode: 'HTML' })
+      await bot.sendMessage(chatId, '🎙️ Ваше голосове повідомлення збережено.', { parse_mode: 'HTML' })
+      await bot.sendMessage(chatId, "🎙️ ")
       const segmentNumber = Math.floor(Math.random() * 99) + 1
       const transcription = await sendAudio(tempFilePath, segmentNumber)
       await bot.sendMessage(chatId, `Ваш текст: ${transcription}.`, { parse_mode: 'HTML' })
