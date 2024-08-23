@@ -1,9 +1,7 @@
 const { TelegramClient } = require('telegram')
 const { StringSession } = require('telegram/sessions')
-const { Api } = require('telegram/tl')
 require('dotenv').config()
 const sendReqToDB = require('../modules/tlg_to_DB')
-const inputLineScene = require('./inputLine')
 
 async function getArrayForSearchTelegramAccounts(bot, msg, txtCommand = '') {
   const response = await sendReqToDB('___SearchTelegramAccounts__', '', txtCommand)
@@ -13,13 +11,6 @@ async function getArrayForSearchTelegramAccounts(bot, msg, txtCommand = '') {
   } else {
     return response
   }
-}
-
-async function getCodeManually(bot, msg) {
-  await bot.sendMessage(msg.chat.id, `☂︎ Enter the code`, { parse_mode: 'HTML' })
-  let inputLine = await inputLineScene(bot, msg)
-  console.log('Received input line:', inputLine)
-  return inputLine
 }
 
 async function startTgClient(bot, msg) {
@@ -33,37 +24,30 @@ async function startTgClient(bot, msg) {
       throw new Error('TG_NUMBER is not defined in environment variables')
     }
 
-    const client = new TelegramClient(new StringSession(''), apiId, apiHash, { connectionRetries: 5 })
+    console.log('Loading interactive example...')
+    const client = new TelegramClient(stringSession, apiId, apiHash, {
+      connectionRetries: 5,
+    })
 
-    try {
-      await client.start({
-        phoneNumber: async () => phoneNumber,
-        phoneCode: async () => {
-          let code
-          console.log("Automatic code retrieval failed. Please enter the code manually:")
-          code = await getCodeManually(bot, msg)
-          return code
-        },
-        password: async () => tg_passwd,
-        onError: (err) => console.log('Error:', err.message),
-      })
+    await client.start({
+      phoneNumber: async () => phoneNumber,
+      phoneCode: async () => await input.text('Please enter the code you received: '),
+      password: async () => tg_passwd,
+      onError: (err) => console.log('Error:', err.message),
+    })
 
-      console.log('You are now connected.')
-      console.log('Your session string:', client.session.save())
-      await client.sendMessage('me', { message: 'It works!' })
-      await bot.sendMessage(msg.chat.id, 'Successfully authenticated!')
-      return client
-
-    } catch (err) {
-      console.error('Error in startTgClient:', err.message)
-      await bot.sendMessage(msg.chat.id, `Authentication failed: ${err.message}`)
-    }
+    console.log('You are now connected.')
+    console.log('Your session string:', client.session.save())
+    await client.sendMessage('me', { message: 'It works!' })
+    await bot.sendMessage(msg.chat.id, 'Successfully authenticated!')
+    return client
 
   } catch (err) {
     console.error('Error in startTgClient:', err.message)
-    bot.sendMessage(msg.chat.id, `An error occurred: ${err.message}`)
+    await bot.sendMessage(msg.chat.id, `Authentication failed: ${err.message}`)
   }
 }
+
 
 async function getContactDataFromTg(client, phone_number) {
   try {
@@ -131,7 +115,7 @@ async function contactScene(bot, msg) {
 
     for (const item of dataArray) {
       console.log(item)
-      const phone_number = '+380674407252' //item.phone_number
+      const phone_number = process.env.TG_NUMBER //item.phone_number
       const searchInfo = await getContactDataFromTg(tgClient, phone_number)
       if (searchInfo === null) {
         console.log('No contact data found')
