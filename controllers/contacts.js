@@ -1,7 +1,8 @@
-const { TelegramClient } = require('telegram')
+const { TelegramClient, Api } = require('telegram')
 const { StringSession } = require('telegram/sessions')
 require('dotenv').config()
 const sendReqToDB = require('../modules/tlg_to_DB')
+const input = require('input')
 
 async function getArrayForSearchTelegramAccounts(bot, msg, txtCommand = '') {
   const response = await sendReqToDB('___SearchTelegramAccounts__', '', txtCommand)
@@ -19,6 +20,7 @@ async function startTgClient(bot, msg) {
     const apiHash = process.env.TG_API_HASH
     const phoneNumber = process.env.TG_NUMBER
     const tg_passwd = process.env.TG_PASSWD
+    const stringSession = new StringSession('')
 
     if (!phoneNumber) {
       throw new Error('TG_NUMBER is not defined in environment variables')
@@ -49,53 +51,30 @@ async function startTgClient(bot, msg) {
 }
 
 
-async function getContactDataFromTg(client, phone_number) {
+async function getContactDataFromTg(tgClient, phone_number) {
   try {
-    const resolveResult = await client.invoke({
-      _: 'contacts.resolvePhone',
-      phone: phone_number,
-    })
+    const result = await tgClient.invoke(
+      new Api.contacts.ResolvePhone({
+        phone: phone_number,
+      })
+    );
+    console.log('Result:', result);
 
-    if (resolveResult && resolveResult.users && resolveResult.users.length > 0) {
-      const resolvedUser = resolveResult.users[0]
-      return {
-        id: resolvedUser.id,
-        first_name: resolvedUser.first_name,
-        last_name: resolvedUser.last_name,
-      }
+    if (result.users.length === 0) {
+      console.log('No users found');
+      return null;
     }
 
-    const importResult = await client.invoke({
-      _: 'contacts.importContacts',
-      contacts: [
-        {
-          _: 'inputPhoneContact',
-          client_id: 0,
-          phone: phone_number,
-          first_name: 'Imported',
-          last_name: 'Contact',
-        },
-      ],
-    })
-
-    console.log('Import Result:', importResult)
-
-    if (!importResult || !importResult.imported || importResult.imported.length === 0) {
-      console.log('No contacts imported')
-      return null
-    }
-
-    const importedUser = importResult.users[0]
-
+    const user = result.users[0];
     return {
-      id: importedUser.id,
-      first_name: importedUser.first_name,
-      last_name: importedUser.last_name,
-    }
+      id: user.id.value,
+      first_name: user.firstName,
+      last_name: user.lastName,
+    };
 
   } catch (error) {
-    console.error('Error in getContactDataFromTg:', error)
-    return null
+    console.error('Error in getContactDataFromTg:', error);
+    return null;
   }
 }
 
@@ -112,16 +91,31 @@ async function contactScene(bot, msg) {
     const dataArray = data.ResponseArray
 
     const tgClient = await startTgClient(bot, msg)
+    tgClient.connect()
+    console.log('Connected to Telegram  server')
 
     for (const item of dataArray) {
       console.log(item)
-      const phone_number = process.env.TG_NUMBER //item.phone_number
-      const searchInfo = await getContactDataFromTg(tgClient, phone_number)
+      const searchInfo = await getContactDataFromTg(tgClient, item.phoneNumber)
       if (searchInfo === null) {
         console.log('No contact data found')
         continue
       }
-      console.log(searchInfo)
+      console.log('Contact data:', searchInfo)
+      const user_data = {
+        id: searchInfo.id,
+        first_name: searchInfo.first_name,
+        last_name: searchInfo.last_name,
+        phone_number: item.phoneNumber,
+        email: item.email,
+        address: item.address,
+        contract: item.contract,
+        PIB: item.PIB,
+        password: '',
+      }
+
+      const signUpRezult = await sendReqToDB('___UserRegistration__', user_data, searchInfo.id)
+      console.log(signUpRezult)
       return
     }
 

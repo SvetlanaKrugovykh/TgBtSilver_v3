@@ -1,6 +1,5 @@
 const { TelegramClient } = require('telegram')
 const { StringSession } = require('telegram/sessions')
-require('dotenv').config()
 const input = require('input')
 const sendReqToDB = require('../modules/tlg_to_DB')
 
@@ -21,15 +20,18 @@ async function getArrayForSearchTelegramAccounts(txtCommand = '') {
 
 async function getContactDataFromTg(client, phone_number) {
   try {
-    const contacts = await client.getContacts()
+    const result = await client.invoke({
+      _: 'contacts.getContacts',
+      hash: 0,
+    });
 
-    const contact = contacts.find(c => c.phone === phone_number)
+    const contact = result.users.find(c => c.phone === phone_number);
     if (contact) {
       return {
         id: contact.id,
         first_name: contact.first_name,
         last_name: contact.last_name,
-      }
+      };
     }
 
     const importResult = await client.invoke({
@@ -43,23 +45,23 @@ async function getContactDataFromTg(client, phone_number) {
           last_name: 'Contact',
         },
       ],
-    })
+    });
 
     if (!importResult || !importResult.imported || importResult.imported.length === 0) {
-      console.log('No contacts imported')
-      return null
+      console.log('No contacts imported');
+      return null;
     }
 
-    const importedUser = importResult.users[0]
+    const importedUser = importResult.users[0];
     return {
       id: importedUser.id,
       first_name: importedUser.first_name,
       last_name: importedUser.last_name,
-    }
+    };
 
   } catch (error) {
-    console.error('Error in getContactDataFromTg:', error)
-    return null
+    console.error('Error in getContactDataFromTg:', error);
+    return null;
   }
 }
 
@@ -89,8 +91,16 @@ async function startTelegramClient() {
 
     console.log('You are now connected.')
     console.log('Your session string:', client.session.save())
-
     await client.sendMessage('me', { message: 'It works!' })
+    await client.connect()
+    console.log('Connected to Telegram  server')
+
+    const result = await client.invoke(
+      new Api.contacts.ResolvePhone({
+        phone: "+380674439567",
+      })
+    )
+    console.log(result)
 
     for (const item of dataArray) {
       console.log(item)
