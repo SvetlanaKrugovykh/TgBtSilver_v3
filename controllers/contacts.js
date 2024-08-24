@@ -100,6 +100,8 @@ async function contactScene(bot, msg) {
       const searchInfo = await getContactDataFromTg(tgClient, item.phoneNumber)
       if (searchInfo === null) {
         console.log(`No contact data found for: ${item.phoneNumber}`)
+        const noTelegram = await sendReqToDB('___noTelegram__', '', item.phoneNumber)
+        console.log(noTelegram)
         continue
       }
       console.log('Contact data:', searchInfo)

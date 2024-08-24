@@ -54,6 +54,8 @@ function objToString(reqType, data, text) {
       return (text)
     case '___SwitchRedirectedClientOn__':
       return (text)
+    case '___noTelegram__':
+      return (text)
     default:
       return (data.id + '#' + text)
   }
