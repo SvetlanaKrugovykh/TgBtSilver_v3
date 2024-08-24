@@ -57,24 +57,24 @@ async function getContactDataFromTg(tgClient, phone_number) {
       new Api.contacts.ResolvePhone({
         phone: phone_number,
       })
-    );
-    console.log('Result:', result);
+    )
 
     if (result.users.length === 0) {
-      console.log('No users found');
-      return null;
+      console.log(`No users found for: ${phone_number}`)
+      return null
     }
 
-    const user = result.users[0];
+    const user = result.users[0]
     return {
       id: user.id.value,
       first_name: user.firstName,
       last_name: user.lastName,
-    };
+      username: user.username,
+    }
 
   } catch (error) {
-    console.error('Error in getContactDataFromTg:', error);
-    return null;
+    console.error('Error in getContactDataFromTg:', error)
+    return null
   }
 }
 
@@ -98,25 +98,22 @@ async function contactScene(bot, msg) {
       console.log(item)
       const searchInfo = await getContactDataFromTg(tgClient, item.phoneNumber)
       if (searchInfo === null) {
-        console.log('No contact data found')
+        console.log(`No contact data found for: ${item.phoneNumber}`)
         continue
       }
       console.log('Contact data:', searchInfo)
       const user_data = {
         id: searchInfo.id,
-        first_name: searchInfo.first_name,
-        last_name: searchInfo.last_name,
-        phone_number: item.phoneNumber,
+        password: searchInfo.first_name + " " + searchInfo.last_name,
+        PIB: searchInfo.username,
+        phoneNumber: item.phoneNumber,
         email: item.email,
         address: item.address,
         contract: item.contract,
-        PIB: item.PIB,
-        password: '',
       }
 
       const signUpRezult = await sendReqToDB('___UserRegistration__', user_data, searchInfo.id)
       console.log(signUpRezult)
-      return
     }
 
   } catch (err) {
