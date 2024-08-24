@@ -20,7 +20,8 @@ async function startTgClient(bot, msg) {
     const apiHash = process.env.TG_API_HASH
     const phoneNumber = process.env.TG_NUMBER
     const tg_passwd = process.env.TG_PASSWD
-    const stringSession = new StringSession('')
+    const sessionString = process.env.TG_SESSION_STRING || ''
+    const stringSession = new StringSession(sessionString)
 
     if (!phoneNumber) {
       throw new Error('TG_NUMBER is not defined in environment variables')
