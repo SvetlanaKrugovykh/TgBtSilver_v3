@@ -5,8 +5,38 @@ module.exports = (fastify, _opts, done) => {
 
   fastify.route({
     method: 'POST',
-    url: '/callback/',
-    handler: callbackController.getCallback,
+    url: '/kf/',
+    handler: callbackController.getCallback('kf'),
+    preHandler: [
+      isAuthorizedGuard
+    ],
+    schema: dataExchangeSchema
+  })
+
+  fastify.route({
+    method: 'POST',
+    url: '/lev/',
+    handler: callbackController.getCallback('lev'),
+    preHandler: [
+      isAuthorizedGuard
+    ],
+    schema: dataExchangeSchema
+  })
+
+  fastify.route({
+    method: 'POST',
+    url: '/pf/',
+    handler: callbackController.getCallback('pf'),
+    preHandler: [
+      isAuthorizedGuard
+    ],
+    schema: dataExchangeSchema
+  })
+
+  fastify.route({
+    method: 'POST',
+    url: '/si/',
+    handler: callbackController.getCallback('si'),
     preHandler: [
       isAuthorizedGuard
     ],

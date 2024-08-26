@@ -92,7 +92,7 @@ app.post('/submit-form', formController.handleFormSubmit)
 app_api.register(authPlugin)
 app_api.register(require('./routes/auth.route'), { prefix: '/api' })
 app_api.register(require('./routes/dataExchange.route'), { prefix: '/api/v1' })
-app_api.register(require('./routes/callback.route'), { prefix: '/api/callback' })
+app_api.register(require('./routes/callback.route'), { prefix: '/api/liqpay/callback' })
 
 
 module.exports = { app, app_api }

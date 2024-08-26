@@ -1,40 +1,40 @@
 require('dotenv').config()
 
 const liqpayKeys = {
-  org1: {
-    publicKey: process.env.LIQPAY_PUBLIC_KEY_ORG1,
-    privateKey: process.env.LIQPAY_PRIVATE_KEY_ORG1,
+  kf: {
+    publicKey: process.env.LIQPAY_PUBLIC_KEY_KF,
+    privateKey: process.env.LIQPAY_PRIVATE_KEY_KF,
   },
-  org2: {
-    publicKey: process.env.LIQPAY_PUBLIC_KEY_ORG2,
-    privateKey: process.env.LIQPAY_PRIVATE_KEY_ORG2,
+  lev: {
+    publicKey: process.env.LIQPAY_PUBLIC_KEY_LEV,
+    privateKey: process.env.LIQPAY_PRIVATE_KEY_LEV,
   },
-  org3: {
-    publicKey: process.env.LIQPAY_PUBLIC_KEY_ORG3,
-    privateKey: process.env.LIQPAY_PRIVATE_KEY_ORG3,
+  pf: {
+    publicKey: process.env.LIQPAY_PUBLIC_KEY_PF,
+    privateKey: process.env.LIQPAY_PRIVATE_KEY_PF,
   },
-  org4: {
-    publicKey: process.env.LIQPAY_PUBLIC_KEY_ORG4,
-    privateKey: process.env.LIQPAY_PRIVATE_KEY_ORG4,
+  si: {
+    publicKey: process.env.LIQPAY_PUBLIC_KEY_SI,
+    privateKey: process.env.LIQPAY_PRIVATE_KEY_SI,
   },
 }
 
 const testLiqpayKeys = {
-  org1: {
-    publicKey: process.env.TEST_LIQPAY_PUBLIC_KEY_ORG1,
-    privateKey: process.env.TEST_LIQPAY_PRIVATE_KEY_ORG1,
+  kf: {
+    publicKey: process.env.TEST_LIQPAY_PUBLIC_KEY_KF,
+    privateKey: process.env.TEST_LIQPAY_PRIVATE_KEY_KF,
   },
-  org2: {
-    publicKey: process.env.TEST_LIQPAY_PUBLIC_KEY_ORG2,
-    privateKey: process.env.TEST_LIQPAY_PRIVATE_KEY_ORG2,
+  lev: {
+    publicKey: process.env.TEST_LIQPAY_PUBLIC_KEY_LEV,
+    privateKey: process.env.TEST_LIQPAY_PRIVATE_KEY_LEV,
   },
-  org3: {
-    publicKey: process.env.TEST_LIQPAY_PUBLIC_KEY_ORG3,
-    privateKey: process.env.TEST_LIQPAY_PRIVATE_KEY_ORG3,
+  pf: {
+    publicKey: process.env.TEST_LIQPAY_PUBLIC_KEY_PF,
+    privateKey: process.env.TEST_LIQPAY_PRIVATE_KEY_PF,
   },
-  org4: {
-    publicKey: process.env.TEST_LIQPAY_PUBLIC_KEY_ORG4,
-    privateKey: process.env.TEST_LIQPAY_PRIVATE_KEY_ORG4,
+  si: {
+    publicKey: process.env.TEST_LIQPAY_PUBLIC_KEY_SI,
+    privateKey: process.env.TEST_LIQPAY_PRIVATE_KEY_SI,
   },
 }
 
