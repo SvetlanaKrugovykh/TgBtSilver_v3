@@ -27,6 +27,7 @@ const tableQueries = {
       organization_id INTEGER REFERENCES organizations(id) ON DELETE CASCADE,
       contract_name VARCHAR,
       payment_code VARCHAR, 
+      tg_id VARCHAR,
       payment_number INTEGER, 
       phone_number VARCHAR, 
       email VARCHAR, -- email
