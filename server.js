@@ -1,5 +1,9 @@
 // server.js
 require('dotenv').config()
+const updateTables = require('./db/tablesUpdate').updateTables
+
+updateTables()
+
 const { app, app_api } = require('./index')
 const HOST = process.env.HOST || '127.0.0.1'
 const PORT = Number(process.env.PORT) || 7173
