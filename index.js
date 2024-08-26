@@ -6,6 +6,7 @@ const Fastify = require('fastify')
 const https = require('https')
 const authPlugin = require('./plagins/app.auth.plugin')
 const bodyParser = require('body-parser')
+const { globalBuffer } = require('./globalBuffer')
 const cors = require('cors')
 require('dotenv').config()
 
@@ -91,6 +92,7 @@ app.post('/submit-form', formController.handleFormSubmit)
 app_api.register(authPlugin)
 app_api.register(require('./routes/auth.route'), { prefix: '/api' })
 app_api.register(require('./routes/dataExchange.route'), { prefix: '/api/v1' })
+app_api.register(require('./routes/callback.route'), { prefix: '/api/callback' })
 
 
 module.exports = { app, app_api }
