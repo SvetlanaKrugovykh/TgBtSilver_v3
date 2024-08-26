@@ -11,9 +11,28 @@ const pool = new Pool({
   port: process.env.PAY_DB_PORT,
 })
 
-const tableNames = ['payments', 'contracts', 'organizations'];
+const tableNames = ['organizations', 'contracts', 'payments']
 
 const tableQueries = {
+  'organizations': `
+    CREATE TABLE organizations (
+      id SERIAL PRIMARY KEY,
+      organization_name VARCHAR,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`,
+  'contracts': `
+    CREATE TABLE contracts (
+      id SERIAL PRIMARY KEY,
+      organization_id INTEGER REFERENCES organizations(id) ON DELETE CASCADE,
+      contract_name VARCHAR,
+      payment_code VARCHAR, 
+      payment_number INTEGER, 
+      phone_number VARCHAR, 
+      email VARCHAR, -- email
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`,
   'payments': `
     CREATE TABLE payments (
       id SERIAL PRIMARY KEY,
@@ -30,34 +49,25 @@ const tableQueries = {
       pay_success_time TIMESTAMP, 
       pay_failure_time TIMESTAMP, 
       pay_callback_received_time TIMESTAMP 
-    )`,
-
-  'contracts': `
-    CREATE TABLE contracts (
-      id SERIAL PRIMARY KEY,
-      organization_id INTEGER REFERENCES organizations(id) ON DELETE CASCADE,
-      contract_name VARCHAR,
-      payment_code VARCHAR, 
-      payment_number INTEGER, 
-      phone_number VARCHAR, 
-      email VARCHAR, -- email
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )`,
-
-  'organizations': `
-    CREATE TABLE organizations (
-      id SERIAL PRIMARY KEY,
-      organization_name VARCHAR,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )`
-};
-
+}
 
 
 module.exports.updateTables = function () {
-  const promises = tableNames.map(tableName => new Promise((resolve, reject) => {
+  checkAndCreateTable('organizations')
+    .then(() => checkAndCreateTable('contracts'))
+    .then(() => checkAndCreateTable('payments'))
+    .then(() => {
+      console.log('All tables created or already exist.')
+    })
+    .catch((err) => {
+      console.error('Error in table creation sequence:', err)
+    })
+}
+
+
+function checkAndCreateTable(tableName) {
+  return new Promise((resolve, reject) => {
     pool.query(
       `SELECT EXISTS (
         SELECT FROM information_schema.tables
@@ -79,13 +89,10 @@ module.exports.updateTables = function () {
         }
       }
     )
-  }))
-
-  Promise.all(promises).then(() => pool.end()).catch(err => {
-    console.error('Error updating tables:', err)
-    pool.end()
   })
 }
+
+
 
 function createTable(tableName) {
   return new Promise((resolve, reject) => {
