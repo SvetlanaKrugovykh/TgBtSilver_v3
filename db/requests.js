@@ -22,8 +22,8 @@ async function insertContract(organization_id, data) {
 
 async function insertPayment(contractId, organizationId, amount, currency, description, orderId) {
   const query = `
-    INSERT INTO payments (contract_id, organization_id, amount, currency, description, order_id)
-    VALUES ($1, $2, $3, $4, $5, $6)
+    INSERT INTO payments (contract_id, organization_id, amount, currency, description, order_id, pay_status)
+    VALUES ($1, $2, $3, $4, $5, $6, 'pending')
     RETURNING id
   `
   const values = [contractId, organizationId, amount, currency, description, orderId]
@@ -58,14 +58,14 @@ module.exports.getOrgByAbbreviation = async function (abbreviation) {
 
 module.exports.getContractByTgID = async function (TgID) {
   const query = `
-    SELECT *
+    SELECT contracts.*, organizations.organization_abbreviation
     FROM contracts
-    WHERE tg_id = $1
+    JOIN organizations ON contracts.organization_id = organizations.id
+    WHERE contracts.tg_id = $1
   `
   const values = [TgID]
   return execPgQuery(query, values)
 }
-
 
 module.exports.getPaymentByOrderId = async function (orderId) {
   const query = `
@@ -87,8 +87,8 @@ module.exports.createContract = async function (organization_id, data) {
   console.log('Created organization and contract:', organization_id, contract)
 }
 
-module.exports.createPayment = async function () {
-  const payment = await insertPayment(1, 1, 1000.00, 'UAH', 'Payment for services', 'ORDER123')
+module.exports.createPayment = async function (contractId, organizationId, amount, currency, description, orderId) {
+  const payment = await insertPayment(contractId, organizationId, amount, currency, description, orderId)
   console.log('Created payment:', payment)
 }
 

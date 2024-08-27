@@ -38,8 +38,11 @@ const testLiqpayKeys = {
   },
 }
 
-function getLiqpayKeys(orgId) {
-  return liqpayKeys[orgId] || null
+function getLiqpayKeys(abbreviation) {
+  if (process.env.LIQPAY_ENV === 'Test') {
+    return testLiqpayKeys[abbreviation] || null
+  }
+  return liqpayKeys[abbreviation] || null
 }
 
-module.exports = { liqpayKeys, testLiqpayKeys, getLiqpayKeys }
+module.exports = { getLiqpayKeys }

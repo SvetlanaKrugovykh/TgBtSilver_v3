@@ -1,67 +1,70 @@
-const sendReqToDB = require('../modules/tlg_to_DB')
-const inputLineScene = require('./inputLine')
-const fs = require('fs')
-const GROUP_ID = process.env.GROUP_ID
+const dbRequests = require('../db/requests')
 require('dotenv').config()
+const crypto = require('crypto')
+const inputLineScene = require('./inputLine')
+const getLiqpayKeys = require('../globalBuffer').getLiqpayKeys
+
 
 async function paymentScene(bot, msg) {
   try {
     const chatId = msg.chat.id
-    await bot.sendMessage(chatId, "Введіть <i>суму оплати в грн без копійок, наприклад введення суми 100 означає 100 гривень </i>, \n", { parse_mode: "HTML" })
+    const currency = 'UAH'
+    const contract = await dbRequests.getContractByTgID(chatId)
+    console.log(contract)
+
+    if (!contract?.organization_abbreviation) {
+      console.log('No contract found')
+      await bot.sendMessage(chatId, '⚠️Ваш договір не знайдено в системі!\n Зверніться до служби підтримки за допомогою', { parse_mode: "HTML" })
+      return
+    }
+
+    const abbreviation = contract.organization_abbreviation
+    const liqpayKeys = getLiqpayKeys(abbreviation)
+    const { publicKey, privateKey } = liqpayKeys
+
+    if (liqpayKeys) {
+      console.log(`LiqPay Public Key: ${publicKey}`)
+    } else {
+      console.log(`No LiqPay keys found for abbreviation: ${abbreviation}`)
+      await bot.sendMessage(chatId, '⚠️Сталася помилка при завантаженні ключів доступу до LiqPay ', { parse_mode: "HTML" })
+      return
+    }
+
+
+    await bot.sendMessage(chatId, "Введіть <i>суму оплати в грн без копійок, наприклад введення суми 200 означає 200 гривень </i>, \n", { parse_mode: "HTML" })
     let userInput = await inputLineScene(bot, msg)
     let amount = userInput.replace(/[^0-9]/g, "")
     if (amount.length === 0) {
       await bot.sendMessage(chatId, "Ви не ввели суму оплати, спробуйте ще раз")
       return
     }
-    const jsonString = await sendReqToDB('__GetClientPersData__', msg.chat, `payment_${chatId}`)
-    const data = JSON.parse(jsonString);
-    const response = JSON.parse(data.ResponseArray[0]);
-    const email = response.email;
-    const phoneNumber = response.PhoneNumber;
-    const filePath = process.env.PATH_FOR_PAYMENTS + chatId + '.html'
 
-    const json_string = {
-      "public_key": process.env.LIQPAY_PUBLIC_KEY,
-      "version": "3",
-      "action": "pay",
-      "amount": amount,
-      "currency": "UAH",
-      "description": email + " " + phoneNumber,
-      "order_id": chatId + "_" + Date.now(),
-      "result_url": "http://silver-service.com.ua/",
-      "server_url": "http://silver-service.com.ua:8000/payment/finish"
-    }
-    const data_string = Buffer.from(JSON.stringify(json_string)).toString('base64')
-    const sign_string = process.env.LIQPAY_PRIVATE_KEY + data_string + process.env.LIQPAY_PRIVATE_KEY
-    const signature = Buffer.from(sign_string).toString('base64')
-    const html = `<form method="POST" action="https://www.liqpay.ua/api/3/checkout" accept-charset="utf-8">
-    <input type="hidden" name="data" value="${data_string}"/>
-    <input type="hidden" name="signature" value="${signature}"/>
-    <input type="image" src="//static.liqpay.ua/buttons/p1ru.radius.png"/>
-    </form>`
-    fs.writeFile(filePath, html, function (error) {
-      if (error) {
-        console.error('File saving error:', error);
-      } else {
-        console.log('File saved succesfully.');
-      }
-    })
+    const description = `Оплата за послугу. Код оплати: ${contract.payment_code}`
+    const callBackUrl = process.env.LIQPAY_CALLBACK_URL
+    console.log(`Web App URL: ${callBackUrl} | ${description} | ${amount} | ${currency}`)
+    const data = Buffer.from(JSON.stringify({
+      version: '3',
+      public_key: publicKey,
+      action: 'pay',
+      amount: amount,
+      currency: currency,
+      description: description,
+      order_id: `order_${Date.now()}`,
+      server_url: `${callBackUrl}/liqpay/callback`,
+    })).toString('base64')
 
-    const options = {
-      reply_markup: {
-        inline_keyboard: [[{
-          text: 'Перейти по ссылке',
-          url: 'http://silver-service.com.ua/payments/5887602942.html'
-        }]]
-      }
-    }
-    bot.sendMessage(chatId, '⚠️Натисність кнопку, щоб перейти за посиланням', options)
+    const signature = crypto.createHash('sha1')
+      .update(privateKey + data + privateKey)
+      .digest('base64')
 
-    sendReqToDB('__SaveTlgMsg__', msg.chat, `payment_${chatId}`)
-    await bot.sendMessage(chatId, '⚠️Наразі опція оплати послуг знаходиться в стані розробки. Дякуємо за те, що користуєтесь нашими послугами!')
+    const paymentLink = `https://www.liqpay.ua/api/3/checkout?data=${encodeURIComponent(data)}&signature=${encodeURIComponent(signature)}`
+    console.log(paymentLink)
 
-    // await bot.sendMessage(GROUP_ID, `Проведено оплату від клієнта. ${JSON.stringify(data)},chatId=${chatId}  \n`, { parse_mode: "HTML" })
+
+    const payment = await dbRequests.createPayment(contract.id, contract.organization_id, amount, currency, description, `order_${Date.now()}`)
+
+    bot.sendMessage(chatId, `Задля оплати, будь ласка, перейдіть за посиланням: ${paymentLink}`)
+
   } catch (err) {
     console.log(err)
   }
