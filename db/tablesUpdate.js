@@ -18,6 +18,8 @@ const tableQueries = {
     CREATE TABLE organizations (
       id SERIAL PRIMARY KEY,
       organization_name VARCHAR,
+      organization_code VARCHAR,
+      organization_abbreviation VARCHAR,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )`,
@@ -27,7 +29,7 @@ const tableQueries = {
       organization_id INTEGER REFERENCES organizations(id) ON DELETE CASCADE,
       contract_name VARCHAR,
       payment_code VARCHAR, 
-      tg_id VARCHAR,
+      tg_id BIGINT,
       payment_number INTEGER, 
       phone_number VARCHAR, 
       email VARCHAR, -- email

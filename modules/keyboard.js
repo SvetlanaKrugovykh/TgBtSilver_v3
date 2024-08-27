@@ -77,8 +77,9 @@ const netwareAdminButtons = {
   buttons: [
     [{ text: 'Ping the device', callback_data: '5_11' }],
     [{ text: 'Check troubles for now', callback_data: '5_15' }],
-    [{ text: 'Check service load', callback_data: '5_12' }],
-    [{ text: 'Check nagios', callback_data: '5_17' }],
+    //    [{ text: 'Check service load', callback_data: '5_12' }],
+    //    [{ text: 'Check nagios', callback_data: '5_17' }],
+    [{ text: 'Load DataBase', callback_data: '5_24' }],
     [{ text: 'Return', callback_data: '5_13' }]
   ]
 }
