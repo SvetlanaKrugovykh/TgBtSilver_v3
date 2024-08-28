@@ -46,6 +46,8 @@ function objToString(reqType, data, text) {
       return (data.id + '#' + data.first_name + '#' + data.last_name + '#' + data.username)
     case '___UserRegistration__':
       return (text + '#' + data?.email + '#' + data?.phoneNumber + '#' + data?.password + '#' + data?.PIB + '#' + data?.contract + '#' + data?.address + '#' + text)
+    case '___GetTgUserData__':
+      return (text + '#' + data?.organization_id + '#' + data?.contract_name + '#' + data?.payment_code + '#' + data?.tg_id + '#' + data?.phone_number + '#' + data?.email + '#' + text)
     case '__GetClientsInfo__':
       return (text);
     case '__GetDeadIP__  ':
