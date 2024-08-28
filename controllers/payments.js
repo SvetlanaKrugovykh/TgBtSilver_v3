@@ -80,8 +80,6 @@ async function paymentScene(bot, msg) {
     const payment = await dbRequests.createPayment(contract.id, contract.organization_id, amount, currency, description, `order_${Date.now()}`)
     console.log(payment)
 
-    // bot.sendMessage(chatId, `Задля оплати, будь ласка, перейдіть за посиланням: ${paymentLink}`)
-
     const markdownLink = `[Задля оплати, будь ласка, перейдіть за посиланням](${paymentLink})`
     bot.sendMessage(chatId, markdownLink, { parse_mode: 'Markdown' })
 
