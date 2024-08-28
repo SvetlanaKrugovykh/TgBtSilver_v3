@@ -68,8 +68,9 @@ async function updatePaymentStatus(order_id, status, paymentData, successTime = 
         receiver_commission = $14,
         sender_commission = $15,
         is_3ds = $16,
-        transaction_id = $17
-    WHERE order_id = $18
+        transaction_id = $17,
+        pay_data = $18
+    WHERE order_id = $19
     RETURNING id
   `
 
@@ -91,6 +92,7 @@ async function updatePaymentStatus(order_id, status, paymentData, successTime = 
     parseFloat(sender_commission),
     Boolean(is_3ds),
     transaction_id,
+    JSON.stringify(paymentData),
     order_id
   ]
 
