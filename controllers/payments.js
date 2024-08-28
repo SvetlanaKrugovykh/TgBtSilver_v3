@@ -48,7 +48,7 @@ async function paymentScene(bot, msg) {
     }
 
 
-    await bot.sendMessage(chatId, "Введіть <i>суму оплати в грн без копійок, наприклад введення суми 200 означає 200 гривень </i>\n⚠️Увага, до суми платежа додається комісія 1,5% від суми платежу!\n", { parse_mode: "HTML" })
+    await bot.sendMessage(chatId, "Введіть <i>суму оплати в грн без копійок, наприклад введення суми 200 означає 200 гривень </i>\n⚠️Увага, до суми платежу додається комісія! \n⚠️ Комісія становить 1,5% від суми платежу!\n", { parse_mode: "HTML" })
     let userInput = await inputLineScene(bot, msg)
     let amount = userInput.replace(/[^0-9]/g, "")
     if (amount.length === 0) {
