@@ -51,7 +51,21 @@ const tableQueries = {
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       pay_success_time TIMESTAMP, 
       pay_failure_time TIMESTAMP, 
-      pay_callback_received_time TIMESTAMP 
+      pay_callback_received_time TIMESTAMP,
+      payment_id VARCHAR,
+      liqpay_order_id VARCHAR,
+      paytype VARCHAR,
+      sender_card_mask2 VARCHAR,
+      sender_card_bank VARCHAR,
+      sender_card_type VARCHAR,
+      sender_card_country VARCHAR,
+      ip VARCHAR(15),
+      sender_first_name VARCHAR,
+      sender_last_name VARCHAR,
+      receiver_commission DECIMAL(10, 2),
+      sender_commission DECIMAL(10, 2),
+      is_3ds BOOLEAN,
+      transaction_id  VARCHAR
     )`
 }
 

@@ -1,10 +1,7 @@
 module.exports = {
-  description: 'Callback liqpay string',
+  description: 'LiqPay Callback Endpoint',
   tags: ['callback'],
-  summary: 'Callback liqpay string',
-  headers: {
-    type: 'object',
-  },
+  summary: 'Handle LiqPay callback with payment details and signature',
   body: {
     type: 'object',
     properties: {
@@ -14,15 +11,24 @@ module.exports = {
     required: ['data', 'signature']
   },
   response: {
-    201: {
+    200: {
       description: 'Successful response',
       type: 'object',
       properties: {
         success: { type: 'boolean' }
       }
     },
+    400: {
+      description: 'Bad Request',
+      type: 'object',
+      properties: {
+        statusCode: { type: 'integer' },
+        error: { type: 'string' },
+        message: { type: 'string' }
+      }
+    },
     500: {
-      description: 'Internal server error',
+      description: 'Internal Server Error',
       type: 'object',
       properties: {
         statusCode: { type: 'integer' },
@@ -30,5 +36,6 @@ module.exports = {
         message: { type: 'string' }
       }
     }
-  }
+  },
+  consumes: ['application/x-www-form-urlencoded']
 }

@@ -56,7 +56,9 @@ async function paymentScene(bot, msg) {
 
     const description = `Оплата за послугу. Код оплати: ${contract.payment_code}. Сума оплати: ${amount} грн.`
     const callBackUrl = process.env.LIQPAY_CALLBACK_URL
-    console.log(`Web App URL: ${callBackUrl} | ${description} | ${amount} | ${currency}`)
+    const URL_MDL = process.env.URL_MDL || ''
+    const server_callback_url = `${callBackUrl}${URL_MDL}${abbreviation}/`
+    console.log(`Payment Request: ${server_callback_url} | ${description} | ${amount} | ${currency}`)
     const data = Buffer.from(JSON.stringify({
       version: '3',
       public_key: publicKey,
@@ -65,7 +67,7 @@ async function paymentScene(bot, msg) {
       currency: currency,
       description: description,
       order_id: `order_${Date.now()}`,
-      server_url: `${callBackUrl}${abbreviation}/`,
+      server_url: server_callback_url,
     })).toString('base64')
 
     const signature = crypto.createHash('sha1')

@@ -1,4 +1,5 @@
 const { execPgQuery } = require('../db/common')
+const sendReqToDB = require('../modules/tlg_to_DB')
 
 async function insertOrganization(data) {
   const query = `
@@ -30,21 +31,88 @@ async function insertPayment(contractId, organizationId, amount, currency, descr
   return execPgQuery(query, values)
 }
 
-async function updatePaymentStatus(orderId, status, payData, successTime = null, failureTime = null) {
+async function updatePaymentStatus(order_id, status, paymentData, successTime = null, failureTime = null) {
+  const {
+    payment_id = null,
+    liqpay_order_id = null,
+    paytype = null,
+    sender_card_mask2 = null,
+    sender_card_bank = null,
+    sender_card_type = null,
+    sender_card_country = null,
+    ip = null,
+    sender_first_name = null,
+    sender_last_name = null,
+    receiver_commission = 0,
+    sender_commission = 0,
+    is_3ds = false,
+    transaction_id = null
+  } = paymentData
+
   const query = `
     UPDATE payments
     SET pay_status = $1,
-        pay_data = $2,
-        pay_success_time = $3,
-        pay_failure_time = $4,
-        updated_at = CURRENT_TIMESTAMP
-    WHERE order_id = $5
+        pay_success_time = $2,
+        pay_failure_time = $3,
+        updated_at = CURRENT_TIMESTAMP,
+        payment_id = $4,
+        liqpay_order_id = $5,
+        paytype = $6,
+        sender_card_mask2 = $7,
+        sender_card_bank = $8,
+        sender_card_type = $9,
+        sender_card_country = $10,
+        ip = $11,
+        sender_first_name = $12,
+        sender_last_name = $13,
+        receiver_commission = $14,
+        sender_commission = $15,
+        is_3ds = $16,
+        transaction_id = $17
+    WHERE order_id = $18
     RETURNING id
   `
-  const values = [status, payData, successTime, failureTime, orderId]
-  return execPgQuery(query, values)
+
+  const values = [
+    status,
+    successTime,
+    failureTime,
+    payment_id,
+    liqpay_order_id,
+    paytype,
+    sender_card_mask2,
+    sender_card_bank,
+    sender_card_type,
+    sender_card_country,
+    ip,
+    sender_first_name,
+    sender_last_name,
+    parseFloat(receiver_commission),
+    parseFloat(sender_commission),
+    Boolean(is_3ds),
+    transaction_id,
+    order_id
+  ]
+
+  try {
+    const result = await execPgQuery(query, values)
+    console.log('Update result:', result)
+    return result
+  } catch (error) {
+    console.error('Error updating payment status:', error)
+    return null
+  }
 }
 
+async function sendPaymentDataToClient(paymentData, status) {
+  const response = await sendReqToDB('___SendPaymentData__', paymentData, status)
+  if (response === null) {
+    return null
+  } else {
+    return response
+  }
+
+}
 
 module.exports.getOrgByAbbreviation = async function (abbreviation) {
   const query = `
@@ -93,14 +161,17 @@ module.exports.createPayment = async function (contractId, organizationId, amoun
 }
 
 module.exports.updatePayment = async function (paymentData) {
-  const { orderId, status, liqpayData } = paymentData
+  const { order_id, status } = paymentData
+
   let payment = null
   if (status === 'success') {
-    payment = await updatePaymentStatus(orderId, status, liqpayData, new Date())
+    payment = await updatePaymentStatus(order_id, status, paymentData, new Date())
+    await sendPaymentDataToClient(paymentData, status)
   } else if (status === 'failure') {
-    payment = updatePaymentStatus(orderId, status, liqpayData, null, new Date())
+    payment = updatePaymentStatus(order_id, status, paymentData, null, new Date())
   }
   console.log('Updated payment:', payment)
+  await sendPaymentDataToClient(paymentData, status)
   return payment
 }
 

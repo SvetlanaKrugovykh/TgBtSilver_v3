@@ -4,37 +4,38 @@ const dbRequests = require('../db/requests')
 const getLiqpayKeys = require('../globalBuffer').getLiqpayKeys
 
 module.exports.getCallback = function (abbreviation) {
-  return async function (request, _reply) {
+  return async function (request, reply) {
     try {
+      console.log(`Received callback for ${abbreviation}`)
       const { data, signature } = request.body
-
       const liqpayKeys = getLiqpayKeys(abbreviation)
       if (!liqpayKeys) {
         console.log(`No LiqPay keys found for abbreviation: ${abbreviation}`)
-        return null
+        return reply.status(400).send('No LiqPay keys found')
       }
-
       const { publicKey, privateKey } = liqpayKeys
-
       console.log(`LiqPay Public Key: ${publicKey}`)
+
       const calculatedSignature = crypto.createHash('sha1')
         .update(privateKey + data + privateKey)
         .digest('base64')
 
       if (signature !== calculatedSignature) {
-        return res.status(400).send('Invalid signature')
+        console.log('Invalid signature')
+        return reply.status(400).send('Invalid signature')
       }
 
       const paymentData = JSON.parse(Buffer.from(data, 'base64').toString('utf8'))
-      console.log(paymentData)
+      console.log('Decoded payment data:', paymentData)
 
       const payment = await dbRequests.updatePayment(paymentData)
-      console.log(payment)
+      console.log('Payment updated:', payment)
 
-      res.status(200).send('OK')
+      reply.status(200).send('OK')
 
     } catch (error) {
-      throw new HttpError[500](error.message)
+      console.error('Error in callback processing:', error.message)
+      reply.status(500).send('Internal Server Error')
     }
   }
 }

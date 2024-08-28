@@ -5,16 +5,27 @@ require('dotenv').config()
 const allowedIPAddresses = process.env.API_ALLOWED_IPS.split(',')
 const allowedSubnets = process.env.API_ALLOWED_SUBNETS.split(',')
 
+const logIPMessage = (clientIP, isAllowed) => {
+  const currentDate = new Date()
+  const message = `${currentDate}: ${isAllowed ? 'Allowed' : 'Forbidden'} IP: ${clientIP}`
+  console.log(message)
+}
+
 const restrictIPMiddleware = (req, reply, done) => {
   const clientIP = req.ip
-  if (!req.url.includes('liqpay/callback') || (!allowedIPAddresses.includes(clientIP) && !ipRangeCheck(clientIP, allowedSubnets))) {
-    console.log(`${new Date()}: Forbidden IP: ${clientIP}`)
+
+  if (req.url.includes('liqpay/callback')) {
+    logIPMessage(`liqpay callback ${clientIP}`, true)
+    done()
+  } else if (!allowedIPAddresses.includes(clientIP) && !ipRangeCheck(clientIP, allowedSubnets)) {
+    logIPMessage(clientIP, false)
     reply.code(403).send('Forbidden')
   } else {
-    console.log(`${new Date()}: Allowed IP: ${clientIP}`)
+    logIPMessage(clientIP, true)
     done()
   }
 }
+
 
 async function authPlugin(fastify, _ = {}) {
   fastify.decorateRequest('auth', null)
