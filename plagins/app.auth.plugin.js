@@ -7,7 +7,7 @@ const allowedSubnets = process.env.API_ALLOWED_SUBNETS.split(',')
 
 const restrictIPMiddleware = (req, reply, done) => {
   const clientIP = req.ip
-  if (!allowedIPAddresses.includes(clientIP) && !ipRangeCheck(clientIP, allowedSubnets)) {
+  if (!req.url.includes('liqpay/callback') || (!allowedIPAddresses.includes(clientIP) && !ipRangeCheck(clientIP, allowedSubnets))) {
     console.log(`${new Date()}: Forbidden IP: ${clientIP}`)
     reply.code(403).send('Forbidden')
   } else {

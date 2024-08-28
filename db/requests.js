@@ -30,18 +30,18 @@ async function insertPayment(contractId, organizationId, amount, currency, descr
   return execPgQuery(query, values)
 }
 
-async function updatePaymentStatus(orderId, status, liqpayData, successTime = null, failureTime = null) {
+async function updatePaymentStatus(orderId, status, payData, successTime = null, failureTime = null) {
   const query = `
     UPDATE payments
-    SET liqpay_status = $1,
-        liqpay_data = $2,
-        liqpay_success_time = $3,
-        liqpay_failure_time = $4,
+    SET pay_status = $1,
+        pay_data = $2,
+        pay_success_time = $3,
+        pay_failure_time = $4,
         updated_at = CURRENT_TIMESTAMP
     WHERE order_id = $5
     RETURNING id
   `
-  const values = [status, liqpayData, successTime, failureTime, orderId]
+  const values = [status, payData, successTime, failureTime, orderId]
   return execPgQuery(query, values)
 }
 
@@ -92,13 +92,15 @@ module.exports.createPayment = async function (contractId, organizationId, amoun
   console.log('Created payment:', payment)
 }
 
-module.exports.markPaymentAsSuccess = async function () {
-  const payment = await updatePaymentStatus('ORDER123', 'success', 'LiqPay response data', new Date())
-  console.log('Updated payment status to success:', payment)
-}
-
-module.exports.markPaymentAsFailure = async function () {
-  const payment = await updatePaymentStatus('ORDER123', 'failure', 'LiqPay response data', null, new Date())
-  console.log('Updated payment status to failure:', payment)
+module.exports.updatePayment = async function (paymentData) {
+  const { orderId, status, liqpayData } = paymentData
+  let payment = null
+  if (status === 'success') {
+    payment = await updatePaymentStatus(orderId, status, liqpayData, new Date())
+  } else if (status === 'failure') {
+    payment = updatePaymentStatus(orderId, status, liqpayData, null, new Date())
+  }
+  console.log('Updated payment:', payment)
+  return payment
 }
 

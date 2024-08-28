@@ -1,6 +1,7 @@
 const callbackController = require('../controllers/callbackController')
-const isAuthorizedGuard = require('../guards/is-authorized.guard')
-const dataExchangeSchema = require('../schemas/dataExchange.schema')
+const isLiqAuthorizedGuard = require('../guards/is-lic-authorized.guard')
+const liqCallBackSchema = require('../schemas/liqCallBackSchema')
+
 module.exports = (fastify, _opts, done) => {
 
   fastify.route({
@@ -8,9 +9,9 @@ module.exports = (fastify, _opts, done) => {
     url: '/kf/',
     handler: callbackController.getCallback('kf'),
     preHandler: [
-      isAuthorizedGuard
+      isLiqAuthorizedGuard
     ],
-    schema: dataExchangeSchema
+    schema: liqCallBackSchema
   })
 
   fastify.route({
@@ -18,9 +19,9 @@ module.exports = (fastify, _opts, done) => {
     url: '/lev/',
     handler: callbackController.getCallback('lev'),
     preHandler: [
-      isAuthorizedGuard
+      isLiqAuthorizedGuard
     ],
-    schema: dataExchangeSchema
+    schema: liqCallBackSchema
   })
 
   fastify.route({
@@ -28,9 +29,9 @@ module.exports = (fastify, _opts, done) => {
     url: '/pf/',
     handler: callbackController.getCallback('pf'),
     preHandler: [
-      isAuthorizedGuard
+      isLiqAuthorizedGuard
     ],
-    schema: dataExchangeSchema
+    schema: liqCallBackSchema
   })
 
   fastify.route({
@@ -38,9 +39,9 @@ module.exports = (fastify, _opts, done) => {
     url: '/si/',
     handler: callbackController.getCallback('si'),
     preHandler: [
-      isAuthorizedGuard
+      isLiqAuthorizedGuard
     ],
-    schema: dataExchangeSchema
+    schema: liqCallBackSchema
   })
 
   done()

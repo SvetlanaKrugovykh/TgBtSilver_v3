@@ -37,16 +37,14 @@ async function paymentScene(bot, msg) {
     await bot.sendMessage(msg.chat.id, `☑︎ ${jsondata?.ResponseArray[0]}`, { parse_mode: 'HTML' })
     const abbreviation = contract.organization_abbreviation
     const liqpayKeys = getLiqpayKeys(abbreviation)
-    const { publicKey, privateKey } = liqpayKeys
-
-    if (liqpayKeys) {
-      console.log(`LiqPay Public Key: ${publicKey}`)
-    } else {
+    if (!liqpayKeys) {
       console.log(`No LiqPay keys found for abbreviation: ${abbreviation}`)
       await bot.sendMessage(chatId, '⛔️ Сталася помилка при завантаженні ключів доступу до LiqPay ', { parse_mode: "HTML" })
-      return
+      return null
     }
 
+    const { publicKey, privateKey } = liqpayKeys
+    console.log(`LiqPay Public Key: ${publicKey}`)
 
     await bot.sendMessage(chatId, "Введіть <i>суму оплати в грн без копійок, наприклад введення суми 200 означає 200 гривень </i>\n⚠️Увага, до суми платежу додається комісія! \n⚠️ Комісія становить 1,5% від суми платежу!\n", { parse_mode: "HTML" })
     let userInput = await inputLineScene(bot, msg)
@@ -56,7 +54,7 @@ async function paymentScene(bot, msg) {
       return
     }
 
-    const description = `Оплата за послугу. Код оплати: ${contract.payment_code}`
+    const description = `Оплата за послугу. Код оплати: ${contract.payment_code}. Сума оплати: ${amount} грн.`
     const callBackUrl = process.env.LIQPAY_CALLBACK_URL
     console.log(`Web App URL: ${callBackUrl} | ${description} | ${amount} | ${currency}`)
     const data = Buffer.from(JSON.stringify({
@@ -67,7 +65,7 @@ async function paymentScene(bot, msg) {
       currency: currency,
       description: description,
       order_id: `order_${Date.now()}`,
-      server_url: `${callBackUrl}/liqpay/callback`,
+      server_url: `${callBackUrl}${abbreviation}/`,
     })).toString('base64')
 
     const signature = crypto.createHash('sha1')
@@ -77,8 +75,8 @@ async function paymentScene(bot, msg) {
     const paymentLink = `https://www.liqpay.ua/api/3/checkout?data=${encodeURIComponent(data)}&signature=${encodeURIComponent(signature)}`
     console.log(paymentLink)
 
-
     const payment = await dbRequests.createPayment(contract.id, contract.organization_id, amount, currency, description, `order_${Date.now()}`)
+    console.log(payment)
 
     bot.sendMessage(chatId, `Задля оплати, будь ласка, перейдіть за посиланням: ${paymentLink}`)
 

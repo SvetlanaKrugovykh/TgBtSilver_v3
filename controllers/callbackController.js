@@ -1,28 +1,40 @@
 const HttpError = require('http-errors')
-require('dotenv').config()
 const crypto = require('crypto')
+const dbRequests = require('../db/requests')
+const getLiqpayKeys = require('../globalBuffer').getLiqpayKeys
 
-module.exports.getCallback = function (organization) {
-  return async function (request, reply) {
-    const { amount, currency, description } = request.body
+module.exports.getCallback = function (abbreviation) {
+  return async function (request, _reply) {
+    try {
+      const { data, signature } = request.body
 
-    const data = Buffer.from(JSON.stringify({
-      version: '3',
-      public_key: process.env[`LIQPAY_PUBLIC_KEY_${organization.toUpperCase()}`],
-      action: 'pay',
-      amount: amount,
-      currency: currency,
-      description: description,
-      order_id: `order_${Date.now()}`,
-      server_url: `${process.env.WEB_APP_URL}/liqpay/callback/${organization}`,
-    })).toString('base64')
+      const liqpayKeys = getLiqpayKeys(abbreviation)
+      if (!liqpayKeys) {
+        console.log(`No LiqPay keys found for abbreviation: ${abbreviation}`)
+        return null
+      }
 
-    const signature = crypto.createHash('sha1')
-      .update(process.env[`LIQPAY_PRIVATE_KEY_${organization.toUpperCase()}`] + data + process.env[`LIQPAY_PRIVATE_KEY_${organization.toUpperCase()}`])
-      .digest('base64')
+      const { publicKey, privateKey } = liqpayKeys
 
-    const paymentLink = `https://www.liqpay.ua/api/3/checkout?data=${encodeURIComponent(data)}&signature=${encodeURIComponent(signature)}`
+      console.log(`LiqPay Public Key: ${publicKey}`)
+      const calculatedSignature = crypto.createHash('sha1')
+        .update(privateKey + data + privateKey)
+        .digest('base64')
 
-    reply.send({ paymentLink })
+      if (signature !== calculatedSignature) {
+        return res.status(400).send('Invalid signature')
+      }
+
+      const paymentData = JSON.parse(Buffer.from(data, 'base64').toString('utf8'))
+      console.log(paymentData)
+
+      const payment = await dbRequests.updatePayment(paymentData)
+      console.log(payment)
+
+      res.status(200).send('OK')
+
+    } catch (error) {
+      throw new HttpError[500](error.message)
+    }
   }
 }
