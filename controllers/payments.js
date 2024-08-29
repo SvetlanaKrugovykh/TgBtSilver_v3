@@ -42,10 +42,19 @@ async function paymentScene(bot, msg) {
       return
     }
 
-    let paymentLink = await formPaymentLink(abbreviation, contract, amount)
+    amount = parseFloat(amount);
+    if (isNaN(amount) || amount <= 0) {
+      await bot.sendMessage(chatId, "Введена некоректна сума, спробуйте ще раз");
+      return
+    }
 
-    const markdownLink = `[Задля оплати, будь ласка, перейдіть за посиланням](${paymentLink})`
-    bot.sendMessage(chatId, markdownLink, { parse_mode: 'Markdown' })
+    amount = (amount * 1.015).toFixed(2)
+    let paymentLink = await formPaymentLink(bot, chatId, abbreviation, contract, amount)
+
+    if (paymentLink) {
+      const markdownLink = `[Задля оплати, будь ласка, перейдіть за посиланням](${paymentLink})`
+      bot.sendMessage(chatId, markdownLink, { parse_mode: 'Markdown' })
+    }
 
   } catch (err) {
     console.log(err)

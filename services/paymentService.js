@@ -3,12 +3,13 @@ const crypto = require('crypto')
 const getLiqpayKeys = require('../globalBuffer').getLiqpayKeys
 
 
-module.exports.formPaymentLink = async function (abbreviation, contract, amount,) {
+module.exports.formPaymentLink = async function (bot = null, chatId = null, abbreviation, contract, amount,) {
 
   const liqpayKeys = getLiqpayKeys(abbreviation)
   if (!liqpayKeys) {
     console.log(`No LiqPay keys found for abbreviation: ${abbreviation}`)
-    await bot.sendMessage(chatId, '⛔️ Сталася помилка при завантаженні ключів доступу до LiqPay ', { parse_mode: "HTML" })
+    if (bot && chatId)
+      await bot.sendMessage(chatId, '⛔️ Сталася помилка при завантаженні ключів доступу до LiqPay. Скоріше за все договір для організації постачальника з  LiqPay ще на стадії узгодження, але скоро запрацює.', { parse_mode: "HTML" })
     return null
   }
 
