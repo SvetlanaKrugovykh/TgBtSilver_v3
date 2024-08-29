@@ -2,7 +2,11 @@
 require('dotenv').config()
 const updateTables = require('./db/tablesUpdate').updateTables
 
-updateTables()
+try {
+  updateTables()
+} catch (err) {
+  console.log(err)
+}
 
 const { app, app_api } = require('./index')
 const HOST = process.env.HOST || '127.0.0.1'
