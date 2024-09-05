@@ -50,9 +50,10 @@ async function paymentScene(bot, msg) {
 
     amount = (amount * 1.015).toFixed(2)
     let paymentLink = await formPaymentLink(bot, chatId, abbreviation, contract, amount)
+    const urlLink = paymentLink?.message?.paymentLink || null
 
-    if (paymentLink) {
-      const markdownLink = `[Задля оплати, будь ласка, перейдіть за посиланням](${paymentLink})`
+    if (urlLink) {
+      const markdownLink = `[Задля оплати, будь ласка, перейдіть за посиланням](${urlLink})`
       bot.sendMessage(chatId, markdownLink, { parse_mode: 'Markdown' })
     }
 

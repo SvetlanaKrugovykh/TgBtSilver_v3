@@ -6,7 +6,6 @@ const Fastify = require('fastify')
 const https = require('https')
 const authPlugin = require('./plagins/app.auth.plugin')
 const bodyParser = require('body-parser')
-const { globalBuffer } = require('./globalBuffer')
 const cors = require('cors')
 require('dotenv').config()
 
