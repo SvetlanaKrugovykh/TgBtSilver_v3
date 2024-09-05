@@ -13,7 +13,10 @@ module.exports.formPaymentLink = async function (bot, chatId, abbreviation, cont
     })
 
     if (response.status === 200) {
-      console.log('Message sent to the Telegram group successfully!')
+      const currency = 'UAH'
+      const description = `Оплата за послугу. Код оплати: ${contract.payment_code}. Сума оплати: ${amount} грн.`
+      const payment = await dbRequests.createPayment(contract.id, contract.organization_id, amount, currency, description, `order_${Date.now()}`)
+      console.log(payment)
       return response.data
     } else {
       await bot.sendMessage(chatId, '⛔️ Сталася помилка при формуванні   лінку до LiqPay. Скоріше за все договір для організації постачальника з  LiqPay ще на стадії узгодження, але скоро запрацює.', { parse_mode: "HTML" })
@@ -24,10 +27,6 @@ module.exports.formPaymentLink = async function (bot, chatId, abbreviation, cont
     await bot.sendMessage(chatId, '⛔️ Сталася помилка при формуванні   лінку до LiqPay. Скоріше за все договір для організації постачальника з  LiqPay ще на стадії узгодження, але скоро запрацює.', { parse_mode: "HTML" })
     console.error('Error sending message to the Telegram group:', error.message)
   }
-
-  const payment = await dbRequests.createPayment(contract.id, contract.organization_id, amount, currency, description, `order_${Date.now()}`)
-  console.log(payment)
-  return payment
 }
 
 

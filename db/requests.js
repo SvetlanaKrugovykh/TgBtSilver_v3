@@ -74,6 +74,22 @@ async function updatePaymentStatus(order_id, status, paymentData, successTime = 
     WHERE order_id = $19
     RETURNING id
   `
+  const payData = {
+    payment_id,
+    liqpay_order_id,
+    paytype,
+    sender_card_mask2,
+    sender_card_bank,
+    sender_card_type,
+    sender_card_country,
+    ip,
+    sender_first_name,
+    sender_last_name,
+    receiver_commission,
+    sender_commission,
+    is_3ds,
+    transaction_id
+  }
 
   const values = [
     status,
@@ -93,7 +109,7 @@ async function updatePaymentStatus(order_id, status, paymentData, successTime = 
     parseFloat(sender_commission),
     Boolean(is_3ds),
     transaction_id,
-    JSON.stringify(paymentData),
+    JSON.stringify(payData),
     order_id
   ]
 
@@ -169,6 +185,7 @@ async function createContract(organization_id, data) {
   console.log('Created organization and contract:', organization_id, contract)
   return contract
 }
+
 
 async function createPayment(contractId, organizationId, amount, currency, description, orderId) {
   const payment = await insertPayment(contractId, organizationId, amount, currency, description, orderId)
