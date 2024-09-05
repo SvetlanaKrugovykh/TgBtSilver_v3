@@ -1,7 +1,7 @@
 const { execPgQuery } = require('../db/common')
 const sendReqToDB = require('../modules/tlg_to_DB')
 
-async function insertOrganization(data) {
+module.exports.insertOrganization = async function (data) {
   const query = `
     INSERT INTO organizations (organization_name, organization_code , organization_abbreviation )
     VALUES ($1, $2, $3)
@@ -11,7 +11,7 @@ async function insertOrganization(data) {
   return execPgQuery(query, values)
 }
 
-async function insertContract(organization_id, data) {
+module.exports.insertContract = async function (organization_id, data) {
   const query = `
     INSERT INTO contracts (organization_id, contract_name, payment_code, payment_number, phone_number, email, tg_id)
     VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -21,7 +21,7 @@ async function insertContract(organization_id, data) {
   return execPgQuery(query, values)
 }
 
-async function insertPayment(contractId, organizationId, amount, currency, description, orderId) {
+module.exports.insertPayment = async function (contractId, organizationId, amount, currency, description, orderId) {
   const query = `
     INSERT INTO payments (contract_id, organization_id, amount, currency, description, order_id, pay_status)
     VALUES ($1, $2, $3, $4, $5, $6, 'pending')
@@ -31,7 +31,7 @@ async function insertPayment(contractId, organizationId, amount, currency, descr
   return execPgQuery(query, values)
 }
 
-async function updatePaymentStatus(order_id, status, paymentData, successTime = null, failureTime = null) {
+module.exports.updatePaymentStatus = async function (order_id, status, paymentData, successTime = null, failureTime = null) {
   const {
     payment_id = null,
     liqpay_order_id = null,
@@ -106,7 +106,7 @@ async function updatePaymentStatus(order_id, status, paymentData, successTime = 
   }
 }
 
-async function sendPaymentDataToClient(paymentData, status) {
+module.exports.sendPaymentDataToClient = async function (paymentData, status) {
   const response = await sendReqToDB('___SendPaymentData__', paymentData, status)
   if (response === null) {
     return null
