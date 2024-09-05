@@ -8,7 +8,7 @@ module.exports.formPaymentLink = async function (bot, chatId, abbreviation, cont
   try {
     const response = await axios.post(formPayLinkURL, {
       abbreviation,
-      'contract': contract.contract_name,
+      'payment_code': contract.payment_code,
       amount
     })
 
