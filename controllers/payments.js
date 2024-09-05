@@ -48,8 +48,11 @@ async function paymentScene(bot, msg) {
       return
     }
 
-    amount = (amount * 1.015).toFixed(2)
-    let paymentLink = await formPaymentLink(bot, chatId, abbreviation, contract, amount)
+    const commissionRate = 0.015;
+    const totalAmount = (Math.ceil((amount / (1 - commissionRate)) * 100) / 100).toFixed(2)
+
+    console.log(totalAmount)
+    let paymentLink = await formPaymentLink(bot, chatId, abbreviation, contract, totalAmount)
     const urlLink = paymentLink?.message?.paymentLink || null
 
     if (urlLink) {
