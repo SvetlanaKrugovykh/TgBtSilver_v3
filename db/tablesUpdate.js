@@ -32,7 +32,8 @@ const tableQueries = {
       tg_id BIGINT,
       payment_number INTEGER, 
       phone_number VARCHAR, 
-      email VARCHAR, -- email
+      email VARCHAR, -- email,
+      ip VARCHAR(15),
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )`,

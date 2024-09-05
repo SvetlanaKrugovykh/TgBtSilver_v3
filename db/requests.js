@@ -1,9 +1,9 @@
 const { execPgQuery } = require('../db/common')
 const sendReqToDB = require('../modules/tlg_to_DB')
 
-module.exports.insertOrganization = async function (data) {
+async function insertOrganization(data) {
   const query = `
-    INSERT INTO organizations (organization_name, organization_code , organization_abbreviation )
+    INSERT INTO organizations (organization_name, organization_code, organization_abbreviation)
     VALUES ($1, $2, $3)
     RETURNING id
   `
@@ -11,17 +11,18 @@ module.exports.insertOrganization = async function (data) {
   return execPgQuery(query, values)
 }
 
-module.exports.insertContract = async function (organization_id, data) {
+async function insertContract(organization_id, data) {
+  const ip = data?.ip || ''
   const query = `
-    INSERT INTO contracts (organization_id, contract_name, payment_code, payment_number, phone_number, email, tg_id)
-    VALUES ($1, $2, $3, $4, $5, $6, $7)
+    INSERT INTO contracts (organization_id, contract_name, payment_code, payment_number, phone_number, email, tg_id, ip)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
     RETURNING id
   `
-  const values = [organization_id, data.contract_name, data.payment_code, data.payment_number, data.phone_number, data.email, data.tg_id]
+  const values = [organization_id, data.contract_name, data.payment_code, data.payment_number, data.phone_number, data.email, data.tg_id, ip]
   return execPgQuery(query, values)
 }
 
-module.exports.insertPayment = async function (contractId, organizationId, amount, currency, description, orderId) {
+async function insertPayment(contractId, organizationId, amount, currency, description, orderId) {
   const query = `
     INSERT INTO payments (contract_id, organization_id, amount, currency, description, order_id, pay_status)
     VALUES ($1, $2, $3, $4, $5, $6, 'pending')
@@ -31,7 +32,7 @@ module.exports.insertPayment = async function (contractId, organizationId, amoun
   return execPgQuery(query, values)
 }
 
-module.exports.updatePaymentStatus = async function (order_id, status, paymentData, successTime = null, failureTime = null) {
+async function updatePaymentStatus(order_id, status, paymentData, successTime = null, failureTime = null) {
   const {
     payment_id = null,
     liqpay_order_id = null,
@@ -106,17 +107,16 @@ module.exports.updatePaymentStatus = async function (order_id, status, paymentDa
   }
 }
 
-module.exports.sendPaymentDataToClient = async function (paymentData, status) {
+async function sendPaymentDataToClient(paymentData, status) {
   const response = await sendReqToDB('___SendPaymentData__', paymentData, status)
   if (response === null) {
     return null
   } else {
     return response
   }
-
 }
 
-module.exports.getOrgByAbbreviation = async function (abbreviation) {
+async function getOrgByAbbreviation(abbreviation) {
   const query = `
     SELECT *
     FROM organizations
@@ -126,7 +126,7 @@ module.exports.getOrgByAbbreviation = async function (abbreviation) {
   return execPgQuery(query, values)
 }
 
-module.exports.getContractByTgID = async function (TgID) {
+async function getContractByTgID(TgID) {
   const query = `
     SELECT contracts.*, organizations.organization_abbreviation
     FROM contracts
@@ -137,7 +137,18 @@ module.exports.getContractByTgID = async function (TgID) {
   return execPgQuery(query, values)
 }
 
-module.exports.getPaymentByOrderId = async function (orderId) {
+async function getContractByIP(IP) {
+  const query = `
+    SELECT contracts.*, organizations.organization_abbreviation
+    FROM contracts
+    JOIN organizations ON contracts.organization_id = organizations.id
+    WHERE contracts.ip = $1
+  `
+  const values = [IP]
+  return execPgQuery(query, values)
+}
+
+async function getPaymentByOrderId(orderId) {
   const query = `
     SELECT *
     FROM payments
@@ -147,22 +158,25 @@ module.exports.getPaymentByOrderId = async function (orderId) {
   return execPgQuery(query, values)
 }
 
-module.exports.createOrganization = async function (data) {
+async function createOrganization(data) {
   const organization = await insertOrganization(data)
   console.log('Created organization:', organization)
+  return organization
 }
 
-module.exports.createContract = async function (organization_id, data) {
+async function createContract(organization_id, data) {
   const contract = await insertContract(organization_id, data)
   console.log('Created organization and contract:', organization_id, contract)
+  return contract
 }
 
-module.exports.createPayment = async function (contractId, organizationId, amount, currency, description, orderId) {
+async function createPayment(contractId, organizationId, amount, currency, description, orderId) {
   const payment = await insertPayment(contractId, organizationId, amount, currency, description, orderId)
   console.log('Created payment:', payment)
+  return payment
 }
 
-module.exports.updatePayment = async function (paymentData) {
+async function updatePayment(paymentData) {
   const { order_id, status } = paymentData
 
   let payment = null
@@ -170,10 +184,25 @@ module.exports.updatePayment = async function (paymentData) {
     payment = await updatePaymentStatus(order_id, status, paymentData, new Date())
     await sendPaymentDataToClient(paymentData, status)
   } else if (status === 'failure') {
-    payment = updatePaymentStatus(order_id, status, paymentData, null, new Date())
+    payment = await updatePaymentStatus(order_id, status, paymentData, null, new Date())
   }
   console.log('Updated payment:', payment)
   await sendPaymentDataToClient(paymentData, status)
   return payment
 }
 
+module.exports = {
+  insertOrganization,
+  insertContract,
+  insertPayment,
+  updatePaymentStatus,
+  sendPaymentDataToClient,
+  getOrgByAbbreviation,
+  getContractByTgID,
+  getContractByIP,
+  getPaymentByOrderId,
+  createOrganization,
+  createContract,
+  createPayment,
+  updatePayment
+}

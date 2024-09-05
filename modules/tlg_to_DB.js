@@ -82,6 +82,8 @@ function objToString(reqType, data, text) {
       return (text)
     case '___noTelegram__':
       return (text)
+    case '___SearchWebContract__':
+      return (text)
     default:
       return (data.id + '#' + text)
   }

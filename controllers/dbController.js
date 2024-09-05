@@ -2,7 +2,17 @@ const HttpError = require('http-errors')
 require('dotenv').config()
 const dbRequests = require('../db/requests')
 const { parse } = require('dotenv')
+const sendReqToDB = require('../modules/tlg_to_DB')
 
+async function getDataArray_(reqType, bot, msg, txtCommand = '') {
+  const response = await sendReqToDB(reqType, '', txtCommand)
+  if (response === null) {
+    await bot.sendMessage(msg.chat.id, `⛔️ ERROR get data from billing`, { parse_mode: 'HTML' })
+    return null
+  } else {
+    return response
+  }
+}
 
 module.exports.dbUpdate = async function (request, reply) {
 
@@ -22,4 +32,45 @@ module.exports.dbUpdate = async function (request, reply) {
   await dbRequests.sendPaymentDataToClient(paymentData, status)
   return payment
 
+}
+
+
+module.exports.dbAddUser = async function (request, reply) {
+  const { ip_address } = request.body
+
+  try {
+    jsonString = await getDataArray_('___SearchWebContract__', null, null, ip_address)
+    if (jsonString !== null) {
+      const data = JSON.parse(jsonString)
+      const dataArray = data.ResponseArray
+      let contract = null
+
+      for (const item of dataArray) {
+        console.log(item)
+        contract = await dbRequests.getContractByIP(item.tg_id)
+        console.log(contract)
+        if (contract === null) {
+          const org = await dbRequests.getOrgByAbbreviation(item.abbreviation)
+          const organization_id = org.id || 1
+          const data = {
+            organization_id: organization_id,
+            contract_name: item.contract_name,
+            payment_code: item.payment_code,
+            tg_id: 0,
+            ip: item.tg_id,
+            payment_number: item.payment_number,
+            phone_number: item.phone_number,
+            email: item.email,
+          }
+          contract = await dbRequests.createContract(organization_id, data)
+        }
+      }
+      return contract
+    }
+
+  } catch (err) {
+    console.error('Error in contactScene:', err)
+  }
+
+  return null
 }

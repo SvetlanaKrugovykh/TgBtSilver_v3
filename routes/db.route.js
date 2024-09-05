@@ -11,5 +11,15 @@ module.exports = (fastify, _opts, done) => {
     ]
   })
 
+  fastify.route({
+    method: 'POST',
+    url: '/db-add-user/',
+    handler: dbController.dbAddUser,
+    preHandler: [
+      isDbAuthorizedGuard
+    ]
+  })
+
+
   done()
 }
