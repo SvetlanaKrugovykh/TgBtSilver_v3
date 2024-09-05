@@ -5,7 +5,7 @@ const TelegramBot = require('node-telegram-bot-api')
 const Fastify = require('fastify')
 const https = require('https')
 const authPlugin = require('./plagins/app.auth.plugin')
-const bodyParser = require('body-parser')
+const dbPlugin = require('./plagins/db.plugin')
 const cors = require('cors')
 require('dotenv').config()
 
@@ -35,6 +35,10 @@ const app_api = Fastify({
 
 const app = Fastify({
   trustProxy: true
+})
+
+const app_db = Fastify({
+  trustProxy: true,
 })
 
 bot.on('message', async (msg) => {
@@ -90,9 +94,13 @@ app.post('/submit-form', formController.handleFormSubmit)
 
 app_api.register(require('./routes/auth.route'), { prefix: '/api' })
 app_api.register(require('./routes/dataExchange.route'), { prefix: '/api/v1' })
-
 app_api.register(authPlugin)
 
-module.exports = { app, app_api }
+
+app_db.register(dbPlugin)
+app_db.register(require('./routes/db.route'), { prefix: '/db' })
+
+
+module.exports = { app, app_api, app_db }
 
 
