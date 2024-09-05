@@ -1,12 +1,13 @@
 const HttpError = require('http-errors')
 require('dotenv').config()
 const dbRequests = require('../db/requests')
+const { parse } = require('dotenv')
 
 
 module.exports.dbUpdate = async function (request, reply) {
 
   const { data } = request.body
-  const paymentData = JSON.parse(data)
+  const { paymentData } = data
 
   const { order_id, status } = paymentData
 
