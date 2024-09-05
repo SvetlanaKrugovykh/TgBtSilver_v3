@@ -60,6 +60,10 @@ async function updatePaymentStatus(order_id, status, paymentData, successTime = 
   `
   let values = [description, amount]
   let payment = await execPgQuery(query, values)
+  if (!payment) {
+    console.error('!!!!! Payment not found:', paymentData)
+    return null
+  }
 
   query = `
     UPDATE payments
