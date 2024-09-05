@@ -22,13 +22,13 @@ async function insertContract(organization_id, data) {
   return execPgQuery(query, values)
 }
 
-async function insertPayment(contractId, organizationId, amount, currency, description, orderId) {
+async function insertPayment(contractId, organizationId, amount, currency, description, order_id) {
   const query = `
     INSERT INTO payments (contract_id, organization_id, amount, currency, description, order_id, pay_status)
     VALUES ($1, $2, $3, $4, $5, $6, 'pending')
     RETURNING id
   `
-  const values = [contractId, organizationId, amount, currency, description, orderId]
+  const values = [contractId, organizationId, amount, currency, description, order_id]
   return execPgQuery(query, values)
 }
 
@@ -47,10 +47,21 @@ async function updatePaymentStatus(order_id, status, paymentData, successTime = 
     receiver_commission = 0,
     sender_commission = 0,
     is_3ds = false,
-    transaction_id = null
+    transaction_id = null,
+    description,
+    amount,
   } = paymentData
 
-  const query = `
+  let query = ` SELECT *
+    FROM payments
+    WHERE description LIKE $1
+    AND amount = $2
+    AND pay_status = 'pending'
+  `
+  let values = [description, amount]
+  let payment = await execPgQuery(query, values)
+
+  query = `
     UPDATE payments
     SET pay_status = $1,
         pay_success_time = $2,
@@ -71,7 +82,7 @@ async function updatePaymentStatus(order_id, status, paymentData, successTime = 
         is_3ds = $16,
         transaction_id = $17,
         pay_data = $18
-    WHERE order_id = $19
+    WHERE id = $19
     RETURNING id
   `
   const payData = {
@@ -91,7 +102,7 @@ async function updatePaymentStatus(order_id, status, paymentData, successTime = 
     transaction_id
   }
 
-  const values = [
+  values = [
     status,
     successTime,
     failureTime,
@@ -110,7 +121,7 @@ async function updatePaymentStatus(order_id, status, paymentData, successTime = 
     Boolean(is_3ds),
     transaction_id,
     JSON.stringify(payData),
-    order_id
+    payment.id
   ]
 
   try {
@@ -164,13 +175,13 @@ async function getContractByIP(IP) {
   return execPgQuery(query, values)
 }
 
-async function getPaymentByOrderId(orderId) {
+async function getPaymentByOrderId(order_id) {
   const query = `
     SELECT *
     FROM payments
     WHERE order_id = $1
   `
-  const values = [orderId]
+  const values = [order_id]
   return execPgQuery(query, values)
 }
 
@@ -187,8 +198,8 @@ async function createContract(organization_id, data) {
 }
 
 
-async function createPayment(contractId, organizationId, amount, currency, description, orderId) {
-  const payment = await insertPayment(contractId, organizationId, amount, currency, description, orderId)
+async function createPayment(contractId, organizationId, amount, currency, description, order_id) {
+  const payment = await insertPayment(contractId, organizationId, amount, currency, description, order_id)
   console.log('Created payment:', payment)
   return payment
 }
