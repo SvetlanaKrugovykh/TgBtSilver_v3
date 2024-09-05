@@ -16,22 +16,23 @@ async function getDataArray_(reqType, bot, msg, txtCommand = '') {
 
 module.exports.dbUpdate = async function (request, reply) {
 
-  const { data } = request.body
-  const { paymentData } = data
-
-  const { order_id, status } = paymentData
-
-  let payment = null
-  if (status === 'success') {
-    payment = await dbRequests.updatePaymentStatus(order_id, status, paymentData, new Date())
-    await dbRequests.sendPaymentDataToClient(paymentData, status)
-  } else if (status === 'failure') {
-    payment = dbRequests.updatePaymentStatus(order_id, status, paymentData, null, new Date())
+  try {
+    const data = request.body
+    const { order_id, status } = request.body
+    let payment = null
+    if (status === 'success') {
+      payment = await dbRequests.updatePaymentStatus(order_id, status, data, new Date())
+      await dbRequests.sendPaymentDataToClient(data, status)
+    } else if (status === 'failure') {
+      payment = await dbRequests.updatePaymentStatus(order_id, status, data, null, new Date())
+    }
+    console.log('Updated payment:', payment)
+    await dbRequests.sendPaymentDataToClient(data, status)
+    return payment
+  } catch (err) {
+    console.error('Error in dbUpdate:', err)
+    return null
   }
-  console.log('Updated payment:', payment)
-  await dbRequests.sendPaymentDataToClient(paymentData, status)
-  return payment
-
 }
 
 
