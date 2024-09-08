@@ -20,6 +20,14 @@ module.exports = (fastify, _opts, done) => {
     ]
   })
 
+  fastify.route({
+    method: 'POST',
+    url: '/db-add-payment/',
+    handler: dbController.dbAddPayment,
+    preHandler: [
+      isDbAuthorizedGuard
+    ]
+  })
 
   done()
 }

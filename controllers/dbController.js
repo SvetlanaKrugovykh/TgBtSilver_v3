@@ -40,7 +40,7 @@ module.exports.dbAddUser = async function (request, reply) {
   const { ip_address } = request.body
 
   try {
-    jsonString = await getDataArray_('___SearchWebContract__', null, null, ip_address)
+    const jsonString = await getDataArray_('___SearchWebContract__', null, null, ip_address)
     if (jsonString !== null) {
       const data = JSON.parse(jsonString)
       const dataArray = data.ResponseArray
@@ -53,7 +53,7 @@ module.exports.dbAddUser = async function (request, reply) {
         if (contract === null) {
           const org = await dbRequests.getOrgByAbbreviation(item.abbreviation)
           const organization_id = org.id || 1
-          const data = {
+          const contractData = {
             organization_id: organization_id,
             contract_name: item.contract_name,
             payment_code: item.payment_code,
@@ -63,15 +63,51 @@ module.exports.dbAddUser = async function (request, reply) {
             phone_number: item.phone_number,
             email: item.email,
           }
-          await dbRequests.createContract(organization_id, data)
-          contract = await dbRequests.getContractByIP(data.ip)
+          await dbRequests.createContract(organization_id, contractData)
+          contract = await dbRequests.getContractByIP(contractData.ip)
         }
       }
       return contract
+    } else {
+      console.log(`No data found for IP address: ${ip_address}`)
     }
-
   } catch (err) {
-    console.error('Error in contactScene:', err)
+    console.error('Error in dbAddUser:', err)
+  }
+
+  return null
+}
+
+module.exports.dbAddPayment = async function (request, reply) {
+  const { ip_address, amount } = request.body
+
+  try {
+    const jsonString = await getDataArray_('___SearchWebContract__', null, null, ip_address)
+    if (jsonString !== null) {
+      const data = JSON.parse(jsonString)
+      const dataArray = data.ResponseArray
+      let contract = null
+      let payment = null
+
+      for (const item of dataArray) {
+        console.log(item)
+        contract = await dbRequests.getContractByIP(item.tg_id)
+        console.log('getContractByIP', contract)
+        if (contract !== null) {
+          const currency = 'UAH'
+          const description = `Оплата за послугу. Код оплати: ${contract.payment_code}. Сума оплати: ${amount} грн.`
+          payment = await dbRequests.createPayment(contract.id, contract.organization_id, amount, currency, description, `order_${Date.now()}`)
+          console.log(payment)
+        } else {
+          console.log(`Contract for ${ip_address} not found`)
+        }
+      }
+      return payment
+    } else {
+      console.log(`No data found for IP address: ${ip_address}`)
+    }
+  } catch (err) {
+    console.error('Error in dbAddPayment:', err)
   }
 
   return null
