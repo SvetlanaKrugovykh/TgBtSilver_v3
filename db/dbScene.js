@@ -67,12 +67,13 @@ async function dbScene(bot, msg) {
 }
 
 async function dbShow(bot, msg) {
-  const n = 5
-  const contracts = await dbRequests.getLastNContracts(n)
-  const payments = await dbRequests.getLastNPayments(n)
+  try {
+    const n = 5
+    const contracts = await dbRequests.getLastNContracts(n)
+    const payments = await dbRequests.getLastNPayments(n)
 
-  const formattedContracts = contracts.map(contract => {
-    return `
+    const formattedContracts = contracts.map(contract => {
+      return `
       Contract ID: ${contract.id}
       Name: ${contract.contract_name}
       Organization: ${contract.organization_abbreviation}
@@ -84,10 +85,10 @@ async function dbShow(bot, msg) {
       Created At: ${new Date(contract.created_at).toLocaleString()}
       Updated At: ${new Date(contract.updated_at).toLocaleString()}
     `;
-  }).join('\n\n')
+    }).join('\n\n')
 
-  const formattedPayments = payments.map(payment => {
-    return `
+    const formattedPayments = payments.map(payment => {
+      return `
       Payment ID: ${payment.id}
       Amount: ${payment.amount}
       Status: ${payment.pay_status}
@@ -96,10 +97,13 @@ async function dbShow(bot, msg) {
       Created At: ${new Date(payment.created_at).toLocaleString()}
       Updated At: ${new Date(payment.updated_at).toLocaleString()}
     `;
-  }).join('\n\n')
+    }).join('\n\n')
 
-  await bot.sendMessage(msg.chat.id, `Last ${n} Contracts:\n${formattedContracts}`, { parse_mode: 'HTML' })
-  await bot.sendMessage(msg.chat.id, `Last ${n} Payments:\n${formattedPayments}`, { parse_mode: 'HTML' })
+    await bot.sendMessage(msg.chat.id, `Last ${n} Contracts:\n${formattedContracts}`, { parse_mode: 'HTML' })
+    await bot.sendMessage(msg.chat.id, `Last ${n} Payments:\n${formattedPayments}`, { parse_mode: 'HTML' })
+  } catch (err) {
+    console.error('Error in contactScene:', err)
+  }
 }
 
 
