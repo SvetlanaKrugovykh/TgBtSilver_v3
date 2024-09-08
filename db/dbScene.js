@@ -70,7 +70,9 @@ async function dbShow(bot, msg) {
   try {
     const n = 5
     const contracts = await dbRequests.getLastNContracts(n)
+    console.log(contracts)
     const payments = await dbRequests.getLastNPayments(n)
+    console.log(payments)
 
     const formattedContracts = contracts.map(contract => {
       return `
