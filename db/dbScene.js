@@ -68,13 +68,13 @@ async function dbScene(bot, msg) {
 
 async function dbShow(bot, msg) {
   try {
-    const n = 5;
-    const contracts = await dbRequests.getLastNContracts(n);
-    console.log(contracts);
-    const payments = await dbRequests.getLastNPayments(n);
-    console.log(payments);
+    const n = 5
+    const contracts = await dbRequests.getLastNContracts(n)
+    console.log(contracts)
+    const payments = await dbRequests.getLastNPayments(n)
+    console.log(payments)
 
-    let formattedContracts;
+    let formattedContracts
     if (contracts && contracts.length > 0) {
       formattedContracts = contracts.map(contract => {
         return `
@@ -88,13 +88,13 @@ async function dbShow(bot, msg) {
         email: ${contract.email}
         Created At: ${new Date(contract.created_at).toLocaleString()}
         Updated At: ${new Date(contract.updated_at).toLocaleString()}
-      `;
-      }).join('\n\n');
+      `
+      }).join('\n\n')
     } else {
-      formattedContracts = 'No contracts found.';
+      formattedContracts = 'No contracts found.'
     }
 
-    let formattedPayments;
+    let formattedPayments
     if (payments && payments.length > 0) {
       formattedPayments = payments.map(payment => {
         return `
@@ -105,16 +105,16 @@ async function dbShow(bot, msg) {
         ip: ${payment.ip}
         Created At: ${new Date(payment.created_at).toLocaleString()}
         Updated At: ${new Date(payment.updated_at).toLocaleString()}
-      `;
-      }).join('\n\n');
+      `
+      }).join('\n\n')
     } else {
-      formattedPayments = 'No payments found.';
+      formattedPayments = 'No payments found.'
     }
 
-    await bot.sendMessage(msg.chat.id, `Last ${n} Contracts:\n${formattedContracts}`, { parse_mode: 'HTML' });
-    await bot.sendMessage(msg.chat.id, `Last ${n} Payments:\n${formattedPayments}`, { parse_mode: 'HTML' });
+    await bot.sendMessage(msg.chat.id, `Last ${n} Contracts:\n${formattedContracts}`, { parse_mode: 'HTML' })
+    await bot.sendMessage(msg.chat.id, `Last ${n} Payments:\n${formattedPayments}`, { parse_mode: 'HTML' })
   } catch (err) {
-    console.error('Error in dbShow:', err);
+    console.error('Error in dbShow:', err)
   }
 }
 

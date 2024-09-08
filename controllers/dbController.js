@@ -82,6 +82,11 @@ module.exports.dbAddPayment = async function (request, reply) {
   const { ip_address, amount } = request.body
 
   try {
+    const amountNumber = Number(amount)
+    if (isNaN(amountNumber)) {
+      throw new Error('Invalid amount value')
+    }
+
     const jsonString = await getDataArray_('___SearchWebContract__', null, null, ip_address)
     if (jsonString !== null) {
       const data = JSON.parse(jsonString)
@@ -95,8 +100,8 @@ module.exports.dbAddPayment = async function (request, reply) {
         console.log('getContractByIP', contract)
         if (contract !== null) {
           const currency = 'UAH'
-          const description = `Оплата за послугу. Код оплати: ${contract.payment_code}. Сума оплати: ${amount} грн.`
-          payment = await dbRequests.createPayment(contract.id, contract.organization_id, amount, currency, description, `order_${Date.now()}`)
+          const description = `Оплата за послугу. Код оплати: ${contract.payment_code}. Сума оплати: ${amountNumber} грн.`
+          payment = await dbRequests.createPayment(contract.id, contract.organization_id, amountNumber, currency, description, `order_${Date.now()}`)
           console.log(payment)
         } else {
           console.log(`Contract for ${ip_address} not found`)
