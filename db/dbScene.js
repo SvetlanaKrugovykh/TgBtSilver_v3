@@ -74,37 +74,47 @@ async function dbShow(bot, msg) {
     const payments = await dbRequests.getLastNPayments(n)
     console.log(payments)
 
-    const formattedContracts = contracts.map(contract => {
-      return `
-      Contract ID: ${contract.id}
-      Name: ${contract.contract_name}
-      Organization: ${contract.organization_abbreviation}
-      Payment Code: ${contract.payment_code}
-      ip: ${contract.ip}
-      tg_id: ${contract.tg_id}
-      phone_number: ${contract.phone_number}
-      email: ${contract.email}
-      Created At: ${new Date(contract.created_at).toLocaleString()}
-      Updated At: ${new Date(contract.updated_at).toLocaleString()}
-    `;
-    }).join('\n\n')
+    let formattedContracts
+    if (contracts.length > 0) {
+      formattedContracts = contracts.map(contract => {
+        return `
+        Contract ID: ${contract.id}
+        Name: ${contract.contract_name}
+        Organization: ${contract.organization_abbreviation}
+        Payment Code: ${contract.payment_code}
+        ip: ${contract.ip}
+        tg_id: ${contract.tg_id}
+        phone_number: ${contract.phone_number}
+        email: ${contract.email}
+        Created At: ${new Date(contract.created_at).toLocaleString()}
+        Updated At: ${new Date(contract.updated_at).toLocaleString()}
+      `
+      }).join('\n\n')
+    } else {
+      formattedContracts = 'No contracts found.'
+    }
 
-    const formattedPayments = payments.map(payment => {
-      return `
-      Payment ID: ${payment.id}
-      Amount: ${payment.amount}
-      Status: ${payment.pay_status}
-      Description: ${payment.description}
-      ip: ${payment.ip}
-      Created At: ${new Date(payment.created_at).toLocaleString()}
-      Updated At: ${new Date(payment.updated_at).toLocaleString()}
-    `;
-    }).join('\n\n')
+    let formattedPayments
+    if (payments.length > 0) {
+      formattedPayments = payments.map(payment => {
+        return `
+        Payment ID: ${payment.id}
+        Amount: ${payment.amount}
+        Status: ${payment.pay_status}
+        Description: ${payment.description}
+        ip: ${payment.ip}
+        Created At: ${new Date(payment.created_at).toLocaleString()}
+        Updated At: ${new Date(payment.updated_at).toLocaleString()}
+      `
+      }).join('\n\n')
+    } else {
+      formattedPayments = 'No payments found.'
+    }
 
     await bot.sendMessage(msg.chat.id, `Last ${n} Contracts:\n${formattedContracts}`, { parse_mode: 'HTML' })
     await bot.sendMessage(msg.chat.id, `Last ${n} Payments:\n${formattedPayments}`, { parse_mode: 'HTML' })
   } catch (err) {
-    console.error('Error in contactScene:', err)
+    console.error('Error in dbShow:', err)
   }
 }
 
