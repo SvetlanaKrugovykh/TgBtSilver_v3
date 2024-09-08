@@ -49,7 +49,7 @@ module.exports.dbAddUser = async function (request, reply) {
       for (const item of dataArray) {
         console.log(item)
         contract = await dbRequests.getContractByIP(item.tg_id)
-        console.log(contract)
+        console.log('getContractByIP', contract)
         if (contract === null) {
           const org = await dbRequests.getOrgByAbbreviation(item.abbreviation)
           const organization_id = org.id || 1
@@ -63,7 +63,8 @@ module.exports.dbAddUser = async function (request, reply) {
             phone_number: item.phone_number,
             email: item.email,
           }
-          contract = await dbRequests.createContract(organization_id, data)
+          await dbRequests.createContract(organization_id, data)
+          contract = await dbRequests.getContractByIP(data.ip)
         }
       }
       return contract

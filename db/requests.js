@@ -157,6 +157,30 @@ async function getOrgByAbbreviation(abbreviation) {
   return execPgQuery(query, values)
 }
 
+async function getLastNContracts(n) {
+  const query = `
+    SELECT *
+    FROM contracts
+    ORDER BY created_at DESC
+    LIMIT $1
+  `;
+  const values = [n]
+  return execPgQuery(query, values, false, true)
+}
+
+async function getLastNPayments(n) {
+  const query = `
+    SELECT *
+    FROM payments
+    ORDER BY created_at DESC
+    LIMIT $1
+  `;
+  const values = [n]
+  return execPgQuery(query, values, false, true)
+}
+
+
+
 async function getContractByTgID(TgID) {
   const query = `
     SELECT contracts.*, organizations.organization_abbreviation
@@ -236,5 +260,7 @@ module.exports = {
   createOrganization,
   createContract,
   createPayment,
-  updatePayment
+  updatePayment,
+  getLastNContracts,
+  getLastNPayments
 }

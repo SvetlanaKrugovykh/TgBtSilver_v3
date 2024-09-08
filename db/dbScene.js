@@ -66,4 +66,42 @@ async function dbScene(bot, msg) {
   }
 }
 
-module.exports = { dbScene }
+async function dbShow(bot, msg) {
+  const n = 5
+  const contracts = await dbRequests.getLastNContracts(n)
+  const payments = await dbRequests.getLastNPayments(n)
+
+  const formattedContracts = contracts.map(contract => {
+    return `
+      Contract ID: ${contract.id}
+      Name: ${contract.contract_name}
+      Organization: ${contract.organization_abbreviation}
+      Payment Code: ${contract.payment_code}
+      ip: ${contract.ip}
+      tg_id: ${contract.tg_id}
+      phone_number: ${contract.phone_number}
+      email: ${contract.email}
+      Created At: ${new Date(contract.created_at).toLocaleString()}
+      Updated At: ${new Date(contract.updated_at).toLocaleString()}
+    `;
+  }).join('\n\n')
+
+  const formattedPayments = payments.map(payment => {
+    return `
+      Payment ID: ${payment.id}
+      Amount: ${payment.amount}
+      Status: ${payment.pay_status}
+      Description: ${payment.description}
+      ip: ${payment.ip}
+      Created At: ${new Date(payment.created_at).toLocaleString()}
+      Updated At: ${new Date(payment.updated_at).toLocaleString()}
+    `;
+  }).join('\n\n')
+
+  await bot.sendMessage(msg.chat.id, `Last ${n} Contracts:\n${formattedContracts}`, { parse_mode: 'HTML' })
+  await bot.sendMessage(msg.chat.id, `Last ${n} Payments:\n${formattedPayments}`, { parse_mode: 'HTML' })
+}
+
+
+
+module.exports = { dbScene, dbShow }

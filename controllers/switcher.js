@@ -9,7 +9,7 @@ const contactScene = require('./contacts')
 const receiptScene = require('./receipt')
 const paymentScene = require('./payments')
 const signUpForm = require('./signUp').signUpForm
-const { dbScene } = require('../db/dbScene')
+const { dbScene, dbShow } = require('../db/dbScene')
 const handleVoiceMessage = require('./handleVoiceMessage')
 const regexIP = /^(\?|)\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(#|)$/
 
@@ -134,6 +134,9 @@ async function handler(bot, msg, webAppUrl) {
       break
     case '5_24':
       await dbScene(bot, msg)
+      break
+    case '5_25':
+      await dbShow(bot, msg)
       break
     case '11_98':
       await clientsAdmin(bot, msg)
