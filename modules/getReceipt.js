@@ -31,7 +31,6 @@ async function getReceipt(telNumber, msg, bot, fileName) {
         try {
           response.data.pipe(fs.createWriteStream(fileFullName))
           console.log(`File ${fileFullName} saved.`)
-          fileName[msg.chat.id] = fileFullName
 
           bot.sendMessage(msg.chat.id, '🥎Рахунок отримано.\n', { parse_mode: 'HTML' })
           bot.sendMessage(msg.chat.id, '👋💙💛 Дякуємо за звернення.\n', { parse_mode: 'HTML' })
