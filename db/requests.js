@@ -159,11 +159,12 @@ async function getOrgByAbbreviation(abbreviation) {
 
 async function getLastNContracts(n) {
   const query = `
-    SELECT *
-    FROM contracts
-    ORDER BY created_at DESC
+    SELECT c.*, o.organization_abbreviation
+    FROM contracts c
+    JOIN organizations o ON c.organization_id = o.id
+    ORDER BY c.created_at DESC
     LIMIT $1
-  `;
+  `
   const values = [n]
   return execPgQuery(query, values, false, true)
 }
