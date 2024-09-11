@@ -28,7 +28,9 @@ async function insertPayment(contractId, organizationId, amount, currency, descr
     VALUES ($1, $2, $3, $4, $5, $6, 'pending')
     RETURNING id
   `
-  const values = [contractId, organizationId, amount, currency, description, order_id]
+
+  const cleanedDescription = description.replace(/^"|"$/g, '')
+  const values = [contractId, organizationId, amount, currency, cleanedDescription, order_id]
   return execPgQuery(query, values)
 }
 
@@ -52,13 +54,15 @@ async function updatePaymentStatus(order_id, status, paymentData, successTime = 
     amount,
   } = paymentData
 
+  const cleanedDescription = description.replace(/^"|"$/g, '')
+
   let query = ` SELECT *
     FROM payments
     WHERE description LIKE $1
     AND amount = $2
     AND pay_status = 'pending'
   `
-  let values = [description, amount]
+  let values = [cleanedDescription, amount]
   let payment = await execPgQuery(query, values)
   if (!payment) {
     console.error('!!!!! Payment not found:', paymentData)
@@ -228,7 +232,8 @@ async function createContract(organization_id, data) {
 
 
 async function createPayment(contractId, organizationId, amount, currency, description, order_id) {
-  const payment = await insertPayment(contractId, organizationId, amount, currency, description, order_id)
+  const cleanedDescription = description.replace(/^"|"$/g, '')
+  const payment = await insertPayment(contractId, organizationId, amount, currency, cleanedDescription, order_id)
   console.log('Created payment:', payment)
   return payment
 }
