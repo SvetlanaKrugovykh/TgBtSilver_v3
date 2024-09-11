@@ -56,6 +56,19 @@ async function dbScene(bot, msg) {
             email: item.email,
           }
           await dbRequests.createContract(organization_id, data)
+        } else {
+          const org = await dbRequests.getOrgByAbbreviation(item.abbreviation)
+          const organization_id = org.id || 1
+          const data = {
+            organization_id: organization_id,
+            contract_name: item.contract_name,
+            payment_code: item.payment_code,
+            tg_id: item.tg_id,
+            payment_number: item.payment_number,
+            phone_number: item.phone_number,
+            email: item.email,
+          }
+          await dbRequests.updateContract(contract.id, data)
         }
       }
     }

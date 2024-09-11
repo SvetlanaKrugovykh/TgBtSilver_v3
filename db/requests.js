@@ -238,6 +238,22 @@ async function createPayment(contractId, organizationId, amount, currency, descr
   return payment
 }
 
+async function updateContract(contract_id, data) {
+  const query = `
+    UPDATE contracts
+    SET contract_name = $1,
+        payment_code = $2,
+        tg_id = $3,
+        payment_number = $4,
+        phone_number = $5,
+        email = $6
+    WHERE id = $7
+    RETURNING id
+  `
+  const values = [data.contract_name, data.payment_code, data.tg_id, data.payment_number, data.phone_number, data.email, contract_id]
+  return execPgQuery(query, values)
+}
+
 async function updatePayment(paymentData) {
   const { order_id, status } = paymentData
 
@@ -268,5 +284,6 @@ module.exports = {
   createPayment,
   updatePayment,
   getLastNContracts,
-  getLastNPayments
+  getLastNPayments,
+  updateContract
 }

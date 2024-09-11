@@ -3,7 +3,7 @@ const { users } = require('../users/users.model')
 const { netwareAdmin, netwareAdminPing, netwareAdminServiceCheck, netwareAdminDeadIPCheck, nagios } = require('./netwareAdmin')
 const { clientsAdmin, sendInvoice, clientsAdminGetInfo, clientsAdminResponseToRequest, clientsAdminMonthlyOFF,
   clientsAdminSwitchOnClient, clientsAdminSwitchOnClientAfterStopping, clientsAdminGetInvoice,
-  clientsAdminStopClientService, clientsAdminCheckHWService, clientsAdminRedirectedClientSwitchOn, clientsAdminGetArpMac } = require('./clientsAdmin')
+  clientsAdminStopClientService, clientsAdminCheckHWService, clientsAdminRedirectedClientSwitchOn, clientsAdminGetArpMac, clientsAdminSwitchOff } = require('./clientsAdmin')
 const supportScene = require('./support')
 const contactScene = require('./contacts')
 const receiptScene = require('./receipt')
@@ -83,6 +83,9 @@ async function handler(bot, msg, webAppUrl) {
       break
     case '3_11':
       await clientsAdminSwitchOnClient(bot, msg)
+      break
+    case '3_21':
+      await clientsAdminSwitchOff(bot, msg)
       break
     case '3_31':
       await clientsAdminSwitchOnClientAfterStopping(bot, msg)

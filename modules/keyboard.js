@@ -45,7 +45,8 @@ const clientAdminStep2Buttons = {
   options: { resize_keyboard: true },
   buttons: [
     [
-      { text: 'Switch ON this client', callback_data: '3_11' },
+      { text: 'Switch ON', callback_data: '3_11' },
+      { text: 'Switch OFF', callback_data: '3_21' },
       { text: 'STOP services for this client', callback_data: '3_13' }
     ],
     [

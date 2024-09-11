@@ -22,6 +22,7 @@ module.exports.dbUpdate = async function (request, reply) {
     let payment = null
     if (status === 'success') {
       payment = await dbRequests.updatePaymentStatus(order_id, status, data, new Date())
+      console.log('Updated payment in local DB (for success):', payment)
       await dbRequests.sendPaymentDataToClient(data, status)
     } else if (status === 'failure') {
       payment = await dbRequests.updatePaymentStatus(order_id, status, data, null, new Date())

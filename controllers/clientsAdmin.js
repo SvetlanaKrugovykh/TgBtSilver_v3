@@ -79,6 +79,15 @@ async function switchOn(bot, msg, txtCommand) {
   }
 }
 
+async function switchOff(bot, msg, txtCommand) {
+  const response = await sendReqToDB('___SwitchOff__', '', txtCommand)
+  if (response === null) {
+    await bot.sendMessage(msg.chat.id, `⛔️ ERROR Client is not switch Off`, { parse_mode: 'HTML' })
+  } else {
+    await bot.sendMessage(msg.chat.id, `🥎🥎 ${txtCommand} request sent\n`, { parse_mode: 'HTML' })
+  }
+}
+
 async function MonthlyOFF(bot, msg, txtCommand) {
   const response = await sendReqToDB('___MonthlySwitchOFF__', '', txtCommand)
   if (response === null) {
@@ -258,6 +267,17 @@ async function clientsAdminSwitchOnClient(bot, msg) {
   await bot.sendMessage(msg.chat.id, '👋💙💛 Have a nice day!\n', { parse_mode: 'HTML' })
 }
 
+async function clientsAdminSwitchOff(bot, msg) {
+  if (codeRule.length < 3) {
+    await bot.sendMessage(msg.chat.id, 'Wrong codeRule. Операцію скасовано. Треба повторити пошук\n', { parse_mode: 'HTML' })
+    return null
+  }
+  const txtCommand = 'switchoff#' + codeRule[msg.chat.id]
+  console.log(`Admin request for the switch off ${codeRule[msg.chat.id]}`)
+  await switchOff(bot, msg, txtCommand)
+  await bot.sendMessage(msg.chat.id, '👋💙💛 Have a nice day!\n', { parse_mode: 'HTML' })
+}
+
 async function clientsAdminMonthlyOFF(bot, msg) {
   const txtCommand = 'clientsAdminMonthlyOFF#'
   console.log(`Admin request for the monthly off sent`)
@@ -395,5 +415,5 @@ module.exports = {
   clientsAdmin, clientsAdminGetInfo, clientsAdminResponseToRequest, clientsAdminMonthlyOFF,
   clientsAdminSwitchOnClient, clientsAdminSwitchOnClientAfterStopping, clientsAdminGetInvoice,
   clientsAdminStopClientService, clientsAdminCheckHWService, sendInvoice,
-  clientsAdminRedirectedClientSwitchOn, clientsAdminGetArpMac
+  clientsAdminRedirectedClientSwitchOn, clientsAdminGetArpMac, clientsAdminSwitchOff
 }
