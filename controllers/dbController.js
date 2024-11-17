@@ -3,6 +3,7 @@ require('dotenv').config()
 const dbRequests = require('../db/requests')
 const { parse } = require('dotenv')
 const sendReqToDB = require('../modules/tlg_to_DB')
+const { sendTxtMsgToTelegram } = require('../modules/mailer')
 
 async function getDataArray_(reqType, bot, msg, txtCommand = '') {
   const response = await sendReqToDB(reqType, '', txtCommand)
@@ -29,6 +30,7 @@ module.exports.dbUpdate = async function (request, reply) {
     }
     console.log('Updated payment:', payment)
     await dbRequests.sendPaymentDataToClient(data, status)
+    await sendTxtMsgToTelegram(`${payment.description} ${status === 'success' ? 'success' : 'failure'}. Amount: ${payment.amount}.`)
     return payment
   } catch (err) {
     console.error('Error in dbUpdate:', err)

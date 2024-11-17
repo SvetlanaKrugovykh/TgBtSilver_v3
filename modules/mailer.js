@@ -59,4 +59,22 @@ async function sendTelegram(tg_id, fileName) {
   }
 }
 
-module.exports = { sendMail, sendTelegram }
+async function sendTxtMsgToTelegram(message) {
+
+  const apiToken = process.env.TELEGRAM_BOT_TOKEN
+  const GROUP_ID = process.env.GROUP_ID
+  try {
+    await axios.post(`https://api.telegram.org/bot${apiToken}/sendMessage`, {
+      chat_id: GROUP_ID,
+      text: message,
+    })
+    console.log('Message sent successfully')
+    return true
+  } catch (error) {
+    console.error('Error sending Telegram message:', error.message)
+    return false
+  }
+
+}
+
+module.exports = { sendMail, sendTelegram, sendTxtMsgToTelegram }
