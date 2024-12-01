@@ -30,7 +30,18 @@ module.exports.dbUpdate = async function (request, reply) {
     }
     console.log('Updated payment:', payment)
     await dbRequests.sendPaymentDataToClient(data, status)
-    await sendTxtMsgToTelegram(`${payment.description} ${status === 'success' ? 'success' : 'failure'}. Amount: ${payment.amount}.`)
+    if (payment) {
+      if (typeof payment === 'string') {
+        try {
+          const payment_data = JSON.parse(payment);
+          await sendTxtMsgToTelegram(`${payment_data.description} ${status === 'success' ? 'success' : 'failure'}. Amount: ${payment_data.amount}.`)
+        } catch (err) {
+          console.error('Error parsing payment JSON:', err);
+          await sendTxtMsgToTelegram(`Payment update failed for Order ID: ${order_id} due to JSON parse error.`)
+          return null
+        }
+      }
+    }
     return payment
   } catch (err) {
     console.error('Error in dbUpdate:', err)
