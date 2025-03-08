@@ -100,7 +100,20 @@ async function MonthlyOFF(bot, msg, txtCommand) {
 
 async function switchOnAfterStop(bot, msg, txtCommand) {
   const response = await sendReqToDB('___SwitchOnAfterStop__', '', txtCommand)
-  if (response === null) {
+
+  let responseContainsNoData = false
+  if (response !== null) {
+    try {
+      const parsedResponse = JSON.parse(response)
+      if (parsedResponse.ResponseArray && Array.isArray(parsedResponse.ResponseArray) && parsedResponse.ResponseArray.some(item => item.includes('There are no data for change'))) {
+        responseContainsNoData = true
+      }
+    } catch (err) {
+      console.error('Error parsing response JSON:', err)
+    }
+  }
+
+  if (response === null || responseContainsNoData) {
     await bot.sendMessage(msg.chat.id, `⛔️ ERROR Client is not switch On After Stopping`, { parse_mode: 'HTML' })
   } else {
     await bot.sendMessage(msg.chat.id, `🥎🥎 ${txtCommand} request sent\n`, { parse_mode: 'HTML' })
