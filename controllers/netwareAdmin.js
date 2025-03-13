@@ -1,5 +1,6 @@
 const { netwareAdminButtons } = require('../modules/keyboard')
 const inputLineScene = require('./inputLine')
+const { getNagiosReport } = require('../modules/getReceipt')
 const ping = require('ping')
 const sendReqToDB = require('../modules/tlg_to_DB')
 const { plot } = require('../services/plots')
@@ -44,11 +45,18 @@ async function netwareAdminDeadIPCheck(bot, msg) {
     } else {
       await bot.sendMessage(msg.chat.id, `🥎\n The problems are}.\n`, { parse_mode: 'HTML' })
       await reportOfNEtProblems(bot, msg, data)
+      await getAndSendReportForNetProblems(bot, msg, data)
     }
   }
   catch (err) {
     console.log(err)
   }
+}
+
+async function getAndSendReportForNetProblems(bot, msg, data) {
+  console.log(`Admin request for the nagios report ${msg.chat.id}`)
+  getNagiosReport(bot, msg)
+  await bot.sendMessage(msg.chat.id, '👋💙💛 Have a nice day!\n', { parse_mode: 'HTML' })
 }
 
 async function reportOfNEtProblems(bot, msg, data) {

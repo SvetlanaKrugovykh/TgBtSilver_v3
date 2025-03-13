@@ -1,5 +1,6 @@
 const axios = require('axios')
 const fs = require('fs')
+const fsPromises = require('fs').promises
 const { AUTH_TOKEN, URL } = process.env
 
 async function getReceipt(telNumber, msg, bot, fileName) {
@@ -37,7 +38,7 @@ async function getReceipt(telNumber, msg, bot, fileName) {
           setTimeout(function () {
             bot.sendDocument(msg.chat.id, fileFullName)
               .catch(function (error) {
-                console.log(error);
+                console.log(error)
               })
           }, 1111)
         } catch (err) {
@@ -53,4 +54,50 @@ async function getReceipt(telNumber, msg, bot, fileName) {
   }
 }
 
-module.exports = { getReceipt }
+async function getNagiosReport(bot, msg) {
+  try {
+    const response = await axios({
+      method: 'post',
+      url: URL,
+      responseType: 'stream',
+      headers: {
+        Authorization: `${AUTH_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+      data: {
+        Query: `Execute;GetNagiosReport;Nothing;КОНЕЦ`,
+      },
+    })
+
+    if (response.status !== 200) {
+      console.log(response.status)
+      return null
+    } else {
+      console.log('response.status', response.status)
+      const TEMP_CATALOG = process.env.TEMP_CATALOG
+      if (!fs.existsSync(TEMP_CATALOG)) fs.mkdirSync(TEMP_CATALOG, { recursive: true })
+      let fileFullName = `${TEMP_CATALOG}__${msg.chat.id}__.html`
+
+      response.data.pipe(fs.createWriteStream(fileFullName))
+        .on('finish', async () => {
+          console.log(`File ${fileFullName} saved.`)
+          try {
+            await fsPromises.access(fileFullName, fs.constants.R_OK)
+            await bot.sendDocument(msg.chat.id, fileFullName)
+          } catch (err) {
+            console.error('Error accessing file:', err)
+            await bot.sendMessage(msg.chat.id, '⛔️ Error sending the document.')
+          }
+        })
+        .on('error', (err) => {
+          console.error('Error writing file:', err)
+          bot.sendMessage(msg.chat.id, '⛔️ Error saving the document.')
+        })
+    }
+  } catch (err) {
+    bot.sendMessage(msg.chat.id, `⛔️ Trouble...\n`, { parse_mode: 'HTML' })
+    return null
+  }
+}
+
+module.exports = { getReceipt, getNagiosReport }
