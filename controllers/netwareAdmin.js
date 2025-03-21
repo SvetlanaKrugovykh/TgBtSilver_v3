@@ -99,25 +99,38 @@ async function netwareAdminServiceCheck(bot, msg) {
   }
 }
 
-async function nagios(bot, msg) {
+async function getAndSendMrtgReport(bot, msg) {
+  console.log(`Admin request for the mrtg report ${msg.chat.id}`)
   try {
-    const chatId = msg.chat.id
-    const username = process.env.NAGIOS_USERNAME
-    const password = process.env.NAGIOS_PASSWORD
-    const NAGIOS_URL = process.env.NAGIOS_URL
-    const BUFFER_URL = process.env.BUFFER_URL
-    const res = await axios.post(BUFFER_URL, {
-      url: NAGIOS_URL,
-      login: username,
-      password: password
-    })
-    const imageBase64 = res.data.image
-    const imageBuffer = Buffer.from(imageBase64, 'base64')
-    await bot.sendPhoto(chatId, imageBuffer, { caption: 'ScreenShot' })
 
+    const data = {
+      "abonentId": msg.chat.id,
+      "ipAddress": "127.0.0.1",
+      "vlanId": "no"
+    }
+    const response = await axios({
+      method: 'POST',
+      url: `${process.env.CM_URL}mrtg-report/`,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `${process.env.CM_AUTH_TOKEN}`,
+
+      },
+      data: data,
+      responseType: 'json',
+    })
+
+    if (response.status !== 200) {
+      console.error(`Failed to fetch MRTG report. Status: ${response.status}`)
+      await bot.sendMessage(msg.chat.id, `⛔️ Failed to fetch MRTG report.`, { parse_mode: 'HTML' })
+      return
+    }
+    await bot.sendMessage(msg.chat.id, '👋💙💛 Have a nice day!\n', { parse_mode: 'HTML' })
   } catch (error) {
-    console.error(error);
+    console.error(error)
   }
+
 }
 
-module.exports = { netwareAdmin, netwareAdminPing, netwareAdminServiceCheck, netwareAdminDeadIPCheck, nagios }
+
+module.exports = { netwareAdmin, netwareAdminPing, netwareAdminServiceCheck, netwareAdminDeadIPCheck, getAndSendMrtgReport }
