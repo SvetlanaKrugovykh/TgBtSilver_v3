@@ -1,5 +1,6 @@
 const { constants, adminStartButtons } = require('../modules/keyboard')
 const { users } = require('../users/users.model')
+const { globalBuffer } = require('../globalBuffer')
 const { netwareAdmin, netwareAdminPing, netwareAdminServiceCheck, netwareAdminDeadIPCheck, getAndSendMrtgReport } = require('./netwareAdmin')
 const { clientsAdmin, sendInvoice, clientsAdminGetInfo, clientsAdminResponseToRequest, clientsAdminMonthlyOFF,
   clientsAdminSwitchOnClient, clientsAdminSwitchOnClientAfterStopping, clientsAdminGetInvoice,
@@ -28,7 +29,8 @@ function getCallbackData(text) {
 }
 
 async function handler(bot, msg, webAppUrl) {
-
+  const chatId = msg?.chat?.id
+  if (!globalBuffer[chatId]) globalBuffer[chatId] = {}
   if (msg.voice) {
     const adminUser = users.find(user => user.id === msg.chat.id)
     if (adminUser) {

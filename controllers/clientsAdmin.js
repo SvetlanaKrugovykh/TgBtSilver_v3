@@ -194,9 +194,16 @@ async function clientsAdmin(bot, msg) {
 
 //#region clientAdminMenus
 async function clientAdminMenuStarter(bot, msg, clientAdminStarterButtons) {
-  await bot.sendMessage(msg.chat.id, clientAdminStarterButtons.title, {
+  const { title, buttons } = clientAdminStarterButtons
+  const adminIds = process.env.ADMINS.split(',').map(id => id.trim())
+  const userButtons = [...buttons]
+  if (adminIds.includes(String(msg.chat.id))) {
+    userButtons.push([{ text: '✍ for Reply on demand', callback_data: '0_99' }])
+  }
+
+  await bot.sendMessage(msg.chat.id, title, {
     reply_markup: {
-      keyboard: clientAdminStarterButtons.buttons,
+      keyboard: userButtons,
       resize_keyboard: true
     }
   })

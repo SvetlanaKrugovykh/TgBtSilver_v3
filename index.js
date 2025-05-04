@@ -4,8 +4,11 @@ const path = require('path')
 const TelegramBot = require('node-telegram-bot-api')
 const Fastify = require('fastify')
 const https = require('https')
+const { globalBuffer } = require('./globalBuffer')
 const authPlugin = require('./plagins/app.auth.plugin')
 const dbPlugin = require('./plagins/db.plugin')
+const { handleAdminResponse } = require('./modules/adminMessageHandler')
+const menu = require('./modules/common_menu')
 const cors = require('cors')
 require('dotenv').config()
 
@@ -88,6 +91,32 @@ bot.on('message', async (msg) => {
     }
   }
 
+})
+
+bot.on('text', async (msg) => {
+  if (msg.text.includes('✍')) {
+    await handleAdminResponse(bot, msg)
+  }
+})
+
+bot.on('callback_query', async (callbackQuery) => {
+  try {
+    const chatId = callbackQuery.message.chat.id
+    await bot.answerCallbackQuery(callbackQuery.id)
+    const action = callbackQuery.data
+    const msg = callbackQuery.message
+    console.log('Callback query received:', action)
+
+    if (globalBuffer[chatId] === undefined) globalBuffer[chatId] = {}
+
+    if (action.startsWith('select_client_')) {
+      const targetChatId = action.split('_')[2]
+      console.log(`Target client ID: ${targetChatId}`)
+      await menu.notTextScene(bot, msg, "en", true, false, targetChatId)
+    }
+  } catch (error) {
+    console.log(error)
+  }
 })
 
 app.post('/submit-form', formController.handleFormSubmit)
