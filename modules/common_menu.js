@@ -119,6 +119,8 @@ module.exports.notTextScene = async function (bot, msg, lang = "en", toSend = tr
 
     if (toSend && !toChatID) {
       await bot.sendMessage(chatId, "Дякуємо! Ваше повідомлення відправлено.\n Очікуйте відповіді протягом 30 хвилин", { parse_mode: "HTML" })
+    } else if (toSend && toChatID) {
+      await bot.sendMessage(process.env.GROUP_ID, `🥎🥎 Message sent to ${toChatID}\n`, { parse_mode: 'HTML' })
     }
   } catch (err) {
     console.log(err)

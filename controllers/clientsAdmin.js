@@ -404,7 +404,7 @@ async function sendInvoice(_bot, msg, recID = false) {
       const tg_id = await inputLineScene(_bot, msg)
       const res_ = await sendTelegram(tg_id, fileName[msg.chat.id])
       if (res_) {
-        await _bot.sendMessage(msg.chat.id, `🥎🥎 Invoice succesfully ssent to ${tg_id}\n`, { parse_mode: 'HTML' })
+        await _bot.sendMessage(msg.chat.id, `🥎🥎 Invoice succesfully sent to ${tg_id}\n`, { parse_mode: 'HTML' })
       } else {
         await _bot.sendMessage(msg.chat.id, `⛔️ Invoice not sent to ${tg_id}\n`, { parse_mode: 'HTML' })
       }
