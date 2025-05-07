@@ -58,13 +58,28 @@ module.exports.notTextScene = async function (bot, msg, lang = "en", toSend = tr
       }
 
       if (message.type === 'text') {
-        await sendReqToDB("__SaveTlgMsg__", msg.chat, message.content)
+        const replyFromDB = await sendReqToDB("__SaveTlgMsg__", msg.chat, message.content)
+        let additionalInfo = ''
+        try {
+          const parsedReply = JSON.parse(replyFromDB)
+          if (parsedReply.ResponseArray && Array.isArray(parsedReply.ResponseArray)) {
+            const match = parsedReply.ResponseArray[0].match(/\(.*\)/)
+            if (match) {
+              additionalInfo = match[0]
+            }
+          }
+        } catch (err) {
+          console.error('Error parsing replyFromDB or extracting additional info:', err)
+        }
+
+        const fullContent = additionalInfo ? `${message.content} ${additionalInfo}` : message.content
+
         if (!toChatID) {
-          globalBuffer.msgQueue[msg.chat.id].push({ type: 'text', content: message.content })
+          globalBuffer.msgQueue[msg.chat.id].push({ type: 'text', content: fullContent })
           if (toSend) {
             await bot.sendMessage(
               GROUP_ID,
-              `Message from ${msg.chat.first_name} ${msg.chat.last_name} (ID: ${msg.chat.id}):\n${message.content}`,
+              `Message from ${msg.chat.first_name} ${msg.chat.last_name} (ID: ${msg.chat.id}):\n${fullContent}`,
               { parse_mode: "HTML" }
             )
           }
