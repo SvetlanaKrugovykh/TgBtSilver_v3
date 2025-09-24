@@ -40,7 +40,11 @@ async function telnetCall(HOST, replaceStr, _conditional = undefined) {
     const client = new net.Socket()
 
     try {
-      client.connect(PORT, HOST, () => {
+      client.connect({
+        port: PORT,
+        host: HOST,
+        localAddress: Params.sourceIP
+      }, () => {
         console.log('Connected to network device')
       })
 
