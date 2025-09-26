@@ -25,16 +25,35 @@ async function netwareAdminPing(bot, msg) {
     const chatId = msg.chat.id
     await bot.sendMessage(chatId, "Введіть <i>ip address</i>, \n", { parse_mode: "HTML" })
     const ip_address = await inputLineScene(bot, msg, '192.168.1.1')
-    ping.sys.probe(ip_address, function (isAlive) {
-      const msg = isAlive ? 'host ' + ip_address + ' is alive' : 'host ' + ip_address + ' is dead'
-      bot.sendMessage(chatId, msg)
-    })
+
+    const sourceIP = process.env.TELNET_SOURCE_IP
+
+    if (sourceIP) {
+      const { exec } = require('child_process')
+      const pingCommand = `ping -c 4 -I ${sourceIP} ${ip_address}` // Linux/Ubuntu
+
+      exec(pingCommand, (error, stdout, stderr) => {
+        if (error) {
+          bot.sendMessage(chatId, `host ${ip_address} is dead (from source IP: ${sourceIP})`)
+        } else {
+          const isAlive = !stdout.includes('100% packet loss')
+          const msg = isAlive
+            ? `host ${ip_address} is alive (from source IP: ${sourceIP})`
+            : `host ${ip_address} is dead (from source IP: ${sourceIP})`
+          bot.sendMessage(chatId, msg)
+        }
+      })
+    } else {
+      ping.sys.probe(ip_address, function (isAlive) {
+        const msg = isAlive ? 'host ' + ip_address + ' is alive' : 'host ' + ip_address + ' is dead'
+        bot.sendMessage(chatId, msg)
+      })
+    }
   }
   catch (err) {
     console.log(err)
   }
 }
-
 async function netwareAdminDeadIPCheck(bot, msg) {
   try {
     const chatId = msg.chat.id
