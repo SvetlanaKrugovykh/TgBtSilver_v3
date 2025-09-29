@@ -1,5 +1,6 @@
 const { execPgQuery } = require('../db/common')
 const sendReqToDB = require('../modules/tlg_to_DB')
+const { logWithTime } = require('../logger')
 
 async function insertOrganization(data) {
   const query = `

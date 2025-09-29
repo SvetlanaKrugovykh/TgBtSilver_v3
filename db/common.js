@@ -1,4 +1,5 @@
 const { Pool } = require('pg')
+const { logWithTime } = require('../logger')
 require('dotenv').config()
 
 const pool = new Pool({

@@ -1,5 +1,6 @@
 const sendReqToDB = require('../modules/tlg_to_DB')
 const dbRequests = require('../db/requests')
+const { logWithTime } = require('../logger')
 
 async function getDataArray(reqType, bot, msg, txtCommand = '') {
   const response = await sendReqToDB(reqType, '', txtCommand)
