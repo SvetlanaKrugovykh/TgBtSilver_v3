@@ -1,6 +1,7 @@
 const axios = require('axios')
 const fs = require('fs')
 const fsPromises = require('fs').promises
+const { logWithTime } = require('../logger')
 const { AUTH_TOKEN, URL } = process.env
 
 async function getReceipt(telNumber, msg, bot, fileName) {
@@ -18,10 +19,10 @@ async function getReceipt(telNumber, msg, bot, fileName) {
       },
     })
     if (!response.status == 200) {
-      console.log(response.status)
+      logWithTime(response.status)
       return null
     } else {
-      console.log('response.status', response.status)
+      logWithTime('response.status', response.status)
       const TEMP_CATALOG = process.env.TEMP_CATALOG
       if (!fs.existsSync(TEMP_CATALOG)) fs.mkdirSync(TEMP_CATALOG, { recursive: true })
       let fileFullName = `${TEMP_CATALOG}__${msg.chat.id}__.pdf`
@@ -31,19 +32,19 @@ async function getReceipt(telNumber, msg, bot, fileName) {
       } else {
         try {
           response.data.pipe(fs.createWriteStream(fileFullName))
-          console.log(`File ${fileFullName} saved.`)
+          logWithTime(`File ${fileFullName} saved.`)
 
           bot.sendMessage(msg.chat.id, '🥎Рахунок отримано.\n', { parse_mode: 'HTML' })
           bot.sendMessage(msg.chat.id, '👋💙💛 Дякуємо за звернення.\n', { parse_mode: 'HTML' })
           setTimeout(function () {
             bot.sendDocument(msg.chat.id, fileFullName)
               .catch(function (error) {
-                console.log(error)
+                logWithTime(error)
               })
           }, 1111)
         } catch (err) {
-          console.log(err)
-          console.log('File not saved!!!')
+          logWithTime(err)
+          logWithTime('File not saved!!!')
         }
       }
     }
@@ -70,17 +71,17 @@ async function getNagiosReport(bot, msg) {
     })
 
     if (response.status !== 200) {
-      console.log(response.status)
+      logWithTime(response.status)
       return null
     } else {
-      console.log('response.status', response.status)
+      logWithTime('response.status', response.status)
       const TEMP_CATALOG = process.env.TEMP_CATALOG
       if (!fs.existsSync(TEMP_CATALOG)) fs.mkdirSync(TEMP_CATALOG, { recursive: true })
       let fileFullName = `${TEMP_CATALOG}__${msg.chat.id}__.html`
 
       response.data.pipe(fs.createWriteStream(fileFullName))
         .on('finish', async () => {
-          console.log(`File ${fileFullName} saved.`)
+          logWithTime(`File ${fileFullName} saved.`)
           try {
             await fsPromises.access(fileFullName, fs.constants.R_OK)
             await bot.sendDocument(msg.chat.id, fileFullName)

@@ -1,5 +1,6 @@
 
 const axios = require('axios')
+const { logWithTime } = require('../logger')
 require('dotenv').config()
 
 const plot = async (bot, msg, period, deviceName) => {
@@ -19,7 +20,7 @@ const plot = async (bot, msg, period, deviceName) => {
     },
   })
 
-  console.log('URL_LOG post data get for graph responese', response.status)
+  logWithTime('URL_LOG post data get for graph responese', response.status)
   if (!response.status == 200) {
     return null
   } else {
@@ -27,7 +28,7 @@ const plot = async (bot, msg, period, deviceName) => {
       const data = response.data.ResponseArray
       await drawChart(bot, msg, data)
     } catch (err) {
-      console.log(err)
+      logWithTime(err)
     }
   }
 }

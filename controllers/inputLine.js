@@ -1,3 +1,4 @@
+const { logWithTime } = require('../logger')
 async function inputLineScene(bot, msg, templateString = '') {
   const chatId = msg.chat.id
   const promise = new Promise(resolve => {
@@ -7,7 +8,7 @@ async function inputLineScene(bot, msg, templateString = '') {
     const messageHandler = (message) => {
       if (message.chat.id === chatId) {
         const inputLine = message.text
-        console.log('Received input Line:', inputLine)
+        logWithTime('Received input Line:', inputLine)
         bot.removeListener('message', messageHandler)
         resolve(inputLine)
       }

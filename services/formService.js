@@ -1,4 +1,5 @@
 const axios = require('axios')
+const { logWithTime } = require('../logger')
 
 const processFormData = async function (phoneNumber, name) {
   const message = `New form submission from website = call request:\nName: ${name}\nPhone: ${phoneNumber}`
@@ -12,7 +13,7 @@ const processFormData = async function (phoneNumber, name) {
     })
 
     if (response.status === 200) {
-      console.log('Message sent to the Telegram group successfully!')
+      logWithTime('Message sent to the Telegram group successfully!')
     } else {
       console.error('Error sending message to the Telegram group:', response.statusText)
     }

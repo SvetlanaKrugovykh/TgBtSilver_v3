@@ -2,6 +2,7 @@ const { TelegramClient, Api } = require('telegram')
 const { StringSession } = require('telegram/sessions')
 require('dotenv').config()
 const sendReqToDB = require('../modules/tlg_to_DB')
+const { logWithTime } = require('../logger')
 const input = require('input')
 
 async function getArrayForSearchTelegramAccounts(bot, msg, txtCommand = '') {
@@ -27,7 +28,7 @@ async function startTgClient(bot, msg) {
       throw new Error('TG_NUMBER is not defined in environment variables')
     }
 
-    console.log('Loading interactive example...')
+    logWithTime('Loading interactive example...')
     const client = new TelegramClient(stringSession, apiId, apiHash, {
       connectionRetries: 5,
     })
@@ -36,11 +37,11 @@ async function startTgClient(bot, msg) {
       phoneNumber: async () => phoneNumber,
       phoneCode: async () => await input.text('Please enter the code you received: '),
       password: async () => tg_passwd,
-      onError: (err) => console.log('Error:', err.message),
+      onError: (err) => logWithTime('Error:', err.message),
     })
 
-    console.log('You are now connected.')
-    console.log('Your session string:', client.session.save())
+    logWithTime('You are now connected.')
+    logWithTime('Your session string:', client.session.save())
     await client.sendMessage('me', { message: 'It works!' })
     await bot.sendMessage(msg.chat.id, 'Successfully authenticated!')
     return client
@@ -61,7 +62,7 @@ async function getContactDataFromTg(tgClient, phone_number) {
     )
 
     if (result.users.length === 0) {
-      console.log(`No users found for: ${phone_number}`)
+      logWithTime(`No users found for: ${phone_number}`)
       return null
     }
 
@@ -93,18 +94,18 @@ async function contactScene(bot, msg) {
 
     const tgClient = await startTgClient(bot, msg)
     tgClient.connect()
-    console.log('Connected to Telegram  server')
+    logWithTime('Connected to Telegram  server')
 
     for (const item of dataArray) {
-      console.log(item)
+      logWithTime(item)
       const searchInfo = await getContactDataFromTg(tgClient, item.phoneNumber)
       if (searchInfo === null) {
-        console.log(`No contact data found for: ${item.phoneNumber}`)
+        logWithTime(`No contact data found for: ${item.phoneNumber}`)
         const noTelegram = await sendReqToDB('___noTelegram__', '', item.phoneNumber)
-        console.log(noTelegram)
+        logWithTime(noTelegram)
         continue
       }
-      console.log('Contact data:', searchInfo)
+      logWithTime('Contact data:', searchInfo)
       const user_data = {
         id: searchInfo.id,
         password: searchInfo.first_name + " " + searchInfo.last_name,
@@ -116,7 +117,7 @@ async function contactScene(bot, msg) {
       }
 
       const signUpRezult = await sendReqToDB('___UserRegistration__', user_data, searchInfo.id)
-      console.log(signUpRezult)
+      logWithTime(signUpRezult)
     }
 
   } catch (err) {

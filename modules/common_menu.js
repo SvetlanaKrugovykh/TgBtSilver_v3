@@ -3,6 +3,7 @@ const fs = require('fs')
 const path = require('path')
 const { globalBuffer } = require('../globalBuffer')
 const sendReqToDB = require('../modules/tlg_to_DB')
+const { logWithTime } = require('../logger')
 const { respondToSelectedClient } = require('../modules/adminMessageHandler')
 require('dotenv').config()
 
@@ -123,7 +124,7 @@ module.exports.notTextScene = async function (bot, msg, lang = "en", toSend = tr
       await bot.sendMessage(process.env.GROUP_ID, `🥎🥎 Message sent to ${toChatID}\n`, { parse_mode: 'HTML' })
     }
   } catch (err) {
-    console.log(err)
+    logWithTime(err)
     await bot.sendMessage(msg.chat.id, "Вибачте, сталася помилка під час відправлення файлу.")
   }
 }

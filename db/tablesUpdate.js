@@ -1,4 +1,5 @@
 const { Pool } = require('pg')
+const { logWithTime } = require('../logger')
 const dotenv = require('dotenv')
 
 dotenv.config()
@@ -76,7 +77,7 @@ module.exports.updateTables = function () {
     .then(() => checkAndCreateTable('contracts'))
     .then(() => checkAndCreateTable('payments'))
     .then(() => {
-      console.log('All tables created or already exist.')
+      logWithTime('All tables created or already exist.')
     })
     .catch((err) => {
       console.error('Error in table creation sequence:', err)
@@ -102,7 +103,7 @@ function checkAndCreateTable(tableName) {
         if (!tableExists) {
           createTable(tableName).then(resolve).catch(reject)
         } else {
-          console.log(`Table ${tableName} already exists.`)
+          logWithTime(`Table ${tableName} already exists.`)
           resolve()
         }
       }
@@ -126,7 +127,7 @@ function createTable(tableName) {
         console.error(`Error creating table ${tableName}:`, err)
         reject(err)
       } else {
-        console.log(`Table ${tableName} created successfully.`)
+        logWithTime(`Table ${tableName} created successfully.`)
         resolve()
       }
     })

@@ -1,21 +1,22 @@
-const fs = require('fs');
+const fs = require('fs')
+const { logWithTime } = require('../logger')
 
 const fname = () => {
-  return '..\logs\\' + Date.now.toISOString();
-};
+  return '..\logs\\' + Date.now.toISOString()
+}
 
 fs.readFile(fname, (err, data) => {
   if (err) {
-    console.log(err);
-    return;
+    logWithTime(err)
+    return
   }
-  console.log(data.toString());
-});
+  logWithTime(data.toString())
+})
 
 fs.writeFile(fname, 'username=Max', err => {
   if (err) {
-    console.log(err);
+    logWithTime(err)
   } else {
-    console.log('Wrote to file!');
+    logWithTime('Wrote to file!')
   }
-});
+})

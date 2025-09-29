@@ -134,7 +134,7 @@ async function updatePaymentStatus(order_id, status, paymentData, successTime = 
 
   try {
     const result = await execPgQuery(query, values)
-    console.log('Update result:', result)
+    logWithTime('Update result:', result)
     return result
   } catch (error) {
     console.error('Error updating payment status:', error)
@@ -220,13 +220,13 @@ async function getPaymentByOrderId(order_id) {
 
 async function createOrganization(data) {
   const organization = await insertOrganization(data)
-  console.log('Created organization:', organization)
+  logWithTime('Created organization:', organization)
   return organization
 }
 
 async function createContract(organization_id, data) {
   const contract = await insertContract(organization_id, data)
-  console.log('Created organization and contract:', organization_id, contract)
+  logWithTime('Created organization and contract:', organization_id, contract)
   return contract
 }
 
@@ -234,7 +234,7 @@ async function createContract(organization_id, data) {
 async function createPayment(contractId, organizationId, amount, currency, description, order_id) {
   const cleanedDescription = description.replace(/^"|"$/g, '')
   const payment = await insertPayment(contractId, organizationId, amount, currency, cleanedDescription, order_id)
-  console.log('Created payment:', payment)
+  logWithTime('Created payment:', payment)
   return payment
 }
 
@@ -264,7 +264,7 @@ async function updatePayment(paymentData) {
   } else if (status === 'failure') {
     payment = await updatePaymentStatus(order_id, status, paymentData, null, new Date())
   }
-  console.log('Updated payment:', payment)
+  logWithTime('Updated payment:', payment)
   await sendPaymentDataToClient(paymentData, status)
   return payment
 }

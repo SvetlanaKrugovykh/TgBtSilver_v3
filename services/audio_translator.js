@@ -1,6 +1,7 @@
 // src/services/audio_translator.js
 const axios = require('axios')
 const fs = require('fs')
+const { logWithTime } = require('../logger')
 require('dotenv').config()
 
 module.exports.translateText = async function (transcription, direction = 'en-ru') {
@@ -27,10 +28,10 @@ module.exports.translateText = async function (transcription, direction = 'en-ru
     const response = await axios.post(translatorUrl, data, { headers })
 
     const elapsedTime = (Date.now() - startTime) / 1000
-    console.log(`Elapsed Time: ${elapsedTime}`)
+    logWithTime(`Elapsed Time: ${elapsedTime}`)
 
     if (response.status !== 200) {
-      console.log(`Status Code: ${response.status}`)
+      logWithTime(`Status Code: ${response.status}`)
     } else {
       const responseData = response.data
       const translatedText = responseData.replyData?.translated_text?.[0] || ''

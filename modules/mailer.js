@@ -2,6 +2,7 @@ const nodemailer = require('nodemailer')
 const axios = require('axios')
 const FormData = require('form-data')
 const fs = require('fs')
+const { logWithTime } = require('../logger')
 require('dotenv').config()
 
 const { MAILHOST, MAILPORT } = process.env
@@ -30,8 +31,8 @@ async function sendMail(message, filename) {
 
     let info = await transporter.sendMail(message)
 
-    console.log("Message sent: %s", info.messageId)
-    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info))
+    logWithTime("Message sent: %s", info.messageId)
+    logWithTime("Preview URL: %s", nodemailer.getTestMessageUrl(info))
   } catch (error) {
     console.error(error)
   }
@@ -52,7 +53,7 @@ async function sendTelegram(tg_id, fileName) {
       headers: formData.getHeaders()
     })
 
-    console.log(response.data)
+    logWithTime(response.data)
     return true
   } catch (error) {
     console.error(error)
@@ -68,7 +69,7 @@ async function sendTxtMsgToTelegram(message) {
       chat_id: GROUP_ID,
       text: message,
     })
-    console.log('Message sent successfully')
+    logWithTime('Message sent successfully')
     return true
   } catch (error) {
     console.error('Error sending Telegram message:', error.message)

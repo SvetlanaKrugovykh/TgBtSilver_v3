@@ -9,6 +9,7 @@ const { getReceipt } = require('../modules/getReceipt')
 const inputLineScene = require('./inputLine')
 const checkValue = require('../modules/common')
 const { sendMail, sendTelegram } = require("../modules/mailer")
+const { logWithTime } = require('../logger')
 const { clientAdminStarterButtons, clientAdminStep2Buttons, clientAdminChoiceClientFromList } = require('../modules/keyboard')
 
 let telNumber = {}
@@ -44,11 +45,11 @@ async function getInfo(bot, msg, inputLine) {
       })
       return null
     }
-    console.log(data.toString())
+    logWithTime(data.toString())
     await bot.sendMessage(msg.chat.id, `🥎\n ${data.toString()}.\n`, { parse_mode: 'HTML' })
     return parsedData
   } catch (err) {
-    console.log(err)
+    logWithTime(err)
     return null
   }
 }
@@ -58,13 +59,13 @@ async function actionsOnId(bot, msg, inputLine) {
     if (inputLine.includes('id#')) {
       let id = inputLine.split('id#')[1]
       let msgtext = inputLine.split('id#')[2]
-      console.log('id', id)
-      console.log('msgtext', msgtext)
+      logWithTime('id', id)
+      logWithTime('msgtext', msgtext)
       try {
         await bot.sendMessage(id, `Дякуємо за звернення, відповідь: \n ${msgtext}`, { parse_mode: 'HTML' })
         await bot.sendMessage(msg.chat.id, `🥎🥎 id# request sent\n`, { parse_mode: 'HTML' })
       } catch (err) {
-        console.log(err)
+        logWithTime(err)
       }
     }
   }
@@ -148,7 +149,7 @@ async function stopService(bot, msg, txtCommand) {
 }
 
 async function invoice(bot, msg, telNumber, fileName) {
-  console.log('Reguest for receipt for', telNumber)
+  logWithTime('Reguest for receipt for', telNumber)
   await getReceipt(telNumber, msg, bot, fileName)
 }
 
@@ -161,16 +162,16 @@ async function goToHardware(bot, msg, responseData) {
     if (responseData.ResponseArray[0].HOST) {
       const HOST = responseData.ResponseArray[0].HOST.toString()
       _HOST[msg.chat.id] = HOST
-      console.log(_HOST)
+      logWithTime(_HOST)
       if (HOST.length > 12 && !Params.excludeHOSTS.includes(HOST)) {
         let match = responseData.ResponseArray[0].Comment.match(/^\w+\/\d+:\d+/)
-        console.log(HOST + ' match= ' + match)
+        logWithTime(HOST + ' match= ' + match)
         if (match) {
           const partComment = match[0]
           if (!partComment.startsWith('EPON')) {
             return null
           }
-          console.log(partComment)
+          logWithTime(partComment)
           EPON[msg.chat.id] = partComment
           await telnetCall(HOST, partComment)
             .then(store => {
@@ -178,12 +179,12 @@ async function goToHardware(bot, msg, responseData) {
               bot.sendMessage(msg.chat.id, `🥎\n ${store.toString()}.\n`, { parse_mode: 'HTML' })
             })
             .catch(err => {
-              console.log(err)
+              logWithTime(err)
             })
         }
       }
     }
-  } catch (err) { console.log(err) }
+  } catch (err) { logWithTime(err) }
 }
 
 async function clientsAdmin(bot, msg) {
@@ -208,7 +209,7 @@ async function clientAdminMenuStarter(bot, msg, clientAdminStarterButtons) {
     }
   })
 
-  console.log(((new Date()).toLocaleTimeString()))
+  logWithTime(((new Date()).toLocaleTimeString()))
 }
 
 async function clientAdminStep2Menu(bot, msg, clientAdminStep2Buttons) {
@@ -253,7 +254,7 @@ async function clientsAdminGetInfo(bot, msg, condition = undefined) {
 
     await clientAdminStep2Menu(bot, msg, clientAdminStep2Buttons)
   } catch (err) {
-    console.log(err)
+    logWithTime(err)
   }
 
 }
@@ -282,7 +283,7 @@ async function clientsAdminSwitchOnClient(bot, msg) {
     return null
   }
   const txtCommand = 'switchon#' + codeRule[msg.chat.id]
-  console.log(`Admin request for the switch on ${codeRule[msg.chat.id]}`)
+  logWithTime(`Admin request for the switch on ${codeRule[msg.chat.id]}`)
   await switchOn(bot, msg, txtCommand)
   await bot.sendMessage(msg.chat.id, '👋💙💛 Have a nice day!\n', { parse_mode: 'HTML' })
 }
@@ -293,14 +294,14 @@ async function clientsAdminSwitchOff(bot, msg) {
     return null
   }
   const txtCommand = 'switchoff#' + codeRule[msg.chat.id]
-  console.log(`Admin request for the switch off ${codeRule[msg.chat.id]}`)
+  logWithTime(`Admin request for the switch off ${codeRule[msg.chat.id]}`)
   await switchOff(bot, msg, txtCommand)
   await bot.sendMessage(msg.chat.id, '👋💙💛 Have a nice day!\n', { parse_mode: 'HTML' })
 }
 
 async function clientsAdminMonthlyOFF(bot, msg) {
   const txtCommand = 'clientsAdminMonthlyOFF#'
-  console.log(`Admin request for the monthly off sent`)
+  logWithTime(`Admin request for the monthly off sent`)
   await MonthlyOFF(bot, msg, txtCommand)
   await bot.sendMessage(msg.chat.id, '👋💙💛 Have a nice day!\n', { parse_mode: 'HTML' })
 }
@@ -311,7 +312,7 @@ async function clientsAdminSwitchOnClientAfterStopping(bot, msg) {
     return null
   }
   const txtCommand = 'switchon#' + codeRule[msg.chat.id]
-  console.log(`Admin request for the switch on ${codeRule[msg.chat.id]}`)
+  logWithTime(`Admin request for the switch on ${codeRule[msg.chat.id]}`)
   await switchOnAfterStop(bot, msg, txtCommand)
   await bot.sendMessage(msg.chat.id, '👋💙💛 Have a nice day!\n', { parse_mode: 'HTML' })
 }
@@ -321,26 +322,26 @@ async function clientsAdminRedirectedClientSwitchOn(bot, msg) {
   try {
     const ip = IP_address[msg.chat.id].replace(/\s+/g, '')
     if (!ip || ip.length < 7) {
-      console.log(`ERROR in request for the Redirected Client switch on ${ip}`)
+      logWithTime(`ERROR in request for the Redirected Client switch on ${ip}`)
       return null
     }
-    console.log(`Admin request for the Redirected Client switch on ${codeRule[msg.chat.id]}`)
+    logWithTime(`Admin request for the Redirected Client switch on ${codeRule[msg.chat.id]}`)
     await switchRedirectedClientOn(bot, msg, ip)
   } catch (err) {
-    console.log(err)
+    logWithTime(err)
   }
 }
 async function clientsAdminGetArpMac(bot, msg) {
   try {
     const ip = IP_address[msg.chat.id].replace(/\s+/g, '')
     if (!ip || ip.length < 7) {
-      console.log(`ERROR in request for the get mac for ip ${ip}`)
+      logWithTime(`ERROR in request for the get mac for ip ${ip}`)
       return null
     }
-    console.log(`Admin request for get mac for ip ${ip} sent`)
+    logWithTime(`Admin request for get mac for ip ${ip} sent`)
     await GetArpMac(bot, msg, ip)
   } catch (err) {
-    console.log(err)
+    logWithTime(err)
   }
 }
 
@@ -350,7 +351,7 @@ async function clientsAdminGetInvoice(bot, msg) {
     await bot.sendMessage(msg.chat.id, 'Wrong telNumber. Операцію скасовано. Треба повторити пошук\n', { parse_mode: 'HTML' })
     return null
   }
-  console.log(`Admin request for the receipt ${telNumber[msg.chat.id]}`)
+  logWithTime(`Admin request for the receipt ${telNumber[msg.chat.id]}`)
   invoice(bot, msg, telNumber[msg.chat.id], fileName)
   await bot.sendMessage(msg.chat.id, '👋💙💛 Have a nice day!\n', { parse_mode: 'HTML' })
 }
@@ -362,7 +363,7 @@ async function clientsAdminStopClientService(bot, msg) {
     return null
   }
   const txtCommand = 'stopService#' + codeRule[msg.chat.id]
-  console.log(`Admin request for the stop service on ${codeRule[msg.chat.id]}`)
+  logWithTime(`Admin request for the stop service on ${codeRule[msg.chat.id]}`)
   await stopService(bot, msg, txtCommand)
   await bot.sendMessage(msg.chat.id, '👋💙💛 Have a nice day!\n', { parse_mode: 'HTML' })
 }
@@ -378,7 +379,7 @@ async function clientsAdminCheckHWService(bot, msg, request) {
     return null
   }
   if (EPON[msg.chat.id].length > 5) {
-    console.log(`Admin request for the check ${request} on ${_HOST[msg.chat.id]} for ${EPON[msg.chat.id]}`)
+    logWithTime(`Admin request for the check ${request} on ${_HOST[msg.chat.id]} for ${EPON[msg.chat.id]}`)
     await telnetCall(_HOST[msg.chat.id], EPON[msg.chat.id], request)
       .then(store => {
         console.dir(store)
@@ -395,7 +396,7 @@ async function sendInvoice(_bot, msg, recID = false) {
   try {
     if (!fileName[msg.chat.id]) return
     if (fileName[msg.chat.id].length === 0) {
-      console.log("Invalid fileName:", fileName)
+      logWithTime("Invalid fileName:", fileName)
       return
     }
 
@@ -413,7 +414,7 @@ async function sendInvoice(_bot, msg, recID = false) {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email[msg.chat.id])) {
-      console.log("Invalid email address:", email)
+      logWithTime("Invalid email address:", email)
       return
     }
     const message = {
@@ -426,7 +427,7 @@ async function sendInvoice(_bot, msg, recID = false) {
 
     sendMail(message, fileName[msg.chat.id])
   } catch (err) {
-    console.log(err)
+    logWithTime(err)
   }
 }
 //#endregion

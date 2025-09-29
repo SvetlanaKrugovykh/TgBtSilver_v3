@@ -5,6 +5,7 @@ const ping = require('ping')
 const sendReqToDB = require('../modules/tlg_to_DB')
 const { plot } = require('../services/plots')
 const axios = require('axios')
+const { logWithTime } = require('../logger')
 require('dotenv').config()
 
 async function netwareAdmin(bot, msg) {
@@ -51,7 +52,7 @@ async function netwareAdminPing(bot, msg) {
     }
   }
   catch (err) {
-    console.log(err)
+    logWithTime(err)
   }
 }
 async function netwareAdminDeadIPCheck(bot, msg) {
@@ -68,12 +69,12 @@ async function netwareAdminDeadIPCheck(bot, msg) {
     }
   }
   catch (err) {
-    console.log(err)
+    logWithTime(err)
   }
 }
 
 async function getAndSendReportForNetProblems(bot, msg, data) {
-  console.log(`Admin request for the nagios report ${msg.chat.id}`)
+  logWithTime(`Admin request for the nagios report ${msg.chat.id}`)
   getNagiosReport(bot, msg)
   await bot.sendMessage(msg.chat.id, '👋💙💛 Have a nice day!\n', { parse_mode: 'HTML' })
 }
@@ -104,7 +105,7 @@ async function reportOfNEtProblems(bot, msg, data) {
 
 async function netwareAdminServiceCheck(bot, msg) {
   try {
-    console.log('netwareAdminServiceCheck')
+    logWithTime('netwareAdminServiceCheck')
     const now = new Date()
     const period = {
       day: now.getDate().toString(),
@@ -114,12 +115,12 @@ async function netwareAdminServiceCheck(bot, msg) {
     plot(bot, msg, period, '192.168.65.239_UP%')
   }
   catch (err) {
-    console.log(err)
+    logWithTime(err)
   }
 }
 
 async function getAndSendMrtgReport(bot, msg) {
-  console.log(`Admin request for the mrtg report ${msg.chat.id}`)
+  logWithTime(`Admin request for the mrtg report ${msg.chat.id}`)
   try {
 
     const data = {

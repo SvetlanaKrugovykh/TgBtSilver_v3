@@ -12,6 +12,7 @@ const paymentScene = require('./payments')
 const signUpForm = require('./signUp').signUpForm
 const { dbScene, dbShow } = require('../db/dbScene')
 const handleVoiceMessage = require('./handleVoiceMessage')
+const { logWithTime } = require('../logger')
 const regexIP = /^(\?|)\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(#|)$/
 
 function getCallbackData(text) {
@@ -34,14 +35,14 @@ async function handler(bot, msg, webAppUrl) {
   if (msg.voice) {
     const adminUser = users.find(user => user.id === msg.chat.id)
     if (adminUser) {
-      console.log('The voice message is:', msg.voice)
+      logWithTime('The voice message is:', msg.voice)
       await handleVoiceMessage(bot, msg?.chat?.id, msg)
     }
     return
   }
 
   const data = getCallbackData(msg.text)
-  console.log('The choise is:', data)
+  logWithTime('The choise is:', data)
 
   switch (data) {
     case '0_1':
@@ -150,12 +151,12 @@ async function handler(bot, msg, webAppUrl) {
       await clientsAdminGetInfo(bot, msg, 'return')
       break
     default:
-      console.log(`default: ${msg.text}`)
+      logWithTime(`default: ${msg.text}`)
       try {
         if (msg.text.length > 3 && msg.text.includes('#H') && !regexIP.test(msg.text)) {
           clientsAdminGetInfo(bot, msg, msg.text)
         }
-      } catch (error) { console.log(error) }
+      } catch (error) { logWithTime(error) }
       break
   }
 }

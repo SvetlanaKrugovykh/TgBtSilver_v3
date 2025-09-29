@@ -1,13 +1,14 @@
 const formService = require('../services/formService')
+const { logWithTime } = require('../logger')
 
 const handleFormSubmit = (req, res) => {
   try {
     const phone = req.body.phone
     const name = req.body.name
 
-    console.log('Received Form Data:')
-    console.log('Phone:', phone)
-    console.log('Name:', name)
+    logWithTime('Received Form Data:')
+    logWithTime('Phone:', phone)
+    logWithTime('Name:', name)
 
     formService.processFormData(phone, name)
 

@@ -1,3 +1,4 @@
+const { logWithTime } = require('../logger')
 const supportedDirections = [
   "en_es",
   "en_fr",
@@ -29,7 +30,7 @@ async function detectLanguage(transcription) {
   if (!supportedDirections.includes(direction))
     direction = process.env.DIRECTION;
 
-  console.log(`Language code : ${langCode} Direction : ${direction}`)
+  logWithTime(`Language code : ${langCode} Direction : ${direction}`)
   return direction
 }
 

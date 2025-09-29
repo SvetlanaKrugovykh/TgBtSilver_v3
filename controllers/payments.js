@@ -2,6 +2,7 @@ require('dotenv').config()
 const dbRequests = require('../db/requests')
 const inputLineScene = require('./inputLine')
 const sendReqToDB = require('../modules/tlg_to_DB')
+const { logWithTime } = require('../logger')
 const formPaymentLink = require('../services/paymentService').formPaymentLink
 
 async function paymentScene(bot, msg) {
@@ -16,10 +17,10 @@ async function paymentScene(bot, msg) {
 
     const chatId = msg.chat.id
     const contract = await dbRequests.getContractByTgID(chatId)
-    console.log(contract)
+    logWithTime(contract)
 
     if (!contract?.organization_abbreviation) {
-      console.log('No contract found')
+      logWithTime('No contract found')
       await bot.sendMessage(chatId, '⚠️Ваш договір не знайдено в системі!\n Зверніться до служби підтримки за допомогою', { parse_mode: "HTML" })
       return null
     }
@@ -51,7 +52,7 @@ async function paymentScene(bot, msg) {
     const commissionRate = 0.015;
     const totalAmount = (Math.ceil((amount / (1 - commissionRate)) * 100) / 100).toFixed(2)
 
-    console.log(totalAmount)
+    logWithTime(totalAmount)
     let paymentLink = await formPaymentLink(bot, chatId, abbreviation, contract, totalAmount)
     const urlLink = paymentLink?.message?.paymentLink || null
 
@@ -61,7 +62,7 @@ async function paymentScene(bot, msg) {
     }
 
   } catch (err) {
-    console.log(err)
+    logWithTime(err)
   }
 }
 

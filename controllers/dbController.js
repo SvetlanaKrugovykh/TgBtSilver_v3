@@ -4,6 +4,7 @@ const dbRequests = require('../db/requests')
 const { parse } = require('dotenv')
 const sendReqToDB = require('../modules/tlg_to_DB')
 const { sendTxtMsgToTelegram } = require('../modules/mailer')
+const { logWithTime } = require('../logger')
 
 async function getDataArray_(reqType, bot, msg, txtCommand = '') {
   const response = await sendReqToDB(reqType, '', txtCommand)
@@ -23,12 +24,12 @@ module.exports.dbUpdate = async function (request, reply) {
     let payment = null
     if (status === 'success') {
       payment = await dbRequests.updatePaymentStatus(order_id, status, data, new Date())
-      console.log('Updated payment in local DB (for success):', payment)
+      logWithTime('Updated payment in local DB (for success):', payment)
       await dbRequests.sendPaymentDataToClient(data, status)
     } else if (status === 'failure') {
       payment = await dbRequests.updatePaymentStatus(order_id, status, data, null, new Date())
     }
-    console.log('Updated payment:', payment)
+    logWithTime('Updated payment:', payment)
     await dbRequests.sendPaymentDataToClient(data, status)
     if (payment) {
       if (typeof payment === 'string') {
@@ -61,9 +62,9 @@ module.exports.dbAddUser = async function (request, reply) {
       let contract = null
 
       for (const item of dataArray) {
-        console.log(item)
+        logWithTime(item)
         contract = await dbRequests.getContractByIP(item.tg_id)
-        console.log('getContractByIP', contract)
+        logWithTime('getContractByIP', contract)
         if (contract === null) {
           const org = await dbRequests.getOrgByAbbreviation(item.abbreviation)
           const organization_id = org.id || 1
@@ -83,7 +84,7 @@ module.exports.dbAddUser = async function (request, reply) {
       }
       return contract
     } else {
-      console.log(`No data found for IP address: ${ip_address}`)
+      logWithTime(`No data found for IP address: ${ip_address}`)
     }
   } catch (err) {
     console.error('Error in dbAddUser:', err)
@@ -109,21 +110,21 @@ module.exports.dbAddPayment = async function (request, reply) {
       let payment = null
 
       for (const item of dataArray) {
-        console.log(item)
+        logWithTime(item)
         contract = await dbRequests.getContractByIP(item.tg_id)
-        console.log('getContractByIP', contract)
+        logWithTime('getContractByIP', contract)
         if (contract !== null) {
           const currency = 'UAH'
           const description = `Оплата за послугу. Код оплати: ${contract.payment_code}. Сума оплати: ${amountNumber} грн.`
           payment = await dbRequests.createPayment(contract.id, contract.organization_id, amountNumber, currency, description, `order_${Date.now()}`)
-          console.log(payment)
+          logWithTime(payment)
         } else {
-          console.log(`Contract for ${ip_address} not found`)
+          logWithTime(`Contract for ${ip_address} not found`)
         }
       }
       return payment
     } else {
-      console.log(`No data found for IP address: ${ip_address}`)
+      logWithTime(`No data found for IP address: ${ip_address}`)
     }
   } catch (err) {
     console.error('Error in dbAddPayment:', err)

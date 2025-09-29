@@ -4,6 +4,7 @@ const fs = require('fs')
 const path = require('path')
 const axios = require('axios')
 const FormData = require('form-data')
+const { logWithTime } = require('../logger')
 require('dotenv').config()
 
 module.exports.sendAudio = async function (filePath, segmentNumber) {
@@ -62,12 +63,12 @@ module.exports.sendAudio = async function (filePath, segmentNumber) {
       if (DELETE_WAV_FILES === 1) {
         try {
           fs.unlinkSync(filePath)
-          console.log(`File ${filePath} deleted successfully.`)
+          logWithTime(`File ${filePath} deleted successfully.`)
         } catch (err) {
           console.error(`Error deleting file ${filePath}: ${err}`)
         }
       }
-      console.log(`Segment ${segmentNumber} sent successfully in ${elapsedTime.toFixed(2)} seconds`)
+      logWithTime(`Segment ${segmentNumber} sent successfully in ${elapsedTime.toFixed(2)} seconds`)
 
       let translatedText
       translatedText = responseJson.replyData?.translated_text

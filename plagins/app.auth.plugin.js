@@ -1,6 +1,7 @@
 const fp = require('fastify-plugin')
 const ipRangeCheck = require('ip-range-check')
 const authService = require('../services/authService')
+const { logWithTime } = require('../logger')
 require('dotenv').config()
 const allowedIPAddresses = process.env.API_ALLOWED_IPS.split(',')
 const allowedSubnets = process.env.API_ALLOWED_SUBNETS.split(',')
@@ -8,7 +9,7 @@ const allowedSubnets = process.env.API_ALLOWED_SUBNETS.split(',')
 const logIPMessage = (clientIP, isAllowed) => {
   const currentDate = new Date()
   const message = `${currentDate}: ${isAllowed ? 'Allowed' : 'Forbidden'} IP: ${clientIP}`
-  console.log(message)
+  logWithTime(message)
 }
 
 const restrictIPMiddleware = (req, reply, done) => {
@@ -44,11 +45,11 @@ async function authPlugin(fastify, _ = {}) {
           //clientId: decoded.clientId
         }
       } catch (e) {
-        console.log(e)
+        logWithTime(e)
       }
       const decodedToken = await authService.checkAccessToken(authorization)
       if (decodedToken) {
-        console.log('decodedToken:', decodedToken)
+        logWithTime('decodedToken:', decodedToken)
       }
     }
   })

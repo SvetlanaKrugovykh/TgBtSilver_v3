@@ -141,7 +141,7 @@ function clientAdminChoiceClientFromList(bot, msg, parsedData) {
 
     return clientChoiceButtons
   } catch (err) {
-    console.log(err)
+    logWithTime(err)
   }
 }
 

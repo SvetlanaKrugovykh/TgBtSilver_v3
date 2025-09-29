@@ -19,9 +19,9 @@ async function dbScene(bot, msg) {
       const dataArray = data.ResponseArray
 
       for (const item of dataArray) {
-        console.log(item)
+        logWithTime(item)
         const org = await dbRequests.getOrgByAbbreviation(item.abbreviation)
-        console.log(org)
+        logWithTime(org)
         if (org === null) {
           const data = {
             organization_name: item.name,
@@ -40,9 +40,9 @@ async function dbScene(bot, msg) {
       const dataArray = data.ResponseArray
 
       for (const item of dataArray) {
-        console.log(item)
+        logWithTime(item)
         const contract = await dbRequests.getContractByTgID(item.tg_id)
-        console.log(contract)
+        logWithTime(contract)
         if (contract === null) {
           const org = await dbRequests.getOrgByAbbreviation(item.abbreviation)
           const organization_id = org.id || 1
@@ -83,9 +83,9 @@ async function dbShow(bot, msg) {
   try {
     const n = 5
     const contracts = await dbRequests.getLastNContracts(n)
-    console.log(contracts)
+    logWithTime(contracts)
     const payments = await dbRequests.getLastNPayments(n)
-    console.log(payments)
+    logWithTime(payments)
 
     let formattedContracts
     if (contracts && contracts.length > 0) {

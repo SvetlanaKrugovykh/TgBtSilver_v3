@@ -1,4 +1,5 @@
 const axios = require(`axios`)
+const { logWithTime } = require('../logger')
 const URL = process.env.URL
 const AUTH_TOKEN = process.env.AUTH_TOKEN
 
@@ -11,7 +12,7 @@ module.exports.sendReqToDB = async function (reqType, text, employeesFIOArray) {
     employeesString = ''
   }
   let dataString = text + employeesString
-  console.log(dataString)
+  logWithTime(dataString)
 
   try {
     const response = await axios({
@@ -27,7 +28,7 @@ module.exports.sendReqToDB = async function (reqType, text, employeesFIOArray) {
       }
     })
     if (!response.status == 200) {
-      console.log(response.status)
+      logWithTime(response.status)
       return null
     } else {
       let dataString = response.data
@@ -36,7 +37,7 @@ module.exports.sendReqToDB = async function (reqType, text, employeesFIOArray) {
     }
 
   } catch (err) {
-    console.log(err)
+    logWithTime(err)
     return null
   }
 }

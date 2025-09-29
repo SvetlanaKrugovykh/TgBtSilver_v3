@@ -1,4 +1,5 @@
 const { globalBuffer } = require('../globalBuffer')
+const { logWithTime } = require('../logger')
 
 module.exports.handleAdminResponse = async function (bot, adminMsg) {
   try {
@@ -39,7 +40,7 @@ module.exports.respondToSelectedClient = async function (bot, adminMsg, targetCh
 
     const messageToRespond = globalBuffer.msgQueue[targetChatId].shift()
     if (messageToRespond.type === 'text') {
-      console.log(`to ${targetChatId}: Admin response:\n${adminMsg.text}`)
+      logWithTime(`to ${targetChatId}: Admin response:\n${adminMsg.text}`)
     }
 
     if (globalBuffer.msgQueue[targetChatId].length === 0) {

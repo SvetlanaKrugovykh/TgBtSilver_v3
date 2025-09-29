@@ -9,6 +9,7 @@ const authPlugin = require('./plagins/app.auth.plugin')
 const dbPlugin = require('./plagins/db.plugin')
 const { handleAdminResponse } = require('./modules/adminMessageHandler')
 const menu = require('./modules/common_menu')
+const { logWithTime } = require('./logger')
 const cors = require('cors')
 require('dotenv').config()
 
@@ -51,8 +52,8 @@ bot.on('message', async (msg) => {
   const ctx = msg
 
   if (text === '/start') {
-    console.log(new Date())
-    console.log(ctx.chat)
+    logWithTime(new Date())
+    logWithTime(ctx.chat)
     const adminUser = users.find(user => user.id === ctx.chat.id)
     if (!adminUser) {
       try {
@@ -63,13 +64,13 @@ bot.on('message', async (msg) => {
           await guestMenu(bot, msg, guestStartButtons)
         }
       } catch (err) {
-        console.log(err)
+        logWithTime(err)
       }
     } else {
       try {
         await adminMenu(bot, msg, adminStartButtons)
       } catch (err) {
-        console.log(err)
+        logWithTime(err)
       }
     }
   } else {
@@ -79,7 +80,7 @@ bot.on('message', async (msg) => {
   if (msg?.web_app_data?.data) {
     try {
       const data = JSON.parse(msg?.web_app_data?.data)
-      console.log(data)
+      logWithTime(data)
       await bot.sendMessage(chatId, 'Дякуємо за зворотній зв`язок!')
       await bot.sendMessage(chatId, 'Ваш emal: ' + data?.email)
       await bot.sendMessage(chatId, 'Ваш договір: ' + data?.contract)
@@ -87,7 +88,7 @@ bot.on('message', async (msg) => {
       await singUpDataSave(bot, chatId, data)
       return
     } catch (e) {
-      console.log(e)
+      logWithTime(e)
     }
   }
 
@@ -105,17 +106,17 @@ bot.on('callback_query', async (callbackQuery) => {
     await bot.answerCallbackQuery(callbackQuery.id)
     const action = callbackQuery.data
     const msg = callbackQuery.message
-    console.log('Callback query received:', action)
+    logWithTime('Callback query received:', action)
 
     if (globalBuffer[chatId] === undefined) globalBuffer[chatId] = {}
 
     if (action.startsWith('select_client_')) {
       const targetChatId = action.split('_')[2]
-      console.log(`Target client ID: ${targetChatId}`)
+      logWithTime(`Target client ID: ${targetChatId}`)
       await menu.notTextScene(bot, msg, "en", true, false, targetChatId)
     }
   } catch (error) {
-    console.log(error)
+    logWithTime(error)
   }
 })
 

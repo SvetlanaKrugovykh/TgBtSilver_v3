@@ -1,4 +1,5 @@
 const net = require('net')
+const { logWithTime } = require('../logger')
 const PORT = 23 // Telnet port
 const { TelnetParams } = require('../data/telnet.model')
 
@@ -45,7 +46,7 @@ async function telnetCall(HOST, replaceStr, _conditional = undefined) {
         host: HOST,
         localAddress: Params.sourceIP
       }, () => {
-        console.log('Connected to network device')
+        logWithTime('Connected to network device')
       })
 
       let buffer = ''
@@ -62,7 +63,7 @@ async function telnetCall(HOST, replaceStr, _conditional = undefined) {
             if (i === ArrayOfCommands.length) {
               if (buffer.includes(_replaceStr)) store.push(buffer)
               client.on('close', () => {
-                console.log('Connection closed')
+                logWithTime('Connection closed')
                 resolve(store)
               })
             }
@@ -76,7 +77,7 @@ async function telnetCall(HOST, replaceStr, _conditional = undefined) {
       })
 
     } catch (error) {
-      console.log(error)
+      logWithTime(error)
     }
   })
 }

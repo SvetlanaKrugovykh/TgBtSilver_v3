@@ -1,7 +1,8 @@
 
-const sendReqToDB = require('../modules/tlg_to_DB');
-const { getReceipt } = require('../modules/getReceipt');
-const inputLineScene = require('./inputLine');
+const sendReqToDB = require('../modules/tlg_to_DB')
+const { getReceipt } = require('../modules/getReceipt')
+const inputLineScene = require('./inputLine')
+const { logWithTime } = require('../logger')
 
 async function receiptScene(bot, msg, isAuthorized) {
   try {
@@ -20,8 +21,8 @@ async function receiptScene(bot, msg, isAuthorized) {
         await bot.sendMessage(chatId, "😡Номер телефону введено помилково\nСеанс буде завершено.", { parse_mode: "HTML" });
       }
     }
-    console.log(new Date());
-    console.log('Tel№:', telNumber);
+    logWithTime(new Date());
+    logWithTime('Tel№:', telNumber);
     sendReqToDB('__SaveTlgMsg__', msg.chat, telNumber);
 
     if (telNumber.length < 7 || telNumber.length > 12) {
@@ -30,7 +31,7 @@ async function receiptScene(bot, msg, isAuthorized) {
       await getReceipt(telNumber, msg, bot);
     }
   } catch (err) {
-    console.log(err);
+    logWithTime(err);
   }
 };
 

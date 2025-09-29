@@ -18,7 +18,7 @@ async function execPgQuery(query, values, commit = false, all = false) {
     client = await pool.connect()
 
     if (DEBUG_LEVEL > 0) {
-      console.log(`execQuery ${query},${values.toString()} client:${client.processID} ${client.database} ${client.host}:${client.port} ${client.user}`)
+      logWithTime(`execQuery ${query},${values.toString()} client:${client.processID} ${client.database} ${client.host}:${client.port} ${client.user}`)
     }
 
     result = await client.query(query, values)

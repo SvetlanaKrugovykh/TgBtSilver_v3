@@ -48,7 +48,7 @@ async function getContactDataFromTg(client, phone_number) {
     });
 
     if (!importResult || !importResult.imported || importResult.imported.length === 0) {
-      console.log('No contacts imported');
+      logWithTime('No contacts imported');
       return null;
     }
 
@@ -77,7 +77,7 @@ async function startTelegramClient() {
 
 
 
-    console.log('Loading interactive example...')
+    logWithTime('Loading interactive example...')
     const client = new TelegramClient(stringSession, apiId, apiHash, {
       connectionRetries: 5,
     })
@@ -86,31 +86,31 @@ async function startTelegramClient() {
       phoneNumber: async () => phoneNumber,
       phoneCode: async () => await input.text('Please enter the code you received: '),
       password: async () => tg_passwd,
-      onError: (err) => console.log('Error:', err.message),
+      onError: (err) => logWithTime('Error:', err.message),
     })
 
-    console.log('You are now connected.')
-    console.log('Your session string:', client.session.save())
+    logWithTime('You are now connected.')
+    logWithTime('Your session string:', client.session.save())
     await client.sendMessage('me', { message: 'It works!' })
     await client.connect()
-    console.log('Connected to Telegram  server')
+    logWithTime('Connected to Telegram  server')
 
     const result = await client.invoke(
       new Api.contacts.ResolvePhone({
         phone: "+380674439567",
       })
     )
-    console.log(result)
+    logWithTime(result)
 
     for (const item of dataArray) {
-      console.log(item)
+      logWithTime(item)
       const phone_number = item.phone_number
       const searchInfo = await getContactDataFromTg(client, phone_number)
       if (searchInfo === null) {
-        console.log('No contact data found')
+        logWithTime('No contact data found')
         continue
       }
-      console.log(searchInfo)
+      logWithTime(searchInfo)
       return
     }
 

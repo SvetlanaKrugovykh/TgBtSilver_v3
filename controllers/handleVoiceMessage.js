@@ -4,6 +4,7 @@ const axios = require('axios')
 const { detectLanguage } = require('../services/languageDetector.cjs')
 const { sendAudio } = require('../services/audio_sender')
 const { translateText } = require('../services/audio_translator')
+const { logWithTime } = require('../logger')
 require('dotenv').config()
 
 async function handleVoiceMessage(bot, chatId, voiceMsg) {
@@ -19,7 +20,7 @@ async function handleVoiceMessage(bot, chatId, voiceMsg) {
       const filePath = file.file_path
       const url = `https://api.telegram.org/file/bot${process.env.TELEGRAM_BOT_TOKEN}/${filePath}`
 
-      console.log(`Fetching file from URL: ${url}`)
+      logWithTime(`Fetching file from URL: ${url}`)
 
       const tempFilePath = path.join(TEMP_DIR, `${chatId}_${Date.now()}.ogg`)
 
@@ -30,17 +31,17 @@ async function handleVoiceMessage(bot, chatId, voiceMsg) {
       }
 
       fs.writeFileSync(tempFilePath, response.data)
-      console.log(`Voice message saved to ${tempFilePath}`)
+      logWithTime(`Voice message saved to ${tempFilePath}`)
       await bot.sendMessage(chatId, '🎙️ Ваше голосове повідомлення збережено.', { parse_mode: 'HTML' })
       await bot.sendMessage(chatId, "🎙️ ")
       const segmentNumber = Math.floor(Math.random() * 99) + 1
       const transcription = await sendAudio(tempFilePath, segmentNumber)
       await bot.sendMessage(chatId, `Ваш текст: ${transcription}.`, { parse_mode: 'HTML' })
-      console.log(`Transcription: ${transcription}`)
+      logWithTime(`Transcription: ${transcription}`)
       const direction = await detectLanguage(transcription)
       const LangBridgeTxt = await translateText(transcription, direction)
       await bot.sendMessage(chatId, `Ваш Переклад: ${LangBridgeTxt}.`, { parse_mode: 'HTML' })
-      console.log(`Translated Text: ${LangBridgeTxt}`)
+      logWithTime(`Translated Text: ${LangBridgeTxt}`)
 
     } catch (error) {
       console.error('Error during voice message handling:', error)
