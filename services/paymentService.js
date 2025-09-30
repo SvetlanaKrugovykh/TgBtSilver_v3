@@ -1,4 +1,4 @@
-const axios = require('axios')
+const { custom_axios } = require('../custom_axios')
 const dbRequests = require('../db/requests')
 const { logWithTime } = require('../logger')
 
@@ -7,17 +7,15 @@ module.exports.formPaymentLink = async function (bot, chatId, abbreviation, cont
   const formPayLinkURL = process.env.FORM_PAY_LINK_URL
 
   try {
-    const response = await axios.post(
-      formPayLinkURL,
-      {
+    const response = await custom_axios({
+      method: 'post',
+      url: formPayLinkURL,
+      data: {
         abbreviation,
         'payment_code': contract.payment_code,
         amount
-      },
-      {
-        localAddress: process.env.SOURCE_AXIOS_IP
       }
-    )
+    })
 
     if (response.status === 200) {
       const currency = 'UAH'

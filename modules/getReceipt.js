@@ -1,4 +1,4 @@
-const axios = require('axios')
+const { custom_axios } = require('../custom_axios')
 const fs = require('fs')
 const fsPromises = require('fs').promises
 const { logWithTime } = require('../logger')
@@ -6,7 +6,7 @@ const { AUTH_TOKEN, URL } = process.env
 
 async function getReceipt(telNumber, msg, bot, fileName) {
   try {
-    const response = await axios({
+    const response = await custom_axios({
       method: 'post',
       url: URL,
       timeout: 90000,
@@ -17,9 +17,9 @@ async function getReceipt(telNumber, msg, bot, fileName) {
       },
       data: {
         Query: `Execute;GetReceipt;${telNumber};КОНЕЦ`,
-      },
-      localAddress: process.env.SOURCE_AXIOS_IP
+      }
     })
+
     if (!response.status == 200) {
       logWithTime(response.status)
       return null
@@ -59,7 +59,7 @@ async function getReceipt(telNumber, msg, bot, fileName) {
 
 async function getNagiosReport(bot, msg) {
   try {
-    const response = await axios({
+    const response = await custom_axios({
       method: 'post',
       url: URL,
       timeout: 90000,
@@ -70,8 +70,7 @@ async function getNagiosReport(bot, msg) {
       },
       data: {
         Query: `Execute;GetNagiosReport;Nothing;КОНЕЦ`,
-      },
-      localAddress: process.env.SOURCE_AXIOS_IP
+      }
     })
 
     if (response.status !== 200) {

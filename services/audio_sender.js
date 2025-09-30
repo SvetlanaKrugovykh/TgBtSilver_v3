@@ -2,7 +2,7 @@
 
 const fs = require('fs')
 const path = require('path')
-const axios = require('axios')
+const { custom_axios } = require('../custom_axios')
 const FormData = require('form-data')
 const { logWithTime } = require('../logger')
 require('dotenv').config()
@@ -48,7 +48,12 @@ module.exports.sendAudio = async function (filePath, segmentNumber) {
 
   try {
     const startTime = Date.now()
-    const response = await axios.post(serverUrl, data, { headers, localAddress: process.env.SOURCE_AXIOS_IP })
+    const response = await custom_axios({
+      method: 'post',
+      url: serverUrl,
+      data: data,
+      headers: headers
+    })
 
     const elapsedTime = (Date.now() - startTime) / 1000
 

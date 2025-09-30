@@ -1,4 +1,4 @@
-const axios = require('axios')
+const { custom_axios } = require('../custom_axios')
 const { logWithTime } = require('../logger')
 
 const processFormData = async function (phoneNumber, name) {
@@ -7,11 +7,14 @@ const processFormData = async function (phoneNumber, name) {
   const apiKey = process.env.TELEGRAM_BOT_TOKEN
 
   try {
-    const response = await axios.post(`https://api.telegram.org/bot${apiKey}/sendMessage`, {
-      chat_id: chatId,
-      text: message,
+    const response = await custom_axios({
+      method: 'post',
+      url: `https://api.telegram.org/bot${apiKey}/sendMessage`,
+      data: {
+        chat_id: chatId,
+        text: message,
+      }
     })
-
     if (response.status === 200) {
       logWithTime('Message sent to the Telegram group successfully!')
     } else {

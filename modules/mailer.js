@@ -1,5 +1,5 @@
 const nodemailer = require('nodemailer')
-const axios = require('axios')
+const { custom_axios } = require('../custom_axios')
 const FormData = require('form-data')
 const fs = require('fs')
 const { logWithTime } = require('../logger')
@@ -49,9 +49,11 @@ async function sendTelegram(tg_id, fileName) {
       contentType: 'application/pdf'
     })
 
-    const response = await axios.post(url, formData, {
-      headers: formData.getHeaders(),
-      localAddress: process.env.SOURCE_AXIOS_IP
+    const response = await custom_axios({
+      method: 'post',
+      url: url,
+      data: formData,
+      headers: formData.getHeaders()
     })
 
     logWithTime(response.data)
@@ -66,10 +68,13 @@ async function sendTxtMsgToTelegram(message) {
   const apiToken = process.env.TELEGRAM_BOT_TOKEN
   const GROUP_ID = process.env.GROUP_ID
   try {
-    await axios.post(`https://api.telegram.org/bot${apiToken}/sendMessage`, {
-      chat_id: GROUP_ID,
-      text: message,
-      localAddress: process.env.SOURCE_AXIOS_IP
+    await custom_axios({
+      method: 'post',
+      url: `https://api.telegram.org/bot${apiToken}/sendMessage`,
+      data: {
+        chat_id: GROUP_ID,
+        text: message
+      }
     })
     logWithTime('Message sent successfully')
     return true

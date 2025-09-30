@@ -1,6 +1,6 @@
 const fs = require('fs')
 const path = require('path')
-const axios = require('axios')
+const { custom_axios } = require('../custom_axios')
 const { detectLanguage } = require('../services/languageDetector.cjs')
 const { sendAudio } = require('../services/audio_sender')
 const { translateText } = require('../services/audio_translator')
@@ -24,9 +24,10 @@ async function handleVoiceMessage(bot, chatId, voiceMsg) {
 
       const tempFilePath = path.join(TEMP_DIR, `${chatId}_${Date.now()}.ogg`)
 
-      const response = await axios.get(url, {
-        responseType: 'arraybuffer',
-        localAddress: process.env.SOURCE_AXIOS_IP
+      const response = await custom_axios({
+        method: 'get',
+        url,
+        responseType: 'arraybuffer'
       })
 
       if (response.status !== 200) {

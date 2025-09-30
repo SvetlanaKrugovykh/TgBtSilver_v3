@@ -1,4 +1,4 @@
-const axios = require(`axios`)
+const { custom_axios } = require('../custom_axios')
 const { logWithTime } = require('../logger')
 const URL = process.env.URL
 const AUTH_TOKEN = process.env.AUTH_TOKEN
@@ -15,7 +15,7 @@ module.exports.sendReqToDB = async function (reqType, text, employeesFIOArray) {
   logWithTime(dataString)
 
   try {
-    const response = await axios({
+    const response = await custom_axios({
       method: 'post',
       url: URL,
       responseType: 'string',
@@ -25,8 +25,7 @@ module.exports.sendReqToDB = async function (reqType, text, employeesFIOArray) {
       },
       data: {
         Query: `ВЫПОЛНИТЬ;${reqType};${dataString};КОНЕЦ`,
-      },
-      localAddress: process.env.SOURCE_AXIOS_IP
+      }
     })
     if (!response.status == 200) {
       logWithTime(response.status)
