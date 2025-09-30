@@ -1,4 +1,4 @@
-const { custom_axios } = require('../custom_axios')
+const custom_axios = require('../custom_axios')
 const { logWithTime } = require('../logger')
 const URL = process.env.URL
 const AUTH_TOKEN = process.env.AUTH_TOKEN

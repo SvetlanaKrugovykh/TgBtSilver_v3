@@ -1,5 +1,5 @@
 // src/services/audio_translator.js
-const { custom_axios } = require('../custom_axios')
+const custom_axios = require('../custom_axios')
 const fs = require('fs')
 const { logWithTime } = require('../logger')
 require('dotenv').config()

@@ -1,4 +1,4 @@
-const { custom_axios } = require('../custom_axios')
+const custom_axios = require('../custom_axios')
 const { logWithTime } = require('../logger')
 
 const processFormData = async function (phoneNumber, name) {

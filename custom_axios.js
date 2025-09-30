@@ -1,4 +1,5 @@
 const axios = require('axios')
+require('dotenv').config()
 
 const SOURCE_AXIOS_IP = process.env.SOURCE_AXIOS_IP
 
@@ -14,10 +15,7 @@ async function warmUpConnection(testUrl = 'https://google.com') {
 
 async function custom_axios(config) {
   await warmUpConnection()
-
-  if (!config.localAddress) {
-    config.localAddress = SOURCE_AXIOS_IP
-  }
+  config.localAddress = config.localAddress || SOURCE_AXIOS_IP
   return axios(config)
 }
 

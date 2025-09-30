@@ -1,5 +1,5 @@
 const nodemailer = require('nodemailer')
-const { custom_axios } = require('../custom_axios')
+const custom_axios = require('../custom_axios')
 const FormData = require('form-data')
 const fs = require('fs')
 const { logWithTime } = require('../logger')

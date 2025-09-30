@@ -1,4 +1,4 @@
-const { custom_axios } = require('../custom_axios')
+const custom_axios = require('../custom_axios')
 const dbRequests = require('../db/requests')
 const { logWithTime } = require('../logger')
 

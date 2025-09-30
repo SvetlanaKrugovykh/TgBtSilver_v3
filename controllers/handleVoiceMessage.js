@@ -1,6 +1,6 @@
 const fs = require('fs')
 const path = require('path')
-const { custom_axios } = require('../custom_axios')
+const custom_axios = require('../custom_axios')
 const { detectLanguage } = require('../services/languageDetector.cjs')
 const { sendAudio } = require('../services/audio_sender')
 const { translateText } = require('../services/audio_translator')

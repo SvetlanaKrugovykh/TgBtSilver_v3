@@ -1,4 +1,4 @@
-const { custom_axios } = require('../custom_axios')
+const custom_axios = require('../custom_axios')
 const fs = require('fs')
 const fsPromises = require('fs').promises
 const { logWithTime } = require('../logger')

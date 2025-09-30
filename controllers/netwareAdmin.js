@@ -4,7 +4,7 @@ const { getNagiosReport } = require('../modules/getReceipt')
 const ping = require('ping')
 const sendReqToDB = require('../modules/tlg_to_DB')
 const { plot } = require('../services/plots')
-const { custom_axios } = require('../custom_axios')
+const custom_axios = require('../custom_axios')
 const { logWithTime } = require('../logger')
 require('dotenv').config()
 
