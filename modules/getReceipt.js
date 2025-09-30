@@ -59,7 +59,7 @@ async function getReceipt(telNumber, msg, bot, fileName) {
 
 async function getNagiosReport(bot, msg) {
   try {
-    const response = await custom_axios({
+    const response = await axios({
       method: 'post',
       url: URL,
       timeout: 90000,
