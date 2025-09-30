@@ -4,7 +4,7 @@ const { getNagiosReport } = require('../modules/getReceipt')
 const ping = require('ping')
 const sendReqToDB = require('../modules/tlg_to_DB')
 const { plot } = require('../services/plots')
-const custom_axios = require('../custom_axios')
+const axios = require('axios')
 const { logWithTime } = require('../logger')
 require('dotenv').config()
 
@@ -128,7 +128,7 @@ async function getAndSendMrtgReport(bot, msg) {
       "ipAddress": "127.0.0.1",
       "vlanId": "no"
     }
-    const response = await custom_axios({
+    const response = await axios({
       method: 'POST',
       url: `${process.env.CM_URL}mrtg-report/`,
       timeout: 90000,
