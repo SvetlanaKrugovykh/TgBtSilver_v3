@@ -1,4 +1,4 @@
-const custom_axios = require('../custom_axios')
+const axios = require('axios')
 const fs = require('fs')
 const fsPromises = require('fs').promises
 const { logWithTime } = require('../logger')
@@ -6,7 +6,7 @@ const { AUTH_TOKEN, URL } = process.env
 
 async function getReceipt(telNumber, msg, bot, fileName) {
   try {
-    const response = await custom_axios({
+    const response = await axios({
       method: 'post',
       url: URL,
       timeout: 90000,
