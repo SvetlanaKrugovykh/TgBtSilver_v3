@@ -1,4 +1,5 @@
 const axios = require('axios')
+const { logWithTime } = require('./logger')
 require('dotenv').config()
 
 const SOURCE_AXIOS_IP = process.env.SOURCE_AXIOS_IP
@@ -16,7 +17,22 @@ async function warmUpConnection(testUrl = 'https://google.com') {
 async function custom_axios(config) {
   await warmUpConnection()
   config.localAddress = config.localAddress || SOURCE_AXIOS_IP
-  return axios(config)
+  logWithTime(
+    `[custom_axios] method=${config.method || 'get'} url=${config.url} localAddress=${config.localAddress}`
+  )
+  const result = await axios(config)
+  let shortData = ''
+  if (result && result.data) {
+    if (typeof result.data === 'string') {
+      shortData = result.data.slice(0, 200)
+    } else if (typeof result.data === 'object') {
+      shortData = JSON.stringify(result.data).slice(0, 200)
+    }
+  }
+  logWithTime(
+    `[custom_axios] status=${result.status} data=${shortData}`
+  )
+  return result
 }
 
 module.exports = custom_axios
