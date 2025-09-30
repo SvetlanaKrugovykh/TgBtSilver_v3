@@ -131,6 +131,7 @@ async function getAndSendMrtgReport(bot, msg) {
     const response = await axios({
       method: 'POST',
       url: `${process.env.CM_URL}mrtg-report/`,
+      timeout: 90000,
       headers: {
         'Content-Type': 'application/json',
         Authorization: `${process.env.CM_AUTH_TOKEN}`,

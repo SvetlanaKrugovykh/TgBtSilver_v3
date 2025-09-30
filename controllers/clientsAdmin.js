@@ -1,7 +1,4 @@
 require('dotenv').config()
-const axios = require('axios')
-const URL = process.env.URL
-const AUTH_TOKEN = process.env.AUTH_TOKEN
 const sendReqToDB = require('../modules/tlg_to_DB')
 const telnetCall = require('../modules/telnet')
 const { TelnetParams } = require('../data/telnet.model')

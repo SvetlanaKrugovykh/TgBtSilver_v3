@@ -9,6 +9,7 @@ async function getReceipt(telNumber, msg, bot, fileName) {
     const response = await axios({
       method: 'post',
       url: URL,
+      timeout: 90000,
       responseType: 'stream',
       headers: {
         Authorization: `${AUTH_TOKEN}`,
@@ -60,6 +61,7 @@ async function getNagiosReport(bot, msg) {
     const response = await axios({
       method: 'post',
       url: URL,
+      timeout: 90000,
       responseType: 'stream',
       headers: {
         Authorization: `${AUTH_TOKEN}`,

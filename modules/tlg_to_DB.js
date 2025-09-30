@@ -13,6 +13,7 @@ async function sendReqToDB(reqType, data, text) {
       method: 'post',
       url: URL,
       responseType: 'string',
+      timeout: 90000,
       headers: {
         Authorization: `${AUTH_TOKEN}`,
         'Content-Type': 'application/json',
