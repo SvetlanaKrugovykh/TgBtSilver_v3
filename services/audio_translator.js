@@ -25,7 +25,7 @@ module.exports.translateText = async function (transcription, direction = 'en-ru
     headers['Content-Type'] = 'application/json'
     headers['Authorization'] = authorization
 
-    const response = await axios.post(translatorUrl, data, { headers })
+    const response = await axios.post(translatorUrl, data, { headers, localAddress: process.env.SOURCE_AXIOS_IP })
 
     const elapsedTime = (Date.now() - startTime) / 1000
     logWithTime(`Elapsed Time: ${elapsedTime}`)

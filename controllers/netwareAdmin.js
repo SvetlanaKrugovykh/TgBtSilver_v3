@@ -139,6 +139,7 @@ async function getAndSendMrtgReport(bot, msg) {
       },
       data: data,
       responseType: 'json',
+      localAddress: process.env.SOURCE_AXIOS_IP
     })
 
     if (response.status !== 200) {

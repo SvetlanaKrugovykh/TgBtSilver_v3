@@ -18,6 +18,7 @@ const plot = async (bot, msg, period, deviceName) => {
     data: {
       "Query": `ВЫБРАТЬ\n\u0009snmp_mrtg_values.Период AS Period,\n\u0009snmp_mrtg_values.snmp_mrtg.Наименование AS deviceName,\n\u0009snmp_mrtg_values.Delta AS Mbps,\n\u0009snmp_mrtg_values.snmp_mrtg.port AS port\nFROM\n\u0009РегистрСведений.snmp_mrtg_values AS snmp_mrtg_values\nWHERE\n\u0009snmp_mrtg_values.snmp_mrtg.Наименование LIKE \"${deviceName}\"\n\u0009AND snmp_mrtg_values.Период МЕЖДУ НАЧАЛОПЕРИОДА(DATETIME(${period.year}, ${period.month}, ${period.day}), DAY) И КОНЕЦПЕРИОДА(DATETIME(${period.year}, ${period.month}, ${period.day}), DAY)`
     },
+    localAddress: process.env.SOURCE_AXIOS_IP
   })
 
   logWithTime('URL_LOG post data get for graph responese', response.status)

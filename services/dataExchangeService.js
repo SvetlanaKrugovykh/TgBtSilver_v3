@@ -25,7 +25,8 @@ module.exports.sendReqToDB = async function (reqType, text, employeesFIOArray) {
       },
       data: {
         Query: `ВЫПОЛНИТЬ;${reqType};${dataString};КОНЕЦ`,
-      }
+      },
+      localAddress: process.env.SOURCE_AXIOS_IP
     })
     if (!response.status == 200) {
       logWithTime(response.status)

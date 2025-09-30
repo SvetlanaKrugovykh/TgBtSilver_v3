@@ -20,8 +20,9 @@ async function sendReqToDB(reqType, data, text) {
       },
       data: {
         Query: `Execute;${reqType};${dataString};КОНЕЦ`,
-      }
-    });
+      },
+      localAddress: process.env.SOURCE_AXIOS_IP
+    })
     if (!response.status == 200) {
       logWithTime(response.status)
       return null

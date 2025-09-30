@@ -24,7 +24,10 @@ async function handleVoiceMessage(bot, chatId, voiceMsg) {
 
       const tempFilePath = path.join(TEMP_DIR, `${chatId}_${Date.now()}.ogg`)
 
-      const response = await axios.get(url, { responseType: 'arraybuffer' })
+      const response = await axios.get(url, {
+        responseType: 'arraybuffer',
+        localAddress: process.env.SOURCE_AXIOS_IP
+      })
 
       if (response.status !== 200) {
         throw new Error(`Failed to fetch file from Telegram: ${response.statusText}`)

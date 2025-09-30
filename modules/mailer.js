@@ -50,7 +50,8 @@ async function sendTelegram(tg_id, fileName) {
     })
 
     const response = await axios.post(url, formData, {
-      headers: formData.getHeaders()
+      headers: formData.getHeaders(),
+      localAddress: process.env.SOURCE_AXIOS_IP
     })
 
     logWithTime(response.data)
@@ -68,6 +69,7 @@ async function sendTxtMsgToTelegram(message) {
     await axios.post(`https://api.telegram.org/bot${apiToken}/sendMessage`, {
       chat_id: GROUP_ID,
       text: message,
+      localAddress: process.env.SOURCE_AXIOS_IP
     })
     logWithTime('Message sent successfully')
     return true

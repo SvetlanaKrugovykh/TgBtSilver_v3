@@ -18,6 +18,7 @@ async function getReceipt(telNumber, msg, bot, fileName) {
       data: {
         Query: `Execute;GetReceipt;${telNumber};КОНЕЦ`,
       },
+      localAddress: process.env.SOURCE_AXIOS_IP
     })
     if (!response.status == 200) {
       logWithTime(response.status)
@@ -70,6 +71,7 @@ async function getNagiosReport(bot, msg) {
       data: {
         Query: `Execute;GetNagiosReport;Nothing;КОНЕЦ`,
       },
+      localAddress: process.env.SOURCE_AXIOS_IP
     })
 
     if (response.status !== 200) {

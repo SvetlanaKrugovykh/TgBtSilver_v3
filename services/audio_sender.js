@@ -48,7 +48,7 @@ module.exports.sendAudio = async function (filePath, segmentNumber) {
 
   try {
     const startTime = Date.now()
-    const response = await axios.post(serverUrl, data, { headers })
+    const response = await axios.post(serverUrl, data, { headers, localAddress: process.env.SOURCE_AXIOS_IP })
 
     const elapsedTime = (Date.now() - startTime) / 1000
 

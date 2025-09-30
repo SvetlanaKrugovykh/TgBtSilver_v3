@@ -7,11 +7,17 @@ module.exports.formPaymentLink = async function (bot, chatId, abbreviation, cont
   const formPayLinkURL = process.env.FORM_PAY_LINK_URL
 
   try {
-    const response = await axios.post(formPayLinkURL, {
-      abbreviation,
-      'payment_code': contract.payment_code,
-      amount
-    })
+    const response = await axios.post(
+      formPayLinkURL,
+      {
+        abbreviation,
+        'payment_code': contract.payment_code,
+        amount
+      },
+      {
+        localAddress: process.env.SOURCE_AXIOS_IP
+      }
+    )
 
     if (response.status === 200) {
       const currency = 'UAH'
