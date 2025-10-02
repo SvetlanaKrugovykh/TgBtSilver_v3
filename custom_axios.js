@@ -15,7 +15,7 @@ async function warmUpConnection(testUrl = 'https://google.com') {
 }
 
 async function custom_axios(config) {
-  await warmUpConnection()
+  if (process.env.WARM_UP_CONNECTION === 'true') await warmUpConnection()
   config.localAddress = config.localAddress || SOURCE_AXIOS_IP
   logWithTime(
     `[custom_axios] method=${config.method || 'get'} url=${config.url} localAddress=${config.localAddress}`
