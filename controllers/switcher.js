@@ -153,7 +153,7 @@ async function handler(bot, msg, webAppUrl) {
     default:
       logWithTime(`default: ${msg.text}`)
       try {
-        if (msg.text.length > 3 && msg.text.includes('#H') && !regexIP.test(msg.text)) {
+        if (msg.text && msg.text.length > 3 && msg.text.includes('#H') && !regexIP.test(msg.text)) {
           clientsAdminGetInfo(bot, msg, msg.text)
         }
       } catch (error) { logWithTime(error) }
