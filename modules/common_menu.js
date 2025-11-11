@@ -87,7 +87,7 @@ module.exports.notTextScene = async function (bot, msg, lang = "en", toSend = tr
         } else {
           await bot.sendMessage(
             GROUP_ID,
-            `Reply from admin group:\n${message.content}`,
+            `📤 Відповідь техпідтримки:\n${message.content}`,
             { parse_mode: "HTML" }
           )
         }
@@ -95,7 +95,7 @@ module.exports.notTextScene = async function (bot, msg, lang = "en", toSend = tr
         if (toSend) {
           const header = !toChatID
             ? `Message from ${msg.chat.first_name} ${msg.chat.last_name} (ID: ${msg.chat.id}):`
-            : `Reply from admin group:\n`
+            : `📤 Відповідь техпідтримки:\n`
           await bot.sendMessage(GROUP_ID, header, { parse_mode: "HTML" })
         }
         if (message.type === 'photo') {

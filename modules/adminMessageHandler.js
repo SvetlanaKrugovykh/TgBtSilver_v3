@@ -46,7 +46,12 @@ module.exports.respondToSelectedClient = async function (bot, adminMsg, targetCh
     if (globalBuffer.msgQueue[targetChatId].length === 0) {
       delete globalBuffer.msgQueue[targetChatId]
     }
-    await bot.sendMessage(adminId, 'Response will successfully sent to the client.')
+
+    const responsePreview = adminMsg.text ?
+      (adminMsg.text.length > 50 ? adminMsg.text.substring(0, 50) + '...' : adminMsg.text)
+      : 'No text content'
+
+    await bot.sendMessage(adminId, `Response successfully sent to client ${targetChatId}:\n"${responsePreview}"`)
   } catch (error) {
     console.error('Error processing admin response:', error)
     await bot.sendMessage(adminMsg.chat.id, 'An error occurred while sending the response.')
