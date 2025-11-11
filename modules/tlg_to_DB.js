@@ -37,7 +37,13 @@ async function sendReqToDB(reqType, data, text) {
     }
 
   } catch (err) {
-    logWithTime(err)
+    if (err.response) {
+      logWithTime(`HTTP Error: ${err.response.status} - ${err.response.statusText} | URL: ${err.config?.url}`)
+    } else if (err.request) {
+      logWithTime(`Network Error: No response received | URL: ${err.config?.url}`)
+    } else {
+      logWithTime(`Request Error: ${err.message}`)
+    }
     return null
   }
 }
