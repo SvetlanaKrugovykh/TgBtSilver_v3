@@ -55,17 +55,22 @@ async function netwareAdminPing(bot, msg) {
     logWithTime(err)
   }
 }
-async function netwareAdminDeadIPCheck(bot, msg) {
+async function netwareAdminDeadIPCheck(bot, msg, typeCheck) {
   try {
     const chatId = msg.chat.id
-    const data = await sendReqToDB('__GetDeadIP__', chatId)
+    if (typeCheck === 'troubles') {
+      const data = await sendReqToDB('__GetDeadIP__', chatId)
+    } else if (typeCheck === 'upDown') {
+      await getAndSendReportForNetProblems(bot, msg, data, typeCheck)
+      return
+    }
     const text = data.toString()
     if (text.length < 28) {
       await bot.sendMessage(msg.chat.id, `🌟🌟🌟🌟🌟 Everything's good ✅ 👍 Absolutely 🆗.\n`, { parse_mode: 'HTML' })
     } else {
       await bot.sendMessage(msg.chat.id, `🥎\n The problems are}.\n`, { parse_mode: 'HTML' })
       await reportOfNEtProblems(bot, msg, data)
-      await getAndSendReportForNetProblems(bot, msg, data)
+      await getAndSendReportForNetProblems(bot, msg, data, typeCheck)
     }
   }
   catch (err) {
@@ -73,9 +78,9 @@ async function netwareAdminDeadIPCheck(bot, msg) {
   }
 }
 
-async function getAndSendReportForNetProblems(bot, msg, data) {
-  logWithTime(`Admin request for the nagios report ${msg.chat.id}`)
-  getNagiosReport(bot, msg)
+async function getAndSendReportForNetProblems(bot, msg, data, typeCheck) {
+  logWithTime(`Admin request for the ${typeCheck} report ${msg.chat.id}`)
+  getNagiosReport(bot, msg, typeCheck)
   await bot.sendMessage(msg.chat.id, '👋💙💛 Have a nice day!\n', { parse_mode: 'HTML' })
 }
 

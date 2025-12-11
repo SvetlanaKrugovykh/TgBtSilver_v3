@@ -130,9 +130,11 @@ async function handler(bot, msg, webAppUrl) {
       await netwareAdminServiceCheck(bot, msg)
       break
     case '5_15':
-      await netwareAdminDeadIPCheck(bot, msg)
+      await netwareAdminDeadIPCheck(bot, msg, 'troubles')
       break
-    case '5_17':
+    case '5_15':
+      await netwareAdminDeadIPCheck(bot, msg, 'upDown')
+      break    case '5_17':
       await getAndSendMrtgReport(bot, msg)
       break
     case '5_13':

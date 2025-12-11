@@ -57,8 +57,10 @@ async function getReceipt(telNumber, msg, bot, fileName) {
   }
 }
 
-async function getNagiosReport(bot, msg) {
+async function getNagiosReport(bot, msg, typeCheck) {
   try {
+    let method = 'GetNagiosReport'
+    if (typeCheck === 'upDown') method = 'GetNagiosUpDownReport'
     const response = await axios({
       method: 'post',
       url: URL,
@@ -69,7 +71,7 @@ async function getNagiosReport(bot, msg) {
         'Content-Type': 'application/json',
       },
       data: {
-        Query: `Execute;GetNagiosReport;Nothing;КОНЕЦ`,
+        Query: `Execute;{${method}};Nothing;КОНЕЦ`,
       }
     })
 
