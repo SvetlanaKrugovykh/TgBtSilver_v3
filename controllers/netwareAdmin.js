@@ -58,17 +58,19 @@ async function netwareAdminPing(bot, msg) {
 async function netwareAdminDeadIPCheck(bot, msg, typeCheck) {
   try {
     const chatId = msg.chat.id
+    let data
     if (typeCheck === 'troubles') {
-      const data = await sendReqToDB('__GetDeadIP__', chatId)
+      data = await sendReqToDB('__GetDeadIP__', chatId)
     } else if (typeCheck === 'upDown') {
+      data = await sendReqToDB('__GetDeadIP__', chatId)
       await getAndSendReportForNetProblems(bot, msg, data, typeCheck)
       return
     }
-    const text = data.toString()
+    const text = data ? data.toString() : ''
     if (text.length < 28) {
       await bot.sendMessage(msg.chat.id, `🌟🌟🌟🌟🌟 Everything's good ✅ 👍 Absolutely 🆗.\n`, { parse_mode: 'HTML' })
     } else {
-      await bot.sendMessage(msg.chat.id, `🥎\n The problems are}.\n`, { parse_mode: 'HTML' })
+      await bot.sendMessage(msg.chat.id, `🥎\n The problems are.\n`, { parse_mode: 'HTML' })
       await reportOfNEtProblems(bot, msg, data)
       await getAndSendReportForNetProblems(bot, msg, data, typeCheck)
     }
