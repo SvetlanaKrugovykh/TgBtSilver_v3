@@ -71,7 +71,7 @@ async function getNagiosReport(bot, msg, typeCheck) {
         'Content-Type': 'application/json',
       },
       data: {
-        Query: `Execute;{${method}};Nothing;КОНЕЦ`,
+        Query: `Execute;${method};Nothing;КОНЕЦ`,
       }
     })
 
