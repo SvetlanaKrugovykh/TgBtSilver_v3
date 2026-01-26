@@ -37,9 +37,9 @@ module.exports.notTextScene = async function (bot, msg, lang = "en", toSend = tr
 
     await new Promise((resolve) => {
       const timeout = setTimeout(() => {
-        bot.removeListener('message', handleMessage)
-        resolve()
-      }, 30000)
+				bot.removeListener("message", handleMessage)
+				resolve()
+			}, 400000)
 
       bot.on('message', (message) => {
         if (message.chat.id === chatId) {
