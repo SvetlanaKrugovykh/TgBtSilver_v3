@@ -18,7 +18,12 @@ module.exports.handleAdminResponse = async function (bot, adminMsg) {
       }
     ])
 
-    await bot.sendMessage(adminId, 'Select a client to respond to:', {
+    const instructionText = `📋 *Support Response Process*\n\n` +
+      `*Step 1:* Choose a clients message from the list below\n` +
+      `*Step 2:* After selecting, type your response message\n Enter\n` 
+
+    await bot.sendMessage(adminId, instructionText, {
+      parse_mode: 'Markdown',
       reply_markup: {
         inline_keyboard: buttons
       }
@@ -35,26 +40,22 @@ module.exports.respondToSelectedClient = async function (bot, adminMsg, targetCh
 
     if (!globalBuffer.msgQueue[targetChatId] || globalBuffer.msgQueue[targetChatId].length === 0) {
       await bot.sendMessage(adminId, 'The message queue for this client is empty.')
-      return
+      return false
     }
 
+    // Remove the message from queue
     const messageToRespond = globalBuffer.msgQueue[targetChatId].shift()
-    if (messageToRespond.type === 'text') {
-      logWithTime(`to ${targetChatId}: Admin response:\n${adminMsg.text}`)
-    }
-
+    
     if (globalBuffer.msgQueue[targetChatId].length === 0) {
       delete globalBuffer.msgQueue[targetChatId]
     }
 
-    const responsePreview = adminMsg.text ?
-      (adminMsg.text.length > 50 ? adminMsg.text.substring(0, 50) + '...' : adminMsg.text)
-      : 'No text content'
-
-    await bot.sendMessage(adminId, `Response successfully sent to client ${targetChatId}:\n"${responsePreview}"`)
+    logWithTime(`Admin ${adminId} processing response to client ${targetChatId}`)
+    return true
   } catch (error) {
     console.error('Error processing admin response:', error)
     await bot.sendMessage(adminMsg.chat.id, 'An error occurred while sending the response.')
+    return false
   }
 }
 

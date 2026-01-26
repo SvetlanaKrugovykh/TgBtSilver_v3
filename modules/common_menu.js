@@ -50,6 +50,8 @@ module.exports.notTextScene = async function (bot, msg, lang = "en", toSend = tr
       })
     })
 
+    let adminResponseText = null  // Store admin's response text for confirmation
+
     for (const message of collectedMessages) {
       if (!toChatID) {
         if (!globalBuffer.msgQueue) globalBuffer.msgQueue = {}
@@ -85,6 +87,7 @@ module.exports.notTextScene = async function (bot, msg, lang = "en", toSend = tr
             )
           }
         } else {
+          adminResponseText = message.content  // Save for confirmation message
           await bot.sendMessage(
             GROUP_ID,
             `📤 Відповідь техпідтримки:\n${message.content}`,
@@ -121,7 +124,8 @@ module.exports.notTextScene = async function (bot, msg, lang = "en", toSend = tr
     if (toSend && !toChatID) {
       await bot.sendMessage(chatId, "Дякуємо! Ваше повідомлення відправлено.\n Очікуйте відповіді протягом 30 хвилин", { parse_mode: "HTML" })
     } else if (toSend && toChatID) {
-      await bot.sendMessage(process.env.GROUP_ID, `🥎🥎 Message sent to ${toChatID}\n`, { parse_mode: 'HTML' })
+      const responsePreview = adminResponseText ? (adminResponseText.length > 100 ? adminResponseText.substring(0, 100) + '...' : adminResponseText) : 'No text'
+      await bot.sendMessage(msg.chat.id, `🥎🥎 Message sent to ${toChatID}\n\n<b>Your response:</b>\n${responsePreview}`, { parse_mode: 'HTML' })
     }
   } catch (err) {
     logWithTime(err)
