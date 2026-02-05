@@ -5,7 +5,7 @@ const fs = require('fs')
 const { logWithTime } = require('../logger')
 require('dotenv').config()
 
-const { MAILHOST, MAILPORT } = process.env
+const { MAILHOST, MAILPORT, MAIL_USER, MAIL_PASS } = process.env
 
 async function sendMail(message, filename) {
   try {
@@ -21,10 +21,10 @@ async function sendMail(message, filename) {
       host: MAILHOST,
       port: Number(MAILPORT),
       secure: false,
-      auth: {
-        user: message.from,
-        pass: undefined
-      }
+      auth: MAIL_USER && MAIL_PASS ? {
+        user: MAIL_USER,
+        pass: MAIL_PASS
+      } : undefined
     })
 
     const attachment = {
