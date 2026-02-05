@@ -9,6 +9,14 @@ const { MAILHOST, MAILPORT } = process.env
 
 async function sendMail(message, filename) {
   try {
+    logWithTime(`sendMail called with filename: ${filename}`)
+    logWithTime(`sendMail message.to: ${message.to}, message.from: ${message.from}`)
+    
+    if (!filename || !fs.existsSync(filename)) {
+      logWithTime(`File not found or invalid: ${filename}`)
+      return false
+    }
+    
     let transporter = nodemailer.createTransport({
       host: MAILHOST,
       port: Number(MAILPORT),
@@ -33,8 +41,11 @@ async function sendMail(message, filename) {
 
     logWithTime("Message sent: %s", info.messageId)
     logWithTime("Preview URL: %s", nodemailer.getTestMessageUrl(info))
+    return true
   } catch (error) {
+    logWithTime('Error sending email:', error.message)
     console.error(error)
+    return false
   }
 
 }
@@ -59,7 +70,9 @@ async function sendTelegram(tg_id, fileName) {
     logWithTime(response.data)
     return true
   } catch (error) {
+    logWithTime('Error sending Telegram document:', error.message)
     console.error(error)
+    return false
   }
 }
 
