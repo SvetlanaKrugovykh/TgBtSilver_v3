@@ -441,10 +441,13 @@ async function sendInvoice(_bot, msg, recID = false) {
     if (recID) {
       await _bot.sendMessage(msg.chat.id, 'Введіть ID клієнта\n', { parse_mode: 'HTML' })
       const tg_id = await inputLineScene(_bot, msg)
+      logWithTime(`Sending invoice via Telegram to ${tg_id}, file: ${invoiceFilePath}`)
       const res_ = await sendTelegram(tg_id, invoiceFilePath)
       if (res_) {
+        logWithTime(`Invoice successfully sent via Telegram to ${tg_id}`)
         await _bot.sendMessage(msg.chat.id, `🥎🥎 Invoice succesfully sent to ${tg_id}\n`, { parse_mode: 'HTML' })
       } else {
+        logWithTime(`Failed to send invoice via Telegram to ${tg_id}`)
         await _bot.sendMessage(msg.chat.id, `⛔️ Invoice not sent to ${tg_id}\n`, { parse_mode: 'HTML' })
       }
       return
@@ -464,7 +467,18 @@ async function sendInvoice(_bot, msg, recID = false) {
       html: '<p>Очікуємо на своєчасну сплату рахунку</p>'
     }
 
-    sendMail(message, invoiceFilePath)
+    await _bot.sendMessage(msg.chat.id, `📧 Відправляю рахунок на email: ${email[msg.chat.id]}...`, { parse_mode: 'HTML' })
+    logWithTime(`Sending invoice via Email to ${email[msg.chat.id]}, file: ${invoiceFilePath}`)
+    
+    const emailResult = await sendMail(message, invoiceFilePath)
+    
+    if (emailResult) {
+      logWithTime(`Invoice successfully sent via Email to ${email[msg.chat.id]}`)
+      await _bot.sendMessage(msg.chat.id, `🥎🥎 Рахунок успішно відправлено на email: ${email[msg.chat.id]}`, { parse_mode: 'HTML' })
+    } else {
+      logWithTime(`Failed to send invoice via Email to ${email[msg.chat.id]}`)
+      await _bot.sendMessage(msg.chat.id, `⛔️ Помилка відправки рахунку на email: ${email[msg.chat.id]}`, { parse_mode: 'HTML' })
+    }
   } catch (err) {
     logWithTime(err)
   }
