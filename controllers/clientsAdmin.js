@@ -1,4 +1,5 @@
 require('dotenv').config()
+const fs = require('fs')
 const sendReqToDB = require('../modules/tlg_to_DB')
 const telnetCall = require('../modules/telnet')
 const { TelnetParams } = require('../data/telnet.model')
@@ -388,19 +389,59 @@ async function clientsAdminCheckHWService(bot, msg, request) {
 }
 
 
+/**
+ * Validates invoice file existence and freshness for specified chat.id
+ * @param {number} chatId - Chat ID
+ * @param {number} maxAgeMinutes - Maximum file age in minutes (default 10)
+ * @returns {string|null} - File path or null if not found or outdated
+ */
+function getInvoiceFilePath(chatId, maxAgeMinutes = 10) {
+  try {
+    const tempCatalog = process.env.TEMP_CATALOG
+    const filePath = `${tempCatalog}__${chatId}__.pdf`
+    
+    logWithTime(`Checking invoice file: ${filePath}`)
+    
+    if (!fs.existsSync(filePath)) {
+      logWithTime(`Invoice file not found: ${filePath}`)
+      return null
+    }
+    
+    const stats = fs.statSync(filePath)
+    const fileModTime = stats.mtime.getTime()
+    const currentTime = Date.now()
+    const fileAgeMinutes = (currentTime - fileModTime) / (1000 * 60)
+    
+    logWithTime(`File age: ${fileAgeMinutes.toFixed(2)} minutes`)
+    
+    if (fileAgeMinutes > maxAgeMinutes) {
+      logWithTime(`Invoice file is too old (${fileAgeMinutes.toFixed(2)} > ${maxAgeMinutes} minutes): ${filePath}`)
+      return null
+    }
+    
+    logWithTime(`Invoice file is valid: ${filePath}`)
+    return filePath
+    
+  } catch (err) {
+    logWithTime(`Error checking invoice file: ${err}`)
+    return null
+  }
+}
+
 async function sendInvoice(_bot, msg, recID = false) {
 
   try {
-    if (!fileName[msg.chat.id]) return
-    if (fileName[msg.chat.id].length === 0) {
-      logWithTime("Invalid fileName:", fileName)
+    const invoiceFilePath = getInvoiceFilePath(msg.chat.id)
+    
+    if (!invoiceFilePath) {
+      await _bot.sendMessage(msg.chat.id, '⛔️ Файл рахунку не знайдено або застарів. Спочатку згенеруйте рахунок.', { parse_mode: 'HTML' })
       return
     }
 
     if (recID) {
       await _bot.sendMessage(msg.chat.id, 'Введіть ID клієнта\n', { parse_mode: 'HTML' })
       const tg_id = await inputLineScene(_bot, msg)
-      const res_ = await sendTelegram(tg_id, fileName[msg.chat.id])
+      const res_ = await sendTelegram(tg_id, invoiceFilePath)
       if (res_) {
         await _bot.sendMessage(msg.chat.id, `🥎🥎 Invoice succesfully sent to ${tg_id}\n`, { parse_mode: 'HTML' })
       } else {
@@ -411,7 +452,8 @@ async function sendInvoice(_bot, msg, recID = false) {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email[msg.chat.id])) {
-      logWithTime("Invalid email address:", email)
+      logWithTime("Invalid email address:", email[msg.chat.id])
+      await _bot.sendMessage(msg.chat.id, '⛔️ Невірна email адреса. Операцію скасовано.', { parse_mode: 'HTML' })
       return
     }
     const message = {
@@ -422,7 +464,7 @@ async function sendInvoice(_bot, msg, recID = false) {
       html: '<p>Очікуємо на своєчасну сплату рахунку</p>'
     }
 
-    sendMail(message, fileName[msg.chat.id])
+    sendMail(message, invoiceFilePath)
   } catch (err) {
     logWithTime(err)
   }
