@@ -116,7 +116,8 @@ async function handler(bot, msg, webAppUrl) {
 			break
 		case "3_18":
 			await sendInvoice(bot, msg)
-			break		case "3_44":
+			break		
+    case "3_44":
 			await sendInvoice(bot, msg, false, "akt")
 			break
 		case "3_28":
