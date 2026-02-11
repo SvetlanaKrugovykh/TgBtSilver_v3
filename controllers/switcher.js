@@ -115,12 +115,15 @@ async function handler(bot, msg, webAppUrl) {
 			await clientsAdmin(bot, msg)
 			break
 		case "3_18":
-		case "3_44":
 			await sendInvoice(bot, msg)
+			break		case "3_44":
+			await sendInvoice(bot, msg, false, "akt")
 			break
 		case "3_28":
-		case "3_43":
 			await sendInvoice(bot, msg, true)
+			break
+    case "3_43":
+			await sendInvoice(bot, msg, true, "akt")
 			break
 		case "3_19":
 			await clientsAdminRedirectedClientSwitchOn(bot, msg)

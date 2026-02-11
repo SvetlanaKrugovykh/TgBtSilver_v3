@@ -428,7 +428,7 @@ function getInvoiceFilePath(chatId, maxAgeMinutes = 10) {
   }
 }
 
-async function sendInvoice(_bot, msg, recID = false) {
+async function sendInvoice(_bot, msg, recID = false, condition = undefined) {
 
   try {
     const invoiceFilePath = getInvoiceFilePath(msg.chat.id)
@@ -461,12 +461,18 @@ async function sendInvoice(_bot, msg, recID = false) {
       await _bot.sendMessage(msg.chat.id, '⛔️ Невірна email адреса. Операцію скасовано.', { parse_mode: 'HTML' })
       return
     }
-    const message = {
+    let message = {
       from: 'AbonOtdel@silver-service.com.ua',
       to: email[msg.chat.id],
       subject: 'Рахунок до сплати за послуги Internet',
       text: 'Доброго дня! У вкладенні рахунок щодо сплати за послуги Інтернет',
       html: '<p>Очікуємо на своєчасну сплату рахунку</p>'
+    }
+
+    if (condition === "akt") {
+      message.subject = 'Акт взаєморозрахунків за послуги Internet'
+      message.text = 'Доброго дня! У вкладенні акт взаєморозрахунків за послуги Інтернет'
+      message.html = '<p>У разі виникнення питань, будь ласка, зв\'яжіться з нами.</p>'
     }
 
     await _bot.sendMessage(msg.chat.id, `📧 Відправляю рахунок на email: ${email[msg.chat.id]}...`, { parse_mode: 'HTML' })
@@ -475,11 +481,11 @@ async function sendInvoice(_bot, msg, recID = false) {
     const emailResult = await sendMail(message, invoiceFilePath)
     
     if (emailResult) {
-      logWithTime(`Invoice successfully sent via Email to ${email[msg.chat.id]}`)
+      logWithTime(`Document successfully sent via Email to ${email[msg.chat.id]}`)
       await _bot.sendMessage(msg.chat.id, `🥎🥎 Рахунок успішно відправлено на email: ${email[msg.chat.id]}`, { parse_mode: 'HTML' })
     } else {
-      logWithTime(`Failed to send invoice via Email to ${email[msg.chat.id]}`)
-      await _bot.sendMessage(msg.chat.id, `⛔️ Помилка відправки рахунку на email: ${email[msg.chat.id]}`, { parse_mode: 'HTML' })
+      logWithTime(`Failed to send document via Email to ${email[msg.chat.id]}`)
+      await _bot.sendMessage(msg.chat.id, `⛔️ Помилка відправки документа на email: ${email[msg.chat.id]}`, { parse_mode: 'HTML' })
     }
   } catch (err) {
     logWithTime(err)
