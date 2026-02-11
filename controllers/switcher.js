@@ -45,123 +45,135 @@ async function handler(bot, msg, webAppUrl) {
   logWithTime('The choise is:', data)
 
   switch (data) {
-    case '0_1':
-      await receiptScene(bot, msg, false)
-      break
-    case '0_2':
-      await supportScene(bot, msg, false)
-      break
-    case '0_3':
-      await signUpForm(bot, msg, webAppUrl)
-      break
-    case '1_1':
-      await receiptScene(bot, msg, true)
-      break
-    case '1_2':
-      await supportScene(bot, msg, true)
-      break
-    case '1_3':
-      await paymentScene(bot, msg)
-      break
-    case '2_1':
-      await clientsAdmin(bot, msg)
-      break
-    case '2_2':
-      await netwareAdmin(bot, msg)
-      break
-    case '2_3':
-      await contactScene(bot, msg)
-      break
-    case '3_1':
-      await clientsAdminGetInfo(bot, msg)
-      break
-    case '3_2':
-      await clientsAdminResponseToRequest(bot, msg)
-      break
-    case '3_4':
-      await clientsAdminMonthlyOFF(bot, msg)
-      break
-    case '3_3':
-      await adminMenu(bot, msg, adminStartButtons)
-      break
-    case '3_11':
-      await clientsAdminSwitchOnClient(bot, msg)
-      break
-    case '3_21':
-      await clientsAdminSwitchOff(bot, msg)
-      break
-    case '3_31':
-      await clientsAdminSwitchOnClientAfterStopping(bot, msg)
-      break
-    case '3_12':
-      await clientsAdminGetInvoice(bot, msg)
-      break
-    case '3_13':
-      await clientsAdminStopClientService(bot, msg)
-      break
-    case '3_14':
-      await clientsAdminCheckHWService(bot, msg, 'attenuation')
-      break
-    case '3_15':
-      await clientsAdminCheckHWService(bot, msg, 'bandwidth')
-      break
-    case '3_16':
-      await clientsAdminCheckHWService(bot, msg, 'macs')
-      break
-    case '3_17':
-      await clientsAdmin(bot, msg)
-      break
-    case '3_18':
-      await sendInvoice(bot, msg)
-      break
-    case '3_28':
-      await sendInvoice(bot, msg, true)
-      break
-    case '3_19':
-      await clientsAdminRedirectedClientSwitchOn(bot, msg)
-      break
-    case '3_20':
-      await clientsAdminGetArpMac(bot, msg)
-      break
-    case '5_11':
-      await netwareAdminPing(bot, msg)
-      break
-    case '5_12':
-      await netwareAdminServiceCheck(bot, msg)
-      break
-    case '5_15':
-      await netwareAdminDeadIPCheck(bot, msg, 'troubles')
-      break
-    case '5_16':
-      await netwareAdminDeadIPCheck(bot, msg, 'upDown')
-      break
-    case '5_17':
-      await getAndSendMrtgReport(bot, msg)
-      break
-    case '5_13':
-      await netwareAdmin(bot, msg)
-      break
-    case '5_24':
-      await dbScene(bot, msg)
-      break
-    case '5_25':
-      await dbShow(bot, msg)
-      break
-    case '11_98':
-      await clientsAdmin(bot, msg)
-      break
-    case '11_99':
-      await clientsAdminGetInfo(bot, msg, 'return')
-      break
-    default:
-      logWithTime(`default: ${msg.text}`)
-      try {
-        if (msg.text && msg.text.length > 3 && msg.text.includes('#H') && !regexIP.test(msg.text)) {
-          clientsAdminGetInfo(bot, msg, msg.text)
-        }
-      } catch (error) { logWithTime(error) }
-      break
-  }
+		case "0_1":
+			await receiptScene(bot, msg, false)
+			break
+		case "0_2":
+			await supportScene(bot, msg, false)
+			break
+		case "0_3":
+			await signUpForm(bot, msg, webAppUrl)
+			break
+		case "1_1":
+			await receiptScene(bot, msg, true)
+			break
+		case "1_2":
+			await supportScene(bot, msg, true)
+			break
+		case "1_3":
+			await paymentScene(bot, msg)
+			break
+		case "2_1":
+			await clientsAdmin(bot, msg)
+			break
+		case "2_2":
+			await netwareAdmin(bot, msg)
+			break
+		case "2_3":
+			await contactScene(bot, msg)
+			break
+		case "3_1":
+			await clientsAdminGetInfo(bot, msg)
+			break
+		case "3_2":
+			await clientsAdminResponseToRequest(bot, msg)
+			break
+		case "3_4":
+			await clientsAdminMonthlyOFF(bot, msg)
+			break
+		case "3_3":
+			await adminMenu(bot, msg, adminStartButtons)
+			break
+		case "3_11":
+			await clientsAdminSwitchOnClient(bot, msg)
+			break
+		case "3_21":
+			await clientsAdminSwitchOff(bot, msg)
+			break
+		case "3_31":
+			await clientsAdminSwitchOnClientAfterStopping(bot, msg)
+			break
+		case "3_12":
+			await clientsAdminGetInvoice(bot, msg)
+			break
+		case "3_42":
+			await clientsAdminGetInvoice(bot, msg, "akt")
+			break
+		case "3_13":
+			await clientsAdminStopClientService(bot, msg)
+			break
+		case "3_14":
+			await clientsAdminCheckHWService(bot, msg, "attenuation")
+			break
+		case "3_15":
+			await clientsAdminCheckHWService(bot, msg, "bandwidth")
+			break
+		case "3_16":
+			await clientsAdminCheckHWService(bot, msg, "macs")
+			break
+		case "3_17":
+			await clientsAdmin(bot, msg)
+			break
+		case "3_18":
+		case "3_44":
+			await sendInvoice(bot, msg)
+			break
+		case "3_28":
+		case "3_43":
+			await sendInvoice(bot, msg, true)
+			break
+		case "3_19":
+			await clientsAdminRedirectedClientSwitchOn(bot, msg)
+			break
+		case "3_20":
+			await clientsAdminGetArpMac(bot, msg)
+			break
+		case "5_11":
+			await netwareAdminPing(bot, msg)
+			break
+		case "5_12":
+			await netwareAdminServiceCheck(bot, msg)
+			break
+		case "5_15":
+			await netwareAdminDeadIPCheck(bot, msg, "troubles")
+			break
+		case "5_16":
+			await netwareAdminDeadIPCheck(bot, msg, "upDown")
+			break
+		case "5_17":
+			await getAndSendMrtgReport(bot, msg)
+			break
+		case "5_13":
+			await netwareAdmin(bot, msg)
+			break
+		case "5_24":
+			await dbScene(bot, msg)
+			break
+		case "5_25":
+			await dbShow(bot, msg)
+			break
+		case "11_98":
+			await clientsAdmin(bot, msg)
+			break
+		case "11_99":
+			await clientsAdminGetInfo(bot, msg, "return")
+			break
+		default:
+			logWithTime(`default: ${msg.text}`)
+			try {
+				if (
+					msg.text &&
+					msg.text.length > 3 &&
+					msg.text.includes("#H") &&
+					!regexIP.test(msg.text)
+				) {
+					clientsAdminGetInfo(bot, msg, msg.text)
+				}
+			} catch (error) {
+				logWithTime(error)
+			}
+			break
+	}
 }
 
 async function guestMenu(bot, msg, guestStartButtons) {

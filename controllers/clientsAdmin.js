@@ -146,9 +146,9 @@ async function stopService(bot, msg, txtCommand) {
   }
 }
 
-async function invoice(bot, msg, telNumber, fileName) {
+async function invoice(bot, msg, telNumber, fileName, condition = undefined) {
   logWithTime('Reguest for receipt for', telNumber)
-  await getReceipt(telNumber, msg, bot, fileName)
+  await getReceipt(telNumber, msg, bot, fileName, condition)
 }
 
 async function goToHardware(bot, msg, responseData) {
@@ -343,14 +343,14 @@ async function clientsAdminGetArpMac(bot, msg) {
   }
 }
 
-async function clientsAdminGetInvoice(bot, msg) {
+async function clientsAdminGetInvoice(bot, msg, condition = undefined) {
   if (telNumber[msg.chat.id] === undefined) return null
   if (telNumber[msg.chat.id].length < 8) {
     await bot.sendMessage(msg.chat.id, 'Wrong telNumber. Операцію скасовано. Треба повторити пошук\n', { parse_mode: 'HTML' })
     return null
   }
   logWithTime(`Admin request for the receipt ${telNumber[msg.chat.id]}`)
-  invoice(bot, msg, telNumber[msg.chat.id], fileName)
+  invoice(bot, msg, telNumber[msg.chat.id], fileName, condition)
   await bot.sendMessage(msg.chat.id, '👋💙💛 Have a nice day!\n', { parse_mode: 'HTML' })
 }
 
@@ -441,14 +441,16 @@ async function sendInvoice(_bot, msg, recID = false) {
     if (recID) {
       await _bot.sendMessage(msg.chat.id, 'Введіть ID клієнта\n', { parse_mode: 'HTML' })
       const tg_id = await inputLineScene(_bot, msg)
-      logWithTime(`Sending invoice via Telegram to ${tg_id}, file: ${invoiceFilePath}`)
+      logWithTime(`Sending file via Telegram to ${tg_id}, file: ${invoiceFilePath}`)
       const res_ = await sendTelegram(tg_id, invoiceFilePath)
       if (res_) {
-        logWithTime(`Invoice successfully sent via Telegram to ${tg_id}`)
-        await _bot.sendMessage(msg.chat.id, `🥎🥎 Invoice succesfully sent to ${tg_id}\n`, { parse_mode: 'HTML' })
+        logWithTime(`File successfully sent via Telegram to ${tg_id}`)
+        await _bot.sendMessage(msg.chat.id, `🥎🥎 File succesfully sent to ${tg_id}\n`, { parse_mode: 'HTML' })
       } else {
-        logWithTime(`Failed to send invoice via Telegram to ${tg_id}`)
-        await _bot.sendMessage(msg.chat.id, `⛔️ Invoice not sent to ${tg_id}\n`, { parse_mode: 'HTML' })
+        logWithTime(`Failed to send file via Telegram to ${tg_id}`)
+        await _bot.sendMessage(msg.chat.id, `⛔️ File not sent to ${tg_id}\n`, {
+					parse_mode: "HTML",
+				})
       }
       return
     }

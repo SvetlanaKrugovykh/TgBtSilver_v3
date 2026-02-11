@@ -41,35 +41,38 @@ const clientAdminStarterButtons = {
 }
 
 const clientAdminStep2Buttons = {
-  title: 'Choose step2 admin action',
-  options: { resize_keyboard: true },
-  buttons: [
-    [
-      { text: 'Switch ON', callback_data: '3_11' },
-      { text: 'Switch OFF', callback_data: '3_21' },
-      { text: 'STOP services for this client', callback_data: '3_13' }
-    ],
-    [
-      { text: 'Switch ON this client AFTER STOPPING', callback_data: '3_31' }
-    ],
-    [
-      { text: 'Get INVOICE', callback_data: '3_12' },
-      { text: 'Send INV by ID', callback_data: '3_28' },
-      { text: 'Send INV by email', callback_data: '3_18' }
-    ],
-    [
-      { text: 'Redirect Client Switch ON', callback_data: '3_19' },
-      { text: 'Get arp mac', callback_data: '3_20' }
-    ],
-    [
-      { text: 'Check attenuation', callback_data: '3_14' },
-      { text: 'Check bandwidth', callback_data: '3_15' }
-    ],
-    [
-      { text: 'Check macs', callback_data: '3_16' },
-      { text: 'Return', callback_data: '3_17' }
-    ]
-  ]
+	title: "Choose step2 admin action",
+	options: { resize_keyboard: true },
+	buttons: [
+		[
+			{ text: "Switch ON", callback_data: "3_11" },
+			{ text: "Switch OFF", callback_data: "3_21" },
+			{ text: "STOP services for this client", callback_data: "3_13" },
+		],
+		[{ text: "Switch ON this client AFTER STOPPING", callback_data: "3_31" }],
+		[
+			{ text: "Get INVOICE", callback_data: "3_12" },
+			{ text: "Send INV by ID", callback_data: "3_28" },
+			{ text: "Send INV by email", callback_data: "3_18" },
+		],
+		[
+			{ text: "Get AKT", callback_data: "3_42" },
+			{ text: "Send AKT by ID", callback_data: "3_43" },
+			{ text: "Send AKT by email", callback_data: "3_44" },
+		],
+		[
+			{ text: "Redirect Client Switch ON", callback_data: "3_19" },
+			{ text: "Get arp mac", callback_data: "3_20" },
+		],
+		[
+			{ text: "Check attenuation", callback_data: "3_14" },
+			{ text: "Check bandwidth", callback_data: "3_15" },
+		],
+		[
+			{ text: "Check macs", callback_data: "3_16" },
+			{ text: "Return", callback_data: "3_17" },
+		],
+	],
 }
 
 const netwareAdminButtons = {
